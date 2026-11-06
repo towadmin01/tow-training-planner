@@ -1,0 +1,1249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TOW Ministry Training Planner</title>
+<style>
+/* Layout: same structure as the TOW dashboard, in a deep-teal colourway so the two apps are easy to tell apart. Single light theme by design. */
+:root{
+  --brand:#0E4B4F; --brand-dark:#093538; --mint:#D5EAE5; --gold:#D9B45A;
+  --bg:#F6F7F4; --soft:#F3F5F1; --soft-2:#EAEEE8; --white:#ffffff;
+  --ink:#1F2621; --ink-2:#4A524C; --muted:#7B847D; --label:#8C948D; --line:#DDE2DC;
+  --green:#1E7A46; --green-bg:#DFF3E7; --amber:#8A5B00; --amber-bg:#FFF2CC; --red:#9C0006; --red-bg:#FCE0E0; --blue:#1F4F7A; --blue-bg:#E2ECF6;
+  --f-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color-scheme:light;
+}
+[hidden]{display:none!important}
+img{max-width:100%}
+.hdr-actions{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.hbtn{font:600 11.5px var(--f-body);color:#fff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:6px 10px;cursor:pointer;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbtn.on{background:var(--gold);color:var(--brand-dark);border-color:var(--gold)}
+.modal{position:fixed;inset:0;background:rgba(10,30,30,.5);z-index:30;display:flex;align-items:center;justify-content:center;padding:16px}
+.mbox{background:#fff;border-radius:12px;padding:18px;width:100%;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--brand)}
+.wrap{max-width:820px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--brand);color:var(--white);box-shadow:0 2px 10px rgba(0,0,0,.15)}
+header.top .wrap{padding-block:14px 12px}
+.brandrow{display:flex;align-items:center;gap:10px}
+.header-logo{height:32px;width:auto;flex-shrink:0}
+.brand{display:flex;flex-direction:column;min-width:0}
+.brand span{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.brand b{font-size:18px;font-weight:700;letter-spacing:-.01em;margin-top:1px}
+nav.tabs{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+nav.tabs button{flex:1 1 0;min-width:72px;text-align:center;padding:8px 4px;border-radius:8px;font:600 12px var(--f-body);color:rgba(255,255,255,.7);background:rgba(255,255,255,.07);cursor:pointer;border:1px solid transparent}
+nav.tabs button[aria-selected="true"]{background:var(--mint);color:var(--brand-dark)}
+main{padding-block:16px 130px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.pagehead h2{font-size:18px;font-weight:700;color:var(--brand)}
+.pagehead p{color:var(--ink-2);font-size:12.5px;margin:4px 0 0;line-height:1.5}
+h3{font-size:14px;font-weight:700}
+.stack{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:14px}
+/* collapsible sections */
+details.sec{background:var(--white);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+details.sec > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--soft-2);border-bottom:1px solid transparent}
+details.sec[open] > summary{border-bottom-color:var(--line)}
+details.sec > summary::-webkit-details-marker{display:none}
+details.sec > summary .chev{width:16px;height:16px;flex:none;color:var(--brand);transition:transform .15s}
+details.sec[open] > summary .chev{transform:rotate(90deg)}
+details.sec > summary .st{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+details.sec > summary .tt{font-weight:700;font-size:14px;color:var(--ink)}
+details.sec > summary .meta{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+details.sec > summary .sub{font-size:12px;color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details.sec .body{padding:14px;display:flex;flex-direction:column;gap:12px}
+details.tsec > summary{border-left:4px solid var(--brand)}
+details.lead-panel > summary{background:#FBF4DF;border-left:4px solid var(--gold)}
+.grid{display:grid;gap:10px 12px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.grid > *{min-width:0}
+.span-all{grid-column:1/-1}
+label.f{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--label)}
+label.f > input,label.f > select,label.f > textarea{display:block;margin-top:4px}
+label.f .req{color:var(--red);margin-left:2px}
+input,select,textarea{font:400 13px var(--f-body);color:var(--ink-2);background:var(--white);border:1px solid var(--line);border-radius:8px;padding:7px 9px;width:100%;min-width:0;text-transform:none;letter-spacing:0}
+input::placeholder,textarea::placeholder{color:#a9b0aa}
+textarea{min-height:54px;resize:vertical;line-height:1.4}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+input:disabled,select:disabled,textarea:disabled{background:var(--soft);color:var(--ink-2);opacity:1}
+.missing{border-color:var(--red)!important;background:var(--red-bg)!important}
+fieldset{border:0;background:var(--soft);border-radius:9px;padding:10px 12px 12px;margin:0;min-width:0}
+legend{float:left;width:100%;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);padding:0;margin-bottom:8px}
+fieldset > .grid{clear:both}
+.btn{display:inline-flex;align-items:center;gap:6px;font:600 12.5px var(--f-body);border-radius:8px;padding:7px 12px;cursor:pointer;border:1px solid var(--line);background:var(--white);color:var(--brand);white-space:nowrap}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--brand);color:var(--white);border-color:var(--brand)}
+.btn.primary:hover{background:var(--brand-dark)}
+.btn.good{background:var(--green);color:#fff;border-color:var(--green)}
+.btn.warn{color:var(--red);border-color:#efc3c3}
+.btn.ghost{background:none;border-color:transparent;color:var(--muted)}
+.btn.small{padding:4px 9px;font-size:11.5px}
+.btn.icon{padding:6px;width:32px;height:32px;justify-content:center}
+.btn svg{width:16px;height:16px;flex:none}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.spread{justify-content:space-between}
+.pill{display:inline-flex;align-items:center;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.pill.none{background:var(--soft-2);color:var(--muted)}
+.pill.draft{background:var(--amber-bg);color:var(--amber)}
+.pill.sub{background:var(--blue-bg);color:var(--blue)}
+.pill.ok{background:var(--green-bg);color:var(--green)}
+.pill.bad{background:var(--red-bg);color:var(--red)}
+.note{font-size:12.5px;padding:8px 11px;border-radius:9px;line-height:1.45}
+.note.warn{background:var(--amber-bg);color:var(--amber)}
+.note.bad{background:var(--red-bg);color:var(--red)}
+.note.info{background:var(--blue-bg);color:var(--blue)}
+.note.ok{background:var(--green-bg);color:var(--green)}
+.notes{display:flex;flex-direction:column;gap:6px}
+.quick{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font-size:11.5px;color:var(--muted)}
+.quick button{font:500 11.5px var(--f-body);background:none;border:0;padding:2px 0;color:var(--brand);cursor:pointer;text-decoration:underline;text-decoration-color:#b9cfc9;text-underline-offset:3px}
+.cost input[type=number]{text-align:right;font-variant-numeric:tabular-nums}
+.money{font-variant-numeric:tabular-nums;font-weight:700}
+.muted{color:var(--muted)} .small{font-size:12px}
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--white);border-top:1px solid var(--line);box-shadow:0 -2px 8px rgba(0,0,0,.05);padding-bottom:env(safe-area-inset-bottom,0px)}
+.savebar .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding-block:9px}
+.savebar .sum{font-size:12px;color:var(--ink-2);margin-right:auto;min-width:0}
+.savebar .sum b{color:var(--ink)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--white)}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--label);font-weight:700;background:var(--soft);white-space:nowrap}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.month td{font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:var(--soft-2);color:var(--brand)}
+.date{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+.childname::before{content:"↳ ";color:var(--muted)}
+details.plain summary{cursor:pointer;font-weight:600;font-size:12.5px;color:var(--brand)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:11.5px;padding:3px 8px;border-radius:6px;background:var(--soft-2);color:var(--ink-2)}
+.empty{text-align:center;padding:28px 10px;color:var(--muted);font-size:13px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(80px + env(safe-area-inset-bottom,0px));background:var(--brand-dark);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:20;box-shadow:0 4px 14px rgba(0,0,0,.2);max-width:calc(100% - 32px)}
+.kpi{display:flex;flex-wrap:wrap;gap:10px}
+.kpi div{flex:1 1 140px;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:11px 12px;display:flex;flex-direction:column}
+.kpi span{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--label)}
+.kpi b{font-size:19px;font-weight:800}
+.wa{background:#EEF7F0;border:1px solid #cfe6d6;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.wa textarea{font-size:12.5px;min-height:150px;background:var(--white)}
+.wa a{font-size:12px;color:var(--green);font-weight:600}
+.history{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.history .h{border-left:2px solid var(--line);padding-left:10px;font-size:12.5px}
+.history .h b{color:var(--ink)}
+.history ul{margin:4px 0 0;padding-left:18px;color:var(--ink-2)}
+.tl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--white);padding:10px 8px}
+.tl svg{display:block;min-width:660px;width:100%;height:auto}
+.tl svg text{font-family:var(--f-body)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11.5px;color:var(--ink-2);margin-top:8px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.conf{border-left:3px solid var(--red)}
+.conf .who{display:flex;flex-direction:column;gap:4px;margin:8px 0}
+.fix{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--green-bg);color:var(--green);border-radius:9px;padding:8px 11px;font-size:12.5px}
+.fix.none{background:var(--amber-bg);color:var(--amber)}
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:minmax(110px,180px) 1fr auto;gap:10px;align-items:center;font-size:12.5px}
+.bar .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.bar .track{display:flex;gap:2px;height:16px}
+.bar .seg{flex:1;border-radius:3px;background:var(--soft-2);border:1px dashed #c6cdc7}
+.bar .seg.held{background:var(--green);border:0}.bar .seg.up{background:#8fb3ad;border:0}.bar .seg.due{background:#d9534f;border:0}.bar .seg.def{background:#e0b24c;border:0}.bar .seg.can{background:#9aa29c;border:0}
+.bar .ct{font-variant-numeric:tabular-nums;font-size:12px;color:var(--ink-2);white-space:nowrap}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.attach a{color:var(--brand);font-weight:600;font-size:12.5px}
+.settings-table input,.settings-table select{font-size:12.5px;padding:5px 7px}
+.settings-table td{padding:6px}
+@media (max-width:540px){ details.sec > summary .meta .small{display:none} details.sec > summary .st,details.sec > summary .tt{white-space:nowrap} .savebar .sum{width:100%} .bar{grid-template-columns:100px 1fr auto} details.sec > summary .sub{display:none} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <div class="brandrow">
+    <img class="header-logo" src="data:image/png;base64,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" alt="Tabernacle of Worship logo">
+    <div class="brand"><span>Tabernacle of Worship</span><b>Ministry Training Planner</b></div>
+    <div class="hdr-actions"><button class="hbtn" type="button" id="who-btn">Set your name</button><button class="hbtn" type="button" id="lead-btn">Leadership</button></div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button id="tab-form" role="tab" aria-selected="true" data-view="form">Plan Form</button>
+    <button id="tab-calendar" role="tab" aria-selected="false" data-view="calendar">Calendar</button>
+    <button id="tab-overview" role="tab" aria-selected="false" data-view="overview">Overview</button>
+    <button id="tab-settings" role="tab" aria-selected="false" data-view="settings" hidden>Settings</button>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <div id="conn" class="note info" hidden style="margin-bottom:12px"></div>
+  <section id="view-form" class="stack"></section>
+  <section id="view-calendar" class="stack" hidden></section>
+  <section id="view-overview" class="stack" hidden></section>
+  <section id="view-settings" class="stack" hidden></section>
+</main>
+
+<div class="savebar" id="savebar" hidden><div class="wrap">
+  <div class="sum" id="sumline"></div>
+  <div class="row" id="actions"></div>
+</div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ===== GitHub Pages version: Google Sheet + Apps Script backend =====
+   1) Deploy Code.gs as a Web App (Execute as: Me, Who has access: Anyone)
+   2) Paste the Web App URL below. */
+const API_URL = "https://script.google.com/macros/s/AKfycbxhFuBDIHPN0KuQqW3U40yjwuCOiybPbOz12lEokjKmN9gVrLV9WDVXv4dljWXI0TlewQ/exec";
+
+(function(){
+  const LS={get:k=>{try{return localStorage.getItem(k)}catch(_){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(_){}}};
+  const SS={get:k=>{try{return sessionStorage.getItem(k)}catch(_){return null}},set:(k,v)=>{try{v==null?sessionStorage.removeItem(k):sessionStorage.setItem(k,v)}catch(_){}}};
+  const cache={plans:{},reviews:{},settings:null,loaded:false};
+  const listeners=[];
+  const notify=()=>listeners.forEach(f=>{try{f()}catch(e){console.error(e)}});
+  const configured=()=>/^https:\/\/script\.google\.com\//.test(API_URL);
+  async function load(){
+    if(!configured()) throw {code:"unavailable",message:"API_URL not set"};
+    const r=await fetch(API_URL+"?action=load&t="+Date.now());
+    const j=await r.json(); if(j.error) throw {code:"unavailable",message:j.error};
+    cache.plans=j.plans||{};cache.reviews=j.reviews||{};cache.settings=j.settings||null;cache.loaded=true;notify();
+  }
+  async function post(body){
+    if(!configured()) throw {code:"unavailable"};
+    if(body.pin==null)body.pin=SS.get("towtp.pin")||"";body.by=LS.get("towtp.name")||"";
+    const r=await fetch(API_URL,{method:"POST",body:JSON.stringify(body)}); // text/plain: no CORS preflight
+    const j=await r.json();
+    if(j.error==="unauthorized") throw {code:"invalid_argument",message:"Leadership PIN required"};
+    if(j.error) throw {code:"unavailable",message:j.error};
+    return j;
+  }
+  const mkSnap=(id,d)=>({id,exists:d!=null,data:()=>d==null?undefined:JSON.parse(JSON.stringify(d)),metadata:{fromCache:false,hasPendingWrites:false}});
+  function docRef(path){
+    const seg=path.split("/");
+    return {path,id:seg[seg.length-1],
+      async set(data){
+        if(seg[0]==="plans"){await post({action:"setPlan",id:seg[1],data});cache.plans[seg[1]]=JSON.parse(JSON.stringify(data))}
+        else if(path==="leadership/settings"){await post({action:"setSettings",data});cache.settings=JSON.parse(JSON.stringify(data))}
+        else if(seg[0]==="leadership"&&seg[2]==="plans"){await post({action:"setReview",id:seg[3],data});cache.reviews[seg[3]]=JSON.parse(JSON.stringify(data))}
+        else throw {code:"invalid_argument"};
+        notify(); setTimeout(()=>load().catch(()=>{}),1500);
+      },
+      async update(data){
+        if(seg[0]!=="plans") throw {code:"invalid_argument"};
+        await post({action:"updatePlan",id:seg[1],data});
+        cache.plans[seg[1]]=Object.assign({},cache.plans[seg[1]]||{},JSON.parse(JSON.stringify(data)));
+        notify(); setTimeout(()=>load().catch(()=>{}),1500);
+      },
+      onSnapshot(next,err){
+        const f=()=>{if(!cache.loaded)return;if(path==="leadership/settings")next(mkSnap("settings",cache.settings))};
+        listeners.push(f); f(); return()=>{};
+      }};
+  }
+  function collRef(path){
+    return {path,doc:id=>docRef(path+"/"+id),
+      onSnapshot(next,err){
+        const f=()=>{if(!cache.loaded)return;const src=path==="plans"?cache.plans:cache.reviews;const docs=Object.keys(src).sort().map(id=>mkSnap(id,src[id]));next({docs,size:docs.length,empty:!docs.length,docChanges:()=>[],metadata:{fromCache:false,hasPendingWrites:false}})};
+        listeners.push(f); f(); return()=>{};
+      }};
+  }
+  const db={doc:docRef,collection:collRef};
+  const user={
+    id:async()=>LS.get("towtp.name")||null,
+    canEdit:async()=>!!SS.get("towtp.pin"),
+    isOwner:async()=>!!SS.get("towtp.pin"),
+    can:async()=>true,
+    profiles:async ids=>Object.fromEntries([].concat(ids).map(i=>[i,{id:i,name:/^u_/.test(i)?"":i,isMe:false}])),
+  };
+  const downloads={save:async({filename,data})=>{
+    const blob=data instanceof Blob?data:new Blob([data],{type:/\.pdf$/i.test(filename)?"application/pdf":/\.csv$/i.test(filename)?"text/csv":"application/octet-stream"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);return {status:"saved"};
+  }};
+  const assets={upload:async file=>{
+    if(file.size>10*1024*1024) throw {code:"too_large"};
+    const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]);r.onerror=rej;r.readAsDataURL(file)});
+    const j=await post({action:"upload",name:file.name,mime:file.type||"application/octet-stream",data:b64,id:(typeof S!=="undefined"&&S.key)?`${S.year}_${S.key}`:""});
+    return {id:j.fileId,url:j.url,contentType:file.type,sizeBytes:file.size};
+  }};
+  window.claude={use:async n=>({db,user,downloads,assets:SS.get("towtp.pin")?assets:null}[n]||null)};
+  window.TOWAPI={load,post,configured,LS,SS};
+  setInterval(()=>{if(document.visibilityState==="visible"&&!(typeof S!=="undefined"&&(S.dirty||S.setDirty)))load().catch(()=>{})},45000);
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&!(typeof S!=="undefined"&&(S.dirty||S.setDirty)))load().catch(()=>{})});
+  window.addEventListener("load",()=>{load().catch(e=>{const c=document.getElementById("conn");if(c){c.hidden=false;c.className="note warn";c.textContent=configured()?"Couldn't reach the Google Sheet. Check your connection, then refresh.":"Setup needed: paste the Apps Script Web App URL into API_URL at the top of index.html."}})});
+})();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+const LOGO="data:image/png;base64,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";
+/* ================= Default settings (editable in Settings) ================= */
+const C=(code,title,covers,outcome,by)=>({code,title,covers,outcome,by});
+const DEFAULTS={
+ years:[2027,2028],
+ dueMonth:12, dueDay:15,
+ staff:["Ps. Derick Wong","Ps. Jocelyn Yoong","Ps. Kenrick Kong","Ps. Kevin Ong","Ps. Melissa Lai","Ps. Michael Lia","Ps. Viven Tan","Jeremy Ong (Offering)","Leon Wong","Priscilla Chin (Cafeteria)"],
+ ministries:[
+  {key:"levites",name:"Levites (Worship)",parent:"",pic:"Ps. Kenrick Kong",team:"Worship team (musicians, vocalists, worship leaders)",freq:4,kpi:true,active:true},
+  {key:"sound",name:"Sound",parent:"levites",pic:"Leon Wong",team:"Sound team",freq:4,kpi:true,active:true},
+  {key:"media",name:"Media",parent:"levites",pic:"Kok Hon",team:"Media / livestream / slides team",freq:4,kpi:true,active:true},
+  {key:"kids",name:"Kids Church",parent:"",pic:"Ps. Viven Tan",team:"Kids Church teachers and helpers",freq:4,kpi:true,active:true},
+  {key:"connect",name:"Connect & Hospitality",parent:"",pic:"Ps. Jocelyn Yoong",team:"Connect personnel, Ushers, Communion",freq:4,kpi:true,active:true},
+  {key:"ert",name:"ERT & Security",parent:"",pic:"Ps. Kevin Ong",team:"ERT and security team",freq:4,kpi:true,active:true},
+  {key:"youth",name:"Youth Network",parent:"",pic:"Ps. Derick Wong",team:"Youth leaders",freq:4,kpi:true,active:true},
+  {key:"ya",name:"Young Adults",parent:"",pic:"Ps. Derick Wong",team:"Young Adults leaders",freq:4,kpi:true,active:true},
+  {key:"events",name:"Events",parent:"",pic:"Ps. Melissa Lai",team:"Events team",freq:4,kpi:true,active:true},
+  {key:"offering",name:"Offering",parent:"",pic:"Jeremy Ong",team:"Offering counters and stewards",freq:4,kpi:true,active:true},
+  {key:"cafeteria",name:"Cafeteria",parent:"",pic:"Priscilla Chin",team:"Cafeteria volunteers and food handlers",freq:4,kpi:true,active:true},
+  {key:"bm",name:"BM Connect",parent:"",pic:"Ps. Michael Lia",team:"BM Connect team",freq:2,kpi:false,active:true},
+ ],
+ courses:{
+  levites:[C("L1","Heart of Worship","Biblical basis of worship, the Levite calling, character and conduct on and off stage","Team shares one vision and a written standard of conduct","Internal"),C("L2","Band Dynamics & Arrangement","Playing as a band, dynamics, transitions, click/tracks, rehearsal discipline","Tighter Sunday sets with fewer stops in rehearsal","Internal or guest MD"),C("L3","Vocal Technique & Harmony","Breathing, pitch, blend, building 3-part harmony, mic technique","Vocalists sing in tune and blend; harmonies prepared before rehearsal","External vocal coach"),C("L4","Worship Leading & Flow","Song selection, keys, linking songs, spontaneous moments, leading the congregation","More team members ready to lead a set","Internal"),C("L5","Music Theory & Number System","Chords, keys, Nashville Number System, reading charts","Musicians can transpose and follow charts on the spot","Internal")],
+  sound:[C("S1","Console & Signal Flow","TOW's mixer layout, gain staging, EQ basics, scenes","Every member can set up and run a basic service mix","Internal"),C("S2","Mixing for Worship & Monitors","Vocal-forward mix, balancing the band, monitor and in-ear mixes","Clear congregational sound and fewer monitor complaints","Internal"),C("S3","Mics, Patching & Wireless","Mic types and placement, stage patching, cable care, wireless frequencies and batteries","Faster, tidier set-up with no dropouts","Internal"),C("S4","Troubleshooting & Emergency Drills","Feedback, dead mic, power trip, backup plan; pre/post-service checklist","Problems fixed within a minute without stopping service","Internal"),C("S5","Guest Engineer Workshop","Hands-on session with a professional live-sound engineer","Senior members level up; new ideas for TOW's set-up","External trainer")],
+  media:[C("M1","Slides & Presentation Standards","Presentation software, lyric timing, fonts, bilingual slides, sermon notes","Zero lyric/slide errors during service","Internal"),C("M2","Livestream & Camera Operation","Framing, shot switching, streaming set-up, audio feed, checklists","Stable, well-framed livestream every week","Internal"),C("M3","Event Photography & Consent","Composition, low-light shots, photo consent (esp. children), PDPA basics","Usable photos for social media without privacy issues","Internal or guest photographer"),C("M4","Video Editing & Content","Short-form editing (e.g. CapCut, Canva), announcements, reels","Weekly announcement and recap videos made in-house","Internal"),C("M5","Stage Lighting Basics","Lighting desk, colour and mood, scenes for worship and events","Lighting supports worship instead of distracting","Internal or vendor")],
+  kids:[C("K1","Child Safety & Protection","Check-in/out, two-adult rule, toilet policy, photo consent, reporting concerns","Every teacher knows and follows the safety policy","Internal"),C("K2","Bible Storytelling by Age Group","Telling stories for ages 3-5, 6-9, 10-12; props, questions, application","Lessons that hold attention and fit the age group","Internal"),C("K3","Classroom Management","Routines, positive discipline, handling disruptive behaviour, transitions","Calmer classes; fewer helpers needed per class","Internal"),C("K4","Inclusive Kids Ministry","Welcoming children with special needs, buddy system, working with parents","Every child can join in safely","Internal or guest specialist"),C("K5","Paediatric First Aid","Choking, fever, cuts, allergies, when to call parents/ERT","Teachers respond correctly to common incidents","ERT or external")],
+  connect:[C("H1","Culture of Welcome","First impressions, greeting newcomers, welcome cards, the newcomer journey","Every newcomer is greeted and their card collected","Internal"),C("H2","Usher Operations","Seating, crowd flow, offering, late-comers, handling disruptions","Smooth services with clear roles per usher","Internal"),C("H3","Communion Serving Protocol","Meaning of communion, preparation, hygiene, serving order, clean-up","Communion served reverently and on time","Internal"),C("H4","Follow-up, Care & Data Privacy","Call and WhatsApp follow-up etiquette, linking newcomers to groups, PDPA","Newcomers followed up within a week; data handled properly","Internal"),C("H5","Difficult Situations & Emergency Roles","Distressed visitors, medical incidents, usher positions in an evacuation","Ushers know their role alongside ERT","Internal + ERT")],
+  ert:[C("E1","CPR, AED & First Aid (Certified)","Adult/child CPR, AED use, bleeding, choking, certification","Certified responders on duty every service","External certified provider"),C("E2","Fire Safety & Evacuation Drill","Extinguisher use, evacuation routes, assembly point, headcount","Building can be cleared safely; drill timed","Internal or Bomba talk"),C("E3","Security Awareness & De-escalation","Spotting suspicious behaviour, calm de-escalation, lockdown steps","Incidents handled quietly without alarming the congregation","Internal or external"),C("E4","Lost Child & Kids Incident Protocol","Joint drill with Kids Church: missing child, unauthorised pick-up","One clear protocol both teams follow","Internal + Kids Church"),C("E5","Traffic, Parking & Radio","Parking flow with limited space, roadside parking, radio use and call signs","Smoother arrivals at big services (Christmas, Easter)","Internal")],
+  youth:[C("Y1","Leading a Teen Cell Group","Running a cell, asking good questions, including quiet members","Leaders run cells confidently every week","Internal"),C("Y2","Discipleship & Mentoring","One-to-one mentoring, Bible reading plans, accountability","Each leader mentors 1-2 youths","Internal"),C("Y3","Safeguarding & Online Boundaries","Leader-youth boundaries, DMs and social media, transport, reporting","Leaders protected and youths safe","Internal"),C("Y4","Teen Mental Health First Response","Signs of stress and anxiety, listening well, when and how to refer","Leaders respond well and refer early","External counsellor"),C("Y5","Creative Programmes & Outreach","Planning Saturday programmes, games, bringing friends","Fresh programmes and more first-time youths","Internal")],
+  ya:[C("A1","Small Group Facilitation","Leading discussions, handling dominant or silent members, prayer time","Groups people want to come back to","Internal"),C("A2","Faith & Work","Living out faith at work, ethics, career decisions, working outstation","YAs equipped for weekday life","Internal or guest professional"),C("A3","Mentoring & Spiritual Disciplines","Prayer, Bible study habits, mentoring a younger believer","Leaders model and pass on healthy habits","Internal"),C("A4","Reaching Peers","Sharing faith naturally with colleagues and friends, hospitality","More friends invited to YA gatherings","Internal"),C("A5","Building the Leadership Pipeline","Spotting and training the next leaders, delegating, succession","One apprentice leader identified per group","Internal")],
+  events:[C("V1","Event Planning & Run Sheets","Timelines, run sheets, roles, checklists","Every event has a run sheet 2 weeks before","Internal"),C("V2","Budget, Logistics & Vendors","Costing, quotes, vendor handling, booking via the Space & Events Portal","Events stay within approved budget","Internal"),C("V3","Stage & Decor on a Budget","Themes, reusable decor, stage design basics","Better-looking events at lower cost","Internal"),C("V4","Event-Day Operations","Crowd flow, emergency coordination with ERT, communication on the day","Calm, coordinated event days","Internal + ERT"),C("V5","Post-Event Review","Feedback, debrief, documenting lessons for next year","Each event improves on the last","Internal")],
+  offering:[C("O1","Counting & Dual-Control Procedures","Two-person rule, counting room steps, sealed bags, tally sheets","Every count follows the same checked procedure","Internal (Finance)"),C("O2","Cash Handling & Security","Safe storage, transport to the bank, what to do in an incident","Offering is never left unattended or with one person","Internal + ERT"),C("O3","E-Giving & QR Reconciliation","Matching DuitNow/QR and bank transfers to records, common errors","Online giving reconciled every week","Internal (Finance)"),C("O4","Integrity & Confidentiality","Biblical stewardship, conflicts of interest, keeping giving records private","Team understands and signs the code of conduct","Internal"),C("O5","Records & Reporting","Weekly summary forms, receipts, handing over to finance","Clean weekly reports with no follow-up queries","Internal (Finance)")],
+  cafeteria:[C("F1","Food Handler Training","Food and personal hygiene, safe temperatures, cross-contamination","Food handlers trained to the KKM food handler standard","External (KKM-recognised trainer)"),C("F2","Kitchen Safety & Fire","Gas safety, knives and hot surfaces, fire blanket and extinguisher use","No kitchen accidents; everyone knows the shut-off points","Internal + ERT"),C("F3","Allergens & Food Labelling","Common allergens, labelling dishes, handling special diets","Allergen information shown for every dish served","Internal"),C("F4","Serving Flow & Hospitality","Queue flow, portioning, serving with a welcoming attitude","Faster queues and less food waste","Internal"),C("F5","Stock, Costing & Budget","Stock-taking, costing a menu, supplier records, waste tracking","Cafeteria stays within budget with records kept","Internal")],
+  bm:[C("B1","Culture of Welcome (in BM)","First impressions, greeting newcomers, welcome cards, the newcomer journey","Every newcomer is greeted and followed up","Internal"),C("B2","Follow-up & Care (in BM)","Call and WhatsApp follow-up etiquette, linking newcomers to groups, PDPA","Newcomers followed up within a week","Internal")],
+ },
+ holidays:{
+  "2027":[["2027-01-01","New Year's Day"],["2027-01-14","Birthday of YDPB Negeri Sembilan"],["2027-01-22","Thaipusam"],["2027-02-06","Chinese New Year"],["2027-02-07","Chinese New Year (2nd day)"],["2027-03-10","Hari Raya Aidilfitri (tentative)"],["2027-03-26","Good Friday"],["2027-03-28","Easter Sunday"],["2027-05-01","Labour Day"],["2027-05-17","Hari Raya Haji (tentative)"],["2027-05-20","Wesak Day (tentative)"],["2027-06-07","Agong's Birthday"],["2027-08-31","National Day"],["2027-09-16","Malaysia Day"],["2027-10-28","Deepavali (tentative)"],["2027-12-25","Christmas Day"]],
+ },
+ waInvite:"*{ministry} Training #{n}*\n*{course}*\n\nHi team, you're invited to our ministry training.\n\n📅 {day}, {date}\n⏰ {start} - {end}\n📍 {venue}\n👤 Trainer: {trainer}\n\nWe'll cover: {covers}\nGoal: {outcome}\n{extras}\n\nPlease reply *YES* to confirm by {rsvp}.\nQuestions? Contact {pic}.\nThank you and God bless! 🙏",
+};
+const PAIR={sound:"media",media:"sound"};
+const FORMATS=["Talk & Discussion","Hands-on Workshop","Drill / Simulation","Certification Course","Rehearsal-based Coaching","Online + Follow-up"];
+const VENUES=["TOW Premises","External Venue"];
+const TRAINER_TYPES=["Internal","External"];
+const COST_FIELDS=[["trainer","Trainer / Speaker Fee"],["venue","Venue Rental"],["equipment","Equipment Rental"],["meals","Meals & Refreshments"],["transport","Transport"],["materials","Materials / Certificates"],["other","Other"]];
+const DELIVERY=["Planned","Held","Deferred","Cancelled"];
+const SUG={ // suggested 2027 dates
+ levites:[["2027-01-17","12:30","15:30","L1"],["2027-05-23","12:30","15:30","L2"],["2027-08-01","12:30","16:30","L3","Vocalists (+ worship leaders)"],["2027-10-17","12:30","15:30","L4","Worship leaders, MDs"]],
+ sound:[["2027-02-27","14:00","17:00","S1"],["2027-06-26","14:00","17:00","S3"],["2027-08-21","14:00","17:00","S2"],["2027-11-20","14:00","17:00","S4"]],
+ media:[["2027-02-28","12:30","15:30","M1"],["2027-06-27","12:30","15:30","M2"],["2027-08-22","12:30","15:30","M3"],["2027-11-21","12:30","15:30","M5"]],
+ kids:[["2027-01-31","12:30","15:30","K1"],["2027-04-25","12:30","15:30","K2"],["2027-07-25","12:30","15:30","K3"],["2027-11-07","12:30","15:30","K4"]],
+ connect:[["2027-01-09","14:00","17:00","H1"],["2027-04-18","12:30","15:30","H2","Ushers (+ Connect)"],["2027-07-18","12:30","15:30","H3","Communion team (+ Ushers)"],["2027-10-24","12:30","15:30","H4","Connect personnel"]],
+ ert:[["2027-03-06","09:00","17:00","E1"],["2027-06-19","14:00","17:00","E2","ERT & security (+ ushers invited)"],["2027-09-04","14:00","17:00","E3"],["2027-11-27","14:00","17:00","E5","ERT, security, ushers"]],
+ youth:[["2027-02-20","13:30","15:45","Y1"],["2027-05-29","13:30","15:45","Y3"],["2027-08-14","13:30","15:45","Y4"],["2027-11-13","13:30","15:45","Y2"]],
+ ya:[["2027-03-14","","","A1"],["2027-06-13","","","A2"],["2027-08-08","","","A3"],["2027-10-10","","","A5"]],
+ events:[["2027-02-13","14:00","17:00","V1"],["2027-04-10","14:00","17:00","V2"],["2027-09-11","14:00","17:00","V3"],["2027-10-02","14:00","17:00","V4"]],
+ offering:[["2027-03-20","14:00","17:00","O1"],["2027-05-15","14:00","17:00","O3"],["2027-09-25","14:00","17:00","O2"],["2027-11-06","14:00","17:00","O4"]],
+ cafeteria:[["2027-01-23","14:00","17:00","F1"],["2027-05-08","14:00","17:00","F2"],["2027-07-03","14:00","17:00","F3"],["2027-10-30","14:00","17:00","F4"]],
+};
+const LANE_COLORS=["#0E4B4F","#3d6ea8","#7b97c4","#C9A227","#1E7A46","#b4532a","#7a4fa0","#b0618f","#3f7f79","#8a6d3b","#5f7d2e","#847e6a","#2c6e8f","#a34e4e"];
+
+/* ================= Helpers ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pd=s=>{const [y,m,d]=String(s).slice(0,10).split("-").map(Number);return new Date(y,m-1,d)};
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], DOWL=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], MONL=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const fmtDate=s=>{if(!s)return "";const d=pd(s);return `${DOW[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]}`};
+const fmtLong=s=>{if(!s)return "";const d=pd(s);return `${d.getDate()} ${MONL[d.getMonth()]} ${d.getFullYear()}`};
+const fmtTime=t=>{if(!t)return "";let [h,m]=t.split(":").map(Number);const ap=h>=12?"pm":"am";h=h%12||12;return m?`${h}:${String(m).padStart(2,"0")}${ap}`:`${h}${ap}`};
+const fmtStamp=s=>{if(!s)return "";const d=new Date(s);return `${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}, ${fmtTime(String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"))}`};
+const rm=n=>"RM "+(Number(n)||0).toLocaleString("en-MY",{minimumFractionDigits:0,maximumFractionDigits:2});
+const weekendKey=s=>{const d=pd(s);if(d.getDay()===0)d.setDate(d.getDate()-1);return iso(d)};
+const isSecondSunday=s=>{const d=pd(s);return d.getDay()===0&&d.getDate()>=8&&d.getDate()<=14};
+const tCost=t=>COST_FIELDS.reduce((a,[k])=>a+(Number(t.cost?.[k])||0),0);
+const planCost=p=>(p.trainings||[]).reduce((a,t)=>a+tCost(t),0);
+const docId=(y,k)=>`${y}_${k}`;
+const nowIso=()=>new Date().toISOString();
+const today=()=>iso(new Date());
+const clone=o=>JSON.parse(JSON.stringify(o));
+const ICON={
+ print:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="6" y="14" width="12" height="7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/></svg>',
+ pdf:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v6M9 15l3 3 3-3"/></svg>',
+ csv:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>',
+ clip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5l-8.5 8.5a5 5 0 0 1-7-7L14 5.5a3.5 3.5 0 0 1 5 5L10.5 19a2 2 0 0 1-3-3L15 8.5"/></svg>',
+ copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>',
+ chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+};
+
+/* ================= State ================= */
+const S={view:"form",year:2027,key:"",plans:{},reviews:{},cfg:clone(DEFAULTS),form:null,dirty:false,canWrite:true,isAdmin:false,canUpload:false,db:null,user:null,uid:null,remoteChanged:false,leaderEdit:false,open:{plan:true},setDraft:null,setDirty:false,setCourseKey:"levites",setHolYear:"2027"};
+try{const k=localStorage.getItem("towtp.key");if(k)S.key=k;const y=+localStorage.getItem("towtp.year");if(y)S.year=y;}catch(e){}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,3200)}
+
+/* settings accessors */
+const mins=()=>S.cfg.ministries;
+const MIN=k=>mins().find(m=>m.key===k);
+const minName=k=>MIN(k)?.name||k;
+const minFull=k=>{const m=MIN(k);if(!m)return k;return m.parent&&MIN(m.parent)?`${MIN(m.parent).name} › ${m.name}`:m.name};
+function orderedMins(activeOnly=true){
+  const all=mins().filter(m=>!activeOnly||m.active!==false), out=[];
+  all.filter(m=>!m.parent||!all.find(x=>x.key===m.parent)).forEach(p=>{out.push(p);all.filter(c=>c.parent===p.key).forEach(c=>out.push(c))});
+  return out;
+}
+const courses=k=>S.cfg.courses[k]||[];
+const courseFor=(k,code)=>courses(k).find(c=>c.code===code);
+const courseLabel=(k,t)=>t.course==="custom"?(t.customTitle||"Custom course"):(()=>{const c=courseFor(k,t.course);return c?`${c.code} – ${c.title}`:""})();
+const holidays=y=>(S.cfg.holidays[String(y)]||[]);
+const laneColor=k=>LANE_COLORS[Math.max(0,mins().findIndex(m=>m.key===k))%LANE_COLORS.length];
+const dueDate=y=>`${y-1}-${String(S.cfg.dueMonth).padStart(2,"0")}-${String(S.cfg.dueDay).padStart(2,"0")}`;
+function blankTraining(k){const m=MIN(k);return {team:m?.team||"",headcount:"",pic:m?.pic||"",course:"",customTitle:"",covers:"",outcome:"",date:"",start:"",end:"",venue:VENUES[0],venueDetail:"",trainerType:"Internal",trainer:"",format:FORMATS[0],cost:{},costNotes:"",delivery:{status:"Planned"}}}
+function blankPlan(k,y){const m=MIN(k);return {ministry:k,year:y,pic:m?.pic||"",coPics:m?.parent?`Under ${minName(m.parent)} (${MIN(m.parent)?.pic||""})`:"",frequency:m?.freq||4,freqReason:"",goal:"",trainings:[],status:"none"}}
+
+/* ================= Workflow ================= */
+const WF={none:["Not started","none"],draft:["Draft","draft"],review:["Awaiting review","sub"],edit_requested:["Edit requested","draft"],changes:["Changes requested","bad"],reopened:["Open for edits","draft"],pic_review:["Awaiting PIC acceptance","sub"],meeting:["Meeting needed","bad"],approved:["Approved","ok"]};
+function wf(p,r){
+  if(!p||!p.status||p.status==="none") return "none";
+  const sub=p.submittedAt||"";
+  if(p.firstSubmittedAt&&r&&r.at&&r.at>sub){
+    if(["approved","pic_review"].includes(r.decision)&&p.editRequest&&p.editRequest.at>r.at&&!(p.picResponse&&p.picResponse.at>p.editRequest.at)) return "edit_requested";
+    if(r.decision==="approved") return "approved";
+    if(r.decision==="changes") return "changes";
+    if(r.decision==="reopened") return "reopened";
+    if(r.decision==="pic_review"){const pr=p.picResponse;if(pr&&pr.at>r.at)return pr.response==="accepted"?"approved":"meeting";return "pic_review"}
+  }
+  if(p.status==="submitted"){ if(p.editRequest&&p.editRequest.at>sub) return "edit_requested"; return "review"; }
+  return "draft";
+}
+const pill=code=>`<span class="pill ${WF[code][1]}">${WF[code][0]}</span>`;
+const picCanEdit=code=>["none","draft","changes","reopened"].includes(code);
+const curId=()=>docId(S.year,S.key);
+const curCode=()=>wf(S.plans[curId()],S.reviews[curId()]);
+const formEditable=()=>S.canWrite&&!!S.key&&(picCanEdit(curCode())||(S.isAdmin&&S.leaderEdit));
+
+/* ================= Change log ================= */
+const P_LABELS={pic:"Ministry lead / PIC",coPics:"Co-PICs",frequency:"Trainings planned",freqReason:"Reason for frequency",goal:"Main goal"};
+const T_LABELS={course:"Course",customTitle:"Course title",team:"Team",headcount:"Headcount",pic:"PIC",covers:"What it covers",outcome:"Expected outcome",date:"Date",start:"Start",end:"End",venue:"Venue",venueDetail:"Venue details",trainerType:"Trainer",trainer:"Trainer name",format:"Format",costNotes:"Cost notes"};
+const short=v=>{v=String(v??"").trim();return v.length>60?v.slice(0,57)+"…":(v||"(blank)")};
+function diffPlan(a,b,k){
+  const out=[]; a=a||{}; b=b||{};
+  for(const [f,l] of Object.entries(P_LABELS)) if(String(a[f]??"")!==String(b[f]??"")) out.push(`${l}: ${short(a[f])} → ${short(b[f])}`);
+  const ta=a.trainings||[], tb=b.trainings||[];
+  for(let i=0;i<Math.max(ta.length,tb.length);i++){
+    const x=ta[i], y=tb[i];
+    if(!x){out.push(`Training #${i+1} added (${short(courseLabel(k,y))}${y.date?", "+fmtDate(y.date):""})`);continue}
+    if(!y){out.push(`Training #${i+1} removed (${short(courseLabel(k,x))})`);continue}
+    for(const [f,l] of Object.entries(T_LABELS)) if(String(x[f]??"")!==String(y[f]??"")){
+      const fv=v=>f==="date"?fmtDate(v):f==="course"?courseLabel(k,{course:v,customTitle:""}):v;
+      out.push(`Training #${i+1} · ${l}: ${short(fv(x[f]))} → ${short(fv(y[f]))}`);
+    }
+    for(const [c,l] of COST_FIELDS) if((Number(x.cost?.[c])||0)!==(Number(y.cost?.[c])||0)) out.push(`Training #${i+1} · ${l}: ${rm(x.cost?.[c])} → ${rm(y.cost?.[c])}`);
+  }
+  return out;
+}
+function logEntry(action,note,changes){return {at:nowIso(),by:S.uid||null,role:S.isAdmin?"Leadership":"PIC",action,note:note||"",changes:changes||[]}}
+const withLog=(p,e)=>[...((p&&p.log)||[]),e].slice(-300);
+
+/* ================= Checks ================= */
+function allEntries(y){
+  const out=[];
+  for(const [id,p] of Object.entries(S.plans)){ if(p.year!==y||!MIN(p.ministry))continue; (p.trainings||[]).forEach((t,i)=>{ if(t.date&&t.delivery?.status!=="Cancelled") out.push({id,k:p.ministry,i,t,p,key:id+"#"+i}) }) }
+  return out.sort((a,b)=>a.t.date.localeCompare(b.t.date)||a.k.localeCompare(b.k));
+}
+function occupancy(y){const occ={};allEntries(y).forEach(e=>{const w=weekendKey(e.t.date);(occ[w]=occ[w]||[]).push({k:e.k,date:e.t.date,key:e.key})});return occ}
+const weekendFree=(occ,k,date,selfKey)=>(occ[weekendKey(date)]||[]).filter(x=>x.key!==selfKey).every(x=>PAIR[k]===x.k&&x.date!==date);
+function dayOk(date,k,y){
+  const d=pd(date);
+  if(d.getFullYear()!==y||d.getMonth()===11||d.getDay()===5) return false;
+  if(isSecondSunday(date)&&k!=="ya"&&k!=="bm") return false;
+  return !holidays(y).some(([hd])=>Math.abs(Math.round((pd(hd)-d)/864e5))<=2);
+}
+function secondSunday(y,m){const d=new Date(y,m,1);d.setDate(1+((7-d.getDay())%7)+7);return iso(d)}
+function suggestDate(e,occ,y){
+  const base=pd(e.t.date), q=Math.floor(base.getMonth()/3), cands=[];
+  if(e.k==="ya"&&isSecondSunday(e.t.date)){for(let n=1;n<=4;n++)for(const s of [1,-1]){const m=base.getMonth()+s*n;if(m>=0&&m<12)cands.push(secondSunday(y,m))}}
+  else for(let n=1;n<=10;n++)for(const s of [1,-1]){const d=new Date(base);d.setDate(d.getDate()+s*n*7);cands.push(iso(d))}
+  for(const sameQ of [true,false]) for(const c of cands){ if(sameQ&&Math.floor(pd(c).getMonth()/3)!==q)continue; if(dayOk(c,e.k,y)&&weekendFree(occ,e.k,c,e.key))return c; }
+  return null;
+}
+function checksFor(k,t,year,idx,form){
+  const res=[]; if(!t.date) return res;
+  const d=pd(t.date), dow=d.getDay();
+  if(d.getFullYear()!==year) res.push(["bad",`This date is not in ${year}.`]);
+  for(const o of allEntries(year)){
+    if(o.k===k||weekendKey(o.t.date)!==weekendKey(t.date)) continue;
+    const who=`${minName(o.k)} Training #${o.i+1} (${fmtDate(o.t.date)})`;
+    if(PAIR[k]===o.k&&o.t.date!==t.date) res.push(["info",`Shared Tech weekend with ${who}. Allowed, since Sound and Media train on different days.`]);
+    else{const sg=suggestDate({k,t,key:docId(year,k)+"#"+idx},occupancy(year),year);res.push(["bad",`Clash: ${who} is already on this ${o.t.date===t.date?"date":"weekend"}.${sg?` Nearest free weekend: ${fmtDate(sg)}.`:""}`])}
+  }
+  form?.trainings.forEach((x,j)=>{if(j!==idx&&x.date&&weekendKey(x.date)===weekendKey(t.date))res.push(["warn",`Training #${j+1} of this plan is on the same weekend.`])});
+  if(dow===5) res.push(["warn","Friday night is Prayer Meeting (8:30pm)."]);
+  if(isSecondSunday(t.date)&&k!=="ya"&&k!=="bm") res.push(["warn","2nd Sunday: BM Connect and Young Adults meet that day."]);
+  if(dow===6&&t.end&&t.end>"19:00") res.push(["warn","Runs into the Chinese Service (Sat 7:30pm)."]);
+  if(dow===0&&t.start&&t.start<"11:30") res.push(["warn","Starts during English Service (Sun 9:30am)."]);
+  if(d.getMonth()===11) res.push(["warn","December is Christmas season. Avoid if possible."]);
+  for(const [hd,hn] of holidays(year)){const diff=Math.round((pd(hd)-d)/864e5);if(Math.abs(diff)<=2)res.push(["warn",diff===0?`Public holiday: ${hn}.`:`Festive / long weekend: ${hn} (${fmtDate(hd)}). Many members travel.`])}
+  return res;
+}
+/* spread: 4/yr = one per quarter, 2/yr = one per half, etc. */
+function periods(f){
+  f=Number(f)||0; if(f<1) return [];
+  const out=[];
+  for(let i=0;i<f;i++){const a=Math.floor(i*12/f),b=Math.floor((i+1)*12/f)-1;
+    const name=f===4?`Q${i+1} (${MON[a]}-${MON[b]})`:f===12?MONL[a]:a===b?MONL[a]:`${MON[a]}-${MON[b]}`;out.push({a,b,name})}
+  return out;
+}
+const spreadWord=f=>({1:"once this year",2:"one every 6 months",3:"one every 4 months",4:"one every quarter",6:"one every 2 months",12:"one every month"}[Number(f)]||`evenly through the year`);
+function spreadIssues(p){
+  const ps=periods(p.frequency), ts=(p.trainings||[]).filter(t=>t.date&&t.delivery?.status!=="Cancelled");
+  if(!ps.length||!ts.length) return [];
+  return ps.filter(r=>!ts.some(t=>{const m=pd(t.date).getMonth();return m>=r.a&&m<=r.b})).map(r=>r.name);
+}
+
+/* ================= WhatsApp ================= */
+function fillTemplate(tpl,vals){
+  return tpl.split("\n").filter(line=>{const keys=[...line.matchAll(/\{(\w+)\}/g)].map(m=>m[1]);return keys.every(k=>String(vals[k]??"").trim()!=="")})
+    .map(line=>line.replace(/\{(\w+)\}/g,(_,k)=>vals[k]??"")).join("\n").replace(/\n{3,}/g,"\n\n").trim();
+}
+function inviteText(k,t,i){
+  const rs=t.date?(()=>{const d=pd(t.date);d.setDate(d.getDate()-7);return fmtLong(iso(d))})():"";
+  const venue=[t.venue,t.venueDetail].filter(Boolean).join(" - ");
+  const extras=[(Number(t.cost?.meals)||0)>0?"🍱 Meals / refreshments provided":"",t.trainerType==="External"&&t.trainer?"":""].filter(Boolean).join("\n");
+  return fillTemplate(S.cfg.waInvite||DEFAULTS.waInvite,{ministry:minName(k),n:i+1,course:courseLabel(k,t).replace(/^\w+\d+ – /,""),day:t.date?DOWL[pd(t.date).getDay()]:"",date:t.date?fmtLong(t.date):"",start:fmtTime(t.start),end:fmtTime(t.end),venue,trainer:t.trainerType==="External"?(t.trainer||"External trainer"):(t.trainer||t.pic||""),covers:t.covers,outcome:t.outcome,extras,rsvp:rs,pic:t.pic});
+}
+function picNoticeText(k,y,code,r){
+  const p=S.plans[docId(y,k)]||{}, who=p.pic||MIN(k)?.pic||"";
+  const next={approved:"view the approved plan and send the invites to your team",changes:"update the plan and submit it again",reopened:"make your edits and submit it again",pic_review:"review the changes, then accept them or request a discussion",meeting:"arrange a meeting with leadership to discuss the plan"}[code]||"view the plan";
+  return [`Hi ${who},`,"",`Leadership has reviewed the ${y} ${minName(k)} training plan.`,`Status: *${WF[code][0]}*`,r?.comment?`Comment: ${r.comment}`:"","",`Please open the Ministry Training Planner to ${next}.`,"Thank you!"].filter((l,i,a)=>l!==""||a[i-1]!=="").join("\n");
+}
+function waBox(id,text,title){
+  return `<div class="wa"><div class="row spread"><b class="small" style="color:var(--green)">${esc(title)}</b>
+    <div class="row"><button class="btn small" type="button" data-copy="${id}">${ICON.copy} Copy</button><a href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">Open WhatsApp</a></div></div>
+    <textarea id="${id}" readonly>${esc(text)}</textarea></div>`;
+}
+function bindCopy(root){root.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{const ta=document.getElementById(b.dataset.copy);try{await navigator.clipboard.writeText(ta.value);toast("Copied. Paste it into WhatsApp.")}catch(e){ta.focus();ta.select();toast("Text selected. Press Ctrl+C (or Copy) to copy.")}})}
+
+/* ================= Plan Form ================= */
+function loadForm(){
+  if(!S.key||!MIN(S.key)){S.form=null;return}
+  const p=S.plans[curId()];
+  S.form=p?clone(p):blankPlan(S.key,S.year);
+  S.form.trainings=S.form.trainings||[];
+  S.dirty=false;S.remoteChanged=false;S.leaderEdit=false;
+}
+function sec(id,step,title,sub,meta,body,cls=""){
+  const open=S.open[id]!==undefined?S.open[id]:true;
+  return `<details class="sec ${cls}" data-sec="${id}" ${open?"open":""}><summary>${ICON.chev}${step?`<span class="st">${esc(step)}</span>`:""}<span class="tt">${title}</span>${sub?`<span class="sub">${sub}</span>`:""}<span class="meta">${meta||""}</span></summary><div class="body">${body}</div></details>`;
+}
+function pageHead(title,text){return `<div class="pagehead"><h2>${esc(title)}</h2><p>${text}</p></div>`}
+
+function renderForm(){
+  const v=$("#view-form");
+  const yearOpts=S.cfg.years.map(y=>`<option value="${y}" ${y===S.year?"selected":""}>${y}</option>`).join("");
+  const minOpts=`<option value="">Choose your ministry…</option>`+orderedMins().map(m=>`<option value="${m.key}" ${m.key===S.key?"selected":""}>${m.parent?"   ↳ ":""}${esc(m.name)} · ${esc(m.pic)}</option>`).join("");
+  let html=pageHead("Yearly Ministry Training Plan",`Each ministry plans at least 4 team trainings a year, ideally ${spreadWord(4)}, on weekends that don't clash with other ministries. Submit your plan by <b>${esc(fmtLong(dueDate(S.year)))}</b>. Your delivery counts toward your yearly KPI (Ministry Training, 10 points).`);
+  if(!S.canWrite) html+=`<div class="note warn">You can view plans but not save them.</div>`;
+  const pickBody=`<div class="grid"><label class="f">Ministry<select id="sel-min">${minOpts}</select></label><label class="f">Plan year<select id="sel-year">${yearOpts}</select></label></div>
+    <div class="row spread" style="border-top:1px solid var(--line);padding-top:10px"><span class="small muted">Prefer paper? Print the form, fill it in by hand and hand it to the church office.</span>
+    <div class="row"><button class="btn icon" type="button" id="btn-blankpdf" title="Download printable form (PDF)" aria-label="Download printable form (PDF)">${ICON.print}</button>
+    ${S.key&&S.plans[curId()]?`<button class="btn icon" type="button" id="btn-planpdf" title="Download this plan (PDF)" aria-label="Download this plan (PDF)">${ICON.pdf}</button>`:""}</div></div>`;
+  html+=sec("pick","Step 1","Ministry & Year","",S.key?`<span class="small muted">${esc(minFull(S.key))} · ${S.year}</span>`:"",pickBody);
+  if(!S.key||!MIN(S.key)){v.innerHTML=html+`<div class="card empty">Choose your ministry above to open its training plan.</div>`;bindForm();$("#savebar").hidden=true;return}
+
+  const f=S.form, m=MIN(S.key), saved=S.plans[curId()], rv=S.reviews[curId()], code=curCode(), ed=formEditable(), ro=ed?"":"disabled";
+  html+=statusPanel(code,saved,rv);
+  // plan details
+  const want=Number(f.frequency)||0;
+  const pBody=`<div class="grid">
+      <label class="f">Ministry lead / PIC<span class="req">*</span><input id="p-pic" data-p="pic" value="${esc(f.pic)}" list="staff-list" ${ro}></label>
+      <label class="f">Co-PICs / helpers<input id="p-copics" data-p="coPics" value="${esc(f.coPics)}" placeholder="e.g. senior MD, team leaders" ${ro}></label>
+      <label class="f">Trainings planned this year<input id="p-freq" data-p="frequency" type="number" min="1" max="12" value="${esc(f.frequency)}" ${ro}></label>
+      <label class="f span-all" id="wrap-reason" ${want===4?"hidden":""}>Why not 4 trainings?<span class="req">*</span><input id="p-reason" data-p="freqReason" value="${esc(f.freqReason)}" placeholder="e.g. monthly rehearsal-based training; team is newly formed" ${ro}></label>
+      <label class="f span-all">Main training goal for the year<textarea id="p-goal" data-p="goal" placeholder="What should this team be able to do better by year end?" ${ro}>${esc(f.goal)}</textarea></label>
+    </div>
+    <div class="note info small" id="spreadnote"></div>
+    <details class="plain"><summary>Dates already taken by other ministries in ${S.year}</summary><div class="chips" id="taken"></div></details>
+    ${ed&&SUG[S.key]&&S.year===2027&&f.trainings.length===0?`<div class="note info row spread"><span>Start from the suggested 2027 dates and courses, then adjust.</span><button class="btn small" id="btn-suggest" type="button">Fill suggested dates</button></div>`:""}
+    ${paperBlock(saved)}`;
+  html+=sec("plan","Step 2","Plan Details","",`<span class="small muted">${f.trainings.length} of ${want} trainings</span>`,pBody);
+  // trainings
+  html+=`<div class="row spread"><div class="row"><span class="st" style="font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand)">Step 3</span><b>Trainings</b></div>
+    <div class="row"><button class="btn small ghost" type="button" id="btn-expand">Expand all</button><button class="btn small ghost" type="button" id="btn-collapse">Collapse all</button></div></div>`;
+  f.trainings.forEach((t,i)=>{html+=trainingSec(t,i,ro,code)});
+  html+=`<div class="row">${ed?`<button class="btn" id="btn-add" type="button">+ Add Training #${f.trainings.length+1}</button>`:""}<span class="muted small" id="countnote"></span></div>`;
+  html+=historyBlock(saved);
+  html+=`<datalist id="staff-list">${S.cfg.staff.map(s=>`<option value="${esc(s.replace(/\s*\(.*\)$/,""))}">`).join("")}</datalist>`;
+  v.innerHTML=html;
+  bindForm(); renderActions(); refreshDerived(); fillNames(v);
+}
+function statusPanel(code,saved,rv){
+  const bits=[];
+  if(code==="none") return "";
+  const lastLead=[...((saved?.log)||[])].reverse().find(e=>e.role==="Leadership"&&e.changes?.length);
+  if(S.isAdmin&&code!=="draft"){
+    const body=`<div class="row">${pill(code)}${saved?.submittedAt?`<span class="small muted">Submitted ${esc(fmtStamp(saved.submittedAt))}${saved.submittedAt.slice(0,10)>dueDate(S.year)?" · <b style='color:var(--red)'>after the deadline</b>":""}</span>`:""}</div>
+      ${code==="edit_requested"?`<div class="note warn"><b>Edit requested:</b> ${esc(saved.editRequest?.reason||"")}</div>`:""}
+      ${code==="meeting"?`<div class="note bad"><b>PIC asked to discuss:</b> ${esc(saved.picResponse?.note||"")} Arrange a meeting, then approve or edit the plan.</div>`:""}
+      ${code==="pic_review"?`<div class="note info">Waiting for the PIC to accept your edits.</div>`:""}
+      <label class="f">Comment to the PIC<textarea id="lead-comment" placeholder="Feedback, reasons for changes, or what to fix">${esc(S.leadComment||"")}</textarea></label>
+      ${S.leaderEdit?`<div class="note warn">You are editing this plan as leadership. Make your changes below, then use <b>Save & Send to PIC</b>. Every change is recorded.</div>`:
+      `<div class="row">
+        ${code!=="approved"?`<button class="btn good" type="button" data-lead="approved">Approve</button>`:""}
+        <button class="btn" type="button" data-lead="edit">Edit Plan</button>
+        <button class="btn warn" type="button" data-lead="changes">Request Changes</button>
+        ${code==="edit_requested"?`<button class="btn" type="button" data-lead="reopened">Allow PIC to Edit</button>`:""}
+      </div>`}
+      ${rv?.decision&&["approved","changes","reopened","pic_review","meeting"].includes(code)?waBox("wa-pic",picNoticeText(S.key,S.year,code,rv),"Message to the PIC (WhatsApp)"):""}`;
+    return sec("lead","Leadership","Review & Decision","",pill(code),body,"lead-panel");
+  }
+  // PIC view
+  let body=`<div class="row">${pill(code)}${saved?.submittedAt?`<span class="small muted">Submitted ${esc(fmtStamp(saved.submittedAt))}</span>`:""}</div>`;
+  if(rv?.comment&&!["review","draft"].includes(code)) body+=`<div class="note ${code==="approved"?"ok":code==="changes"?"bad":"info"}"><b>Leadership comment:</b> ${esc(rv.comment)}</div>`;
+  if(code==="pic_review"){
+    body+=`<div class="note info"><b>Leadership edited your plan.</b> Please check the changes below, then accept them or ask to discuss.${lastLead?`<ul style="margin:6px 0 0;padding-left:18px">${lastLead.changes.slice(0,12).map(c=>`<li>${esc(c)}</li>`).join("")}</ul>`:""}</div>
+      <label class="f">Note to leadership (needed if you ask to discuss)<textarea id="pic-note"></textarea></label>
+      <div class="row"><button class="btn good" type="button" data-pic="accepted">Accept Changes</button><button class="btn warn" type="button" data-pic="discuss">Request Discussion</button></div>`;
+  }else if(["review","approved","meeting"].includes(code)&&S.canWrite){
+    body+=`<div class="small muted">${code==="approved"?"Your plan is approved and locked.":"Your plan is locked while leadership reviews it."} To change it, ask leadership to reopen it.</div>
+      <details class="plain"><summary>Request to edit</summary><div class="stack" style="margin-top:8px"><label class="f">What do you need to change, and why?<textarea id="edit-reason"></textarea></label><div><button class="btn" type="button" id="btn-reqedit">Send Edit Request</button></div></div></details>`;
+  }else if(code==="edit_requested") body+=`<div class="note warn">Edit request sent: ${esc(saved.editRequest?.reason||"")}. Leadership will reopen the plan.</div>`;
+  else if(code==="changes"||code==="reopened") body+=`<div class="small muted">Make your changes below, then submit again.</div>`;
+  return sec("status","","Plan Status","",pill(code),body);
+}
+function trainingSec(t,i,ro,code){
+  const k=S.key, lib=courses(k), c=courseFor(k,t.course), id=n=>`t${i}-${n}`;
+  const cOpts=`<option value="">Choose a course…</option>`+lib.map(x=>`<option value="${esc(x.code)}" ${t.course===x.code?"selected":""}>${esc(x.code)} – ${esc(x.title)}</option>`).join("")+`<option value="custom" ${t.course==="custom"?"selected":""}>Custom Course (write your own)</option>`;
+  const sel=(arr,val)=>arr.map(x=>`<option ${x===val?"selected":""}>${esc(x)}</option>`).join("");
+  const delivery=t.delivery||{status:"Planned"};
+  const dStat=delivery.status||"Planned";
+  const past=t.date&&t.date<=today();
+  const meta=`${dStat!=="Planned"?`<span class="pill ${dStat==="Held"?"ok":dStat==="Deferred"?"draft":"none"}">${esc(dStat)}</span>`:past?`<span class="pill bad">Report due</span>`:""}<span class="small money" id="${id("total")}"></span>${ro?"":`<button class="btn small ghost" type="button" data-rm="${i}">Remove</button>`}`;
+  const canReport=S.canWrite&&["approved","pic_review","meeting","edit_requested"].includes(code);
+  const body=`
+    <div class="grid">
+      <label class="f span-all">Course<span class="req">*</span><select id="${id("course")}" data-t="${i}" data-k="course" ${ro}>${cOpts}</select></label>
+      <label class="f span-all" id="${id("ctw")}" ${t.course==="custom"?"":"hidden"}>Course title<span class="req">*</span><input id="${id("ct")}" data-t="${i}" data-k="customTitle" value="${esc(t.customTitle)}" ${ro}></label>
+      ${c?`<div class="span-all small muted">Suggested trainer: ${esc(c.by)}</div>`:""}
+      <label class="f">Team(s) to be trained<span class="req">*</span><input id="${id("team")}" data-t="${i}" data-k="team" value="${esc(t.team)}" ${ro}></label>
+      <label class="f">Expected headcount<input id="${id("hc")}" data-t="${i}" data-k="headcount" type="number" min="0" value="${esc(t.headcount)}" ${ro}></label>
+      <label class="f">PIC for this training<span class="req">*</span><input id="${id("pic")}" data-t="${i}" data-k="pic" value="${esc(t.pic)}" list="staff-list" ${ro}></label>
+      <label class="f span-all">What it covers<span class="req">*</span><textarea id="${id("cov")}" data-t="${i}" data-k="covers" ${ro}>${esc(t.covers)}</textarea></label>
+      <label class="f span-all">Expected outcome<span class="req">*</span><textarea id="${id("out")}" data-t="${i}" data-k="outcome" ${ro}>${esc(t.outcome)}</textarea></label>
+    </div>
+    <fieldset><legend>Date, Time & Place</legend><div class="grid">
+      <label class="f">Date<span class="req">*</span><input id="${id("date")}" type="date" data-t="${i}" data-k="date" value="${esc(t.date)}" ${ro}></label>
+      <label class="f">Start<span class="req">*</span><input id="${id("st")}" type="time" data-t="${i}" data-k="start" value="${esc(t.start)}" ${ro}></label>
+      <label class="f">End<span class="req">*</span><input id="${id("en")}" type="time" data-t="${i}" data-k="end" value="${esc(t.end)}" ${ro}></label>
+      ${ro?"":`<div class="span-all quick"><span>Quick fill:</span><button type="button" data-q="${i}" data-s="12:30" data-e="15:30">Sun after service 12:30–3:30pm</button><button type="button" data-q="${i}" data-s="14:00" data-e="17:00">Sat 2–5pm</button><button type="button" data-q="${i}" data-s="20:00" data-e="22:00">Weeknight 8–10pm</button></div>`}
+      <label class="f">Venue<select id="${id("ven")}" data-t="${i}" data-k="venue" ${ro}>${sel(VENUES,t.venue)}</select></label>
+      <label class="f">Venue details<input id="${id("vd")}" data-t="${i}" data-k="venueDetail" value="${esc(t.venueDetail)}" placeholder="${t.venue==="External Venue"?"Name and address":"Main hall, room, etc."}" ${ro}></label>
+      <div class="span-all notes" id="${id("chk")}" aria-live="polite"></div>
+    </div></fieldset>
+    <fieldset><legend>Trainer & Format</legend><div class="grid">
+      <label class="f">Trainer<select id="${id("tt")}" data-t="${i}" data-k="trainerType" ${ro}>${sel(TRAINER_TYPES,t.trainerType)}</select></label>
+      <label class="f">Trainer name / organisation<input id="${id("tn")}" data-t="${i}" data-k="trainer" value="${esc(t.trainer)}" ${ro}></label>
+      <label class="f">Format<select id="${id("fm")}" data-t="${i}" data-k="format" ${ro}>${sel(FORMATS,t.format)}</select></label>
+    </div></fieldset>
+    <fieldset class="cost"><legend>Estimated Costs (RM) · leave blank if none</legend><div class="grid">
+      ${COST_FIELDS.map(([ck,cl])=>`<label class="f">${cl}<input id="${id("c-"+ck)}" type="number" min="0" step="1" inputmode="decimal" data-t="${i}" data-k="cost.${ck}" value="${esc(t.cost?.[ck]??"")}" placeholder="0" ${ro}></label>`).join("")}
+      <label class="f span-all">Cost notes<input id="${id("cn")}" data-t="${i}" data-k="costNotes" value="${esc(t.costNotes)}" placeholder="e.g. lunch for 20 at RM12; CPR cert RM150 per person" ${ro}></label>
+    </div></fieldset>
+    ${code==="approved"&&t.date?waBox(id("wa"),inviteText(k,t,i),"WhatsApp invite for participants"):""}
+    <details class="plain" ${canReport&&past?"open":""}><summary>After the training: report</summary>
+      ${canReport?`<div class="grid" style="margin-top:8px">
+        <label class="f">Status<select id="${id("ds")}">${sel(DELIVERY,dStat)}</select></label>
+        <label class="f">Attendance<input id="${id("da")}" type="number" min="0" value="${esc(delivery.attendance??"")}"></label>
+        <label class="f">Actual cost (RM)<input id="${id("dc")}" type="number" min="0" value="${esc(delivery.actualCost??"")}"></label>
+        <label class="f span-all">Summary & feedback<textarea id="${id("df")}" placeholder="What went well, what to improve; new date if deferred">${esc(delivery.feedback||"")}</textarea></label>
+        <div class="span-all row"><button class="btn small" type="button" data-report="${i}">Save Report</button>${delivery.reportedAt?`<span class="small muted">Last reported ${esc(fmtStamp(delivery.reportedAt))}</span>`:""}</div>
+      </div>`:`<div class="small muted" style="margin-top:6px">Available once the plan is approved. Send attendance, feedback and actual cost within 7 days of the training.</div>`}
+    </details>`;
+  const sub=[courseLabel(k,t),t.date?fmtDate(t.date):""].filter(Boolean).join(" · ");
+  return sec("t"+i,"",`Training #${i+1}`,`<span id="${id("sub")}">${esc(sub)}</span>`,meta,body,"tsec");
+}
+function historyBlock(saved){
+  const log=(saved?.log)||[]; if(!log.length) return "";
+  const items=[...log].reverse().map(e=>`<div class="h"><b>${esc(e.action)}</b> · ${esc(e.role)} · <span data-uid="${esc(e.by||"")}">…</span> · <span class="muted">${esc(fmtStamp(e.at))}</span>${e.note?`<div>${esc(e.note)}</div>`:""}${e.changes?.length?`<ul>${e.changes.map(c=>`<li>${esc(c)}</li>`).join("")}</ul>`:""}</div>`).join("");
+  S.open.hist=S.open.hist??false;
+  return sec("hist","","Change History",`${log.length} record${log.length>1?"s":""}`,"",`<div class="history">${items}</div>`);
+}
+async function fillNames(root){
+  const els=[...root.querySelectorAll("[data-uid]")]; if(!els.length) return;
+  const ids=[...new Set(els.map(e=>e.dataset.uid).filter(Boolean))];
+  let ps={}; try{if(S.user&&ids.length)ps=await S.user.profiles(ids)}catch(_){}
+  els.forEach(e=>{e.textContent=(e.dataset.uid&&ps[e.dataset.uid]?.name)||"Someone"});
+}
+function paperBlock(saved){
+  const files=(saved&&saved.paperForms)||[];
+  if(!S.canUpload&&!files.length) return "";
+  const list=files.map(f=>`<div class="row"><span class="pill ok">On file</span><a href="${esc(f.url||("https://drive.google.com/file/d/"+f.id+"/view"))}" target="_blank" rel="noopener">${esc(f.name||"Paper form")}</a><span class="small muted">${esc(fmtStamp(f.uploadedAt))}</span></div>`).join("");
+  return `<div class="attach stack" style="gap:6px;border-top:1px solid var(--line);padding-top:10px">
+    <div class="row spread"><b class="small" style="color:var(--brand)">Paper form record</b>${S.canUpload?`<label class="btn small filebtn">${ICON.clip} Attach scan<input id="paper-file" type="file" accept="application/pdf,image/*"></label>`:""}</div>
+    ${list||`<span class="small muted">If this ministry handed in a paper form, attach the scan here (saved to Google Drive), then type its details into the form.</span>`}</div>`;
+}
+
+/* ---- bindings ---- */
+function bindForm(){
+  const v=$("#view-form");
+  v.querySelectorAll("details.sec").forEach(d=>d.addEventListener("toggle",()=>{S.open[d.dataset.sec]=d.open}));
+  const sm=$("#sel-min"); if(sm) sm.onchange=e=>{ if(S.dirty&&!confirmLeave())return e.target.value=S.key; S.key=e.target.value; try{localStorage.setItem("towtp.key",S.key)}catch(_){} S.leadComment=""; loadForm(); renderForm(); };
+  const sy=$("#sel-year"); if(sy) sy.onchange=e=>{ if(S.dirty&&!confirmLeave())return e.target.value=S.year; S.year=+e.target.value; try{localStorage.setItem("towtp.year",S.year)}catch(_){} loadForm(); renderAll(); };
+  const bp=$("#btn-blankpdf"); if(bp) bp.onclick=()=>pdfOut(()=>planPdf(S.key||null,null,S.year),`TOW-Training-Plan-Form-${S.key?minName(S.key):"Blank"}`,bp);
+  const pp=$("#btn-planpdf"); if(pp) pp.onclick=()=>pdfOut(()=>planPdf(S.key,S.plans[curId()],S.year),`TOW-Training-Plan-${S.year}-${minName(S.key)}`,pp);
+  bindCopy(v);
+  if(!S.form) return;
+  v.querySelectorAll("[data-p]").forEach(el=>el.addEventListener("input",()=>{
+    S.form[el.dataset.p]=el.type==="number"?(el.value===""?"":Number(el.value)):el.value; markDirty();
+    if(el.dataset.p==="frequency") $("#wrap-reason").hidden=Number(el.value)===4;
+    refreshDerived();
+  }));
+  v.querySelectorAll("[data-t]").forEach(el=>el.addEventListener(el.tagName==="SELECT"?"change":"input",()=>{
+    const i=+el.dataset.t,key=el.dataset.k,t=S.form.trainings[i];
+    const val=el.type==="number"?(el.value===""?"":Number(el.value)):el.value;
+    if(key.startsWith("cost.")){t.cost=t.cost||{};t.cost[key.slice(5)]=val}else t[key]=val;
+    el.classList.remove("missing"); markDirty();
+    if(key==="course"){const c=courseFor(S.key,val);if(c){if(!t.covers)t.covers=c.covers;if(!t.outcome)t.outcome=c.outcome;if(/External/.test(c.by))t.trainerType="External"}renderForm();document.getElementById(`t${i}-course`)?.focus();return}
+    if(key==="venue"){const vd=$(`#t${i}-vd`);if(vd)vd.placeholder=val==="External Venue"?"Name and address":"Main hall, room, etc."}
+    refreshDerived(i);
+  }));
+  v.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{const i=+b.dataset.q,t=S.form.trainings[i];t.start=b.dataset.s;t.end=b.dataset.e;$(`#t${i}-st`).value=t.start;$(`#t${i}-en`).value=t.end;markDirty();refreshDerived(i)});
+  v.querySelectorAll("[data-rm]").forEach(b=>b.onclick=e=>{e.preventDefault();const i=+b.dataset.rm;
+    if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="Click again to remove";setTimeout(()=>{b.dataset.armed="";b.textContent="Remove"},4000);return}
+    S.form.trainings.splice(i,1);markDirty();renderForm()});
+  const add=$("#btn-add"); if(add) add.onclick=()=>{const n=S.form.trainings.length;S.form.trainings.push(blankTraining(S.key));S.open["t"+n]=true;markDirty();renderForm();document.querySelector(`[data-sec="t${n}"]`)?.scrollIntoView({behavior:"smooth",block:"start"})};
+  const sug=$("#btn-suggest"); if(sug) sug.onclick=()=>{
+    S.form.trainings=SUG[S.key].map(([date,start,end,code,team])=>{const t=blankTraining(S.key),c=courseFor(S.key,code);Object.assign(t,{date,start,end,course:c?code:"",covers:c?.covers||"",outcome:c?.outcome||""});if(team)t.team=team;if(c&&/External/.test(c.by))t.trainerType="External";if(code==="E1"){t.venue="External Venue";t.format="Certification Course"}return t});
+    markDirty();renderForm();toast("Suggested dates filled. Review each training, then save.");
+  };
+  $("#btn-expand")?.addEventListener("click",()=>{v.querySelectorAll("details.sec").forEach(d=>d.open=true)});
+  $("#btn-collapse")?.addEventListener("click",()=>{v.querySelectorAll("details.sec").forEach(d=>{if(d.dataset.sec!=="pick")d.open=false})});
+  const up=$("#paper-file"); if(up) up.onchange=()=>attachPaper(up);
+  const lc=$("#lead-comment"); if(lc) lc.oninput=()=>S.leadComment=lc.value;
+  v.querySelectorAll("[data-lead]").forEach(b=>b.onclick=()=>leadAction(b.dataset.lead,b));
+  v.querySelectorAll("[data-pic]").forEach(b=>b.onclick=()=>picRespond(b.dataset.pic,b));
+  $("#btn-reqedit")?.addEventListener("click",e=>requestEdit(e.currentTarget));
+  v.querySelectorAll("[data-report]").forEach(b=>b.onclick=()=>saveReport(+b.dataset.report,b));
+}
+let leaveArmed=0;
+function confirmLeave(){ if(Date.now()-leaveArmed<5000){S.dirty=false;return true} leaveArmed=Date.now(); toast("You have unsaved changes. Save first, or choose again to discard them."); return false; }
+function markDirty(){S.dirty=true;renderActions()}
+function refreshDerived(only){
+  const f=S.form; if(!f) return;
+  const paint=i=>{const t=f.trainings[i];const tot=$(`#t${i}-total`);if(tot)tot.textContent=rm(tCost(t));
+    const sub=$(`#t${i}-sub`);if(sub)sub.textContent=[courseLabel(S.key,t),t.date?fmtDate(t.date):""].filter(Boolean).join(" · ");
+    const ctw=$(`#t${i}-ctw`);if(ctw)ctw.hidden=t.course!=="custom";
+    const box=$(`#t${i}-chk`);if(box){const cs=checksFor(S.key,t,S.year,i,f);box.innerHTML=cs.length?cs.map(([l,m])=>`<div class="note ${l}">${esc(m)}</div>`).join(""):(t.date?`<div class="note ok">No clashes found for ${esc(fmtDate(t.date))}.</div>`:"")}};
+  f.trainings.forEach((_,i)=>paint(i));
+  const n=f.trainings.length, want=Number(f.frequency)||0;
+  const cn=$("#countnote"); if(cn) cn.textContent=n<want?`${n} of ${want} trainings added`:`${n} trainings planned`;
+  const sp=$("#spreadnote"); if(sp){const miss=spreadIssues(f);sp.className="note small "+(miss.length?"warn":"info");sp.textContent=want?`Spread: ${want} trainings means ${spreadWord(want)}${periods(want).length?` (${periods(want).map(p=>p.name.split(" ")[0]).join(", ")})`:""}, so the team isn't rushing at year end.${miss.length?` Nothing planned yet in: ${miss.join(", ")}.`:""}`:""}
+  const tk=$("#taken"); if(tk){const es=allEntries(S.year).filter(e=>e.k!==S.key);tk.innerHTML=es.length?es.map(e=>`<span class="chip"><b>${esc(fmtDate(e.t.date))}</b> · ${esc(minName(e.k))}</span>`).join(""):`<span class="muted small">No other ministry has saved dates yet.</span>`}
+  const clashes=f.trainings.reduce((a,t,i)=>a+checksFor(S.key,t,S.year,i,f).filter(x=>x[0]==="bad").length,0);
+  $("#sumline").innerHTML=`<b>${n}</b> of ${want} trainings · Est. <b class="money">${rm(planCost(f))}</b>${clashes?` · <span style="color:var(--red)">${clashes} clash${clashes>1?"es":""}</span>`:""}${S.dirty?" · <i>unsaved</i>":""}`;
+}
+function renderActions(){
+  const bar=$("#savebar"), a=$("#actions");
+  if(S.view!=="form"||!S.key||!S.form||!S.canWrite){bar.hidden=true;return}
+  const code=curCode(); let html="";
+  if(S.isAdmin&&S.leaderEdit) html=`<button class="btn" type="button" id="act-cancel">Cancel</button><button class="btn primary" type="button" id="act-leadsave">Save & Send to PIC</button>`;
+  else if(picCanEdit(code)) html=`<button class="btn" type="button" id="act-draft">Save Draft</button><button class="btn primary" type="button" id="act-submit">Submit Plan</button>`;
+  bar.hidden=!html; a.innerHTML=html;
+  refreshDerivedSum();
+  $("#act-draft")?.addEventListener("click",()=>save(false));
+  $("#act-submit")?.addEventListener("click",()=>save(true));
+  $("#act-cancel")?.addEventListener("click",()=>{loadForm();renderForm()});
+  $("#act-leadsave")?.addEventListener("click",e=>leaderSave(e.currentTarget));
+}
+function refreshDerivedSum(){ if(S.form){const n=S.form.trainings.length,want=Number(S.form.frequency)||0;$("#sumline").innerHTML=`<b>${n}</b> of ${want} trainings · Est. <b class="money">${rm(planCost(S.form))}</b>${S.dirty?" · <i>unsaved</i>":""}`} }
+
+/* ---- validation & saving ---- */
+function validate(){
+  const f=S.form, errs=[], mark=id=>document.getElementById(id)?.classList.add("missing");
+  if(!String(f.pic||"").trim()){errs.push("Ministry lead / PIC");mark("p-pic")}
+  if(!(Number(f.frequency)>=1)){errs.push("Trainings planned this year");mark("p-freq")}
+  if(Number(f.frequency)!==4&&!String(f.freqReason||"").trim()){errs.push("Reason for not planning 4 trainings");mark("p-reason")}
+  if(f.trainings.length<Number(f.frequency)) errs.push(`${Number(f.frequency)-f.trainings.length} more training(s) to reach ${f.frequency}`);
+  f.trainings.forEach((t,i)=>{
+    const need=[["course","course","Course"],["team","team","Team"],["pic","pic","PIC"],["covers","cov","What it covers"],["outcome","out","Expected outcome"],["date","date","Date"],["start","st","Start time"],["end","en","End time"]];
+    if(t.course==="custom") need.push(["customTitle","ct","Course title"]);
+    if(t.venue==="External Venue") need.push(["venueDetail","vd","External venue name"]);
+    const miss=need.filter(([k])=>!String(t[k]??"").trim()); miss.forEach(([,id])=>mark(`t${i}-${id}`));
+    if(miss.length){errs.push(`Training #${i+1}: ${miss.map(x=>x[2]).join(", ")}`);S.open["t"+i]=true;document.querySelector(`[data-sec="t${i}"]`)?.setAttribute("open","")}
+    if(t.date&&pd(t.date).getFullYear()!==S.year) errs.push(`Training #${i+1}: date is not in ${S.year}`);
+    if(t.start&&t.end&&t.end<=t.start) errs.push(`Training #${i+1}: end time is before start time`);
+  });
+  return errs;
+}
+function showErrorBox(errs){
+  let box=$("#errbox"); if(!box){box=document.createElement("div");box.id="errbox";box.className="note bad";$("#view-form").insertBefore(box,$("#view-form").children[1])}
+  box.innerHTML=`<b>Please complete before submitting:</b><ul style="margin:6px 0 0;padding-left:18px">${errs.map(e=>`<li>${esc(e)}</li>`).join("")}</ul><div class="small" style="margin-top:6px">You can use Save Draft at any time.</div>`;
+  box.scrollIntoView({behavior:"smooth",block:"center"});
+}
+let submitAck=0;
+async function save(submit){
+  if(!S.db){toast("Saving isn't available right now. Reopen the page on claude.ai.");return}
+  if(submit){
+    const errs=validate(); if(errs.length){showErrorBox(errs);return}
+    const clashes=S.form.trainings.reduce((a,t,i)=>a+checksFor(S.key,t,S.year,i,S.form).filter(x=>x[0]==="bad").length,0);
+    const miss=spreadIssues(S.form);
+    if((clashes||miss.length)&&Date.now()-submitAck>8000){submitAck=Date.now();toast(`${clashes?clashes+" date clash(es)":""}${clashes&&miss.length?" and ":""}${miss.length?"no training in "+miss.join(", "):""}. Click Submit again to submit anyway.`);return}
+  }
+  const prev=S.plans[curId()]||null, now=nowIso(), body=clone(S.form);
+  Object.assign(body,{ministry:S.key,year:S.year,updatedAt:now,updatedBy:S.uid||null,status:submit?"submitted":"draft"});
+  if(submit){body.submittedAt=now;body.submittedBy=S.uid||null;body.firstSubmittedAt=prev?.firstSubmittedAt||now}
+  if(prev?.firstSubmittedAt||submit){
+    const changes=prev?.firstSubmittedAt?diffPlan(prev,body,S.key):[];
+    if(submit||changes.length) body.log=withLog(prev,logEntry(submit?(prev?.firstSubmittedAt?"Resubmitted":"Submitted"):"Edited (draft)","",changes));
+  }
+  await writePlan(body,submit?"Plan submitted. Leadership will review it.":"Draft saved.");
+}
+async function writePlan(body,msg){
+  disableActions(true);
+  try{await S.db.doc("plans/"+curId()).set(body);S.plans[curId()]=body;S.dirty=false;S.leaderEdit=false;toast(msg);loadForm();renderAll();return true}
+  catch(e){toast(e?.code==="invalid_argument"?"Couldn't save. Check your connection and try again.":e?.code==="quota_exceeded"?"Storage is full. Ask the admin to clear old records.":"Couldn't save. Check your connection and try again.");return false}
+  finally{disableActions(false)}
+}
+const disableActions=on=>document.querySelectorAll("#actions button,[data-lead],[data-pic]").forEach(b=>b.disabled=on);
+async function writeReview(decision,comment){
+  const r={decision,comment:comment||"",at:nowIso(),by:S.uid||null};
+  await S.db.doc("leadership/review/plans/"+curId()).set(r); S.reviews[curId()]=r; return r;
+}
+async function leadAction(kind,btn){
+  if(kind==="edit"){S.leaderEdit=true;S.open.plan=true;renderForm();toast("Edit mode on. Change what you need, then Save & Send to PIC.");return}
+  const comment=($("#lead-comment")?.value||"").trim();
+  if(kind==="changes"&&!comment){$("#lead-comment").classList.add("missing");toast("Add a comment telling the PIC what to change.");return}
+  const p=S.plans[curId()]; if(!p) return;
+  btn.disabled=true;
+  try{
+    await writeReview(kind,comment);
+    const label={approved:"Approved",changes:"Changes requested",reopened:"Reopened for PIC edits"}[kind];
+    await S.db.doc("plans/"+curId()).update({log:withLog(p,logEntry(label,comment))});
+    S.leadComment=""; toast(`${label}. Copy the WhatsApp message to let the PIC know.`); S.open.lead=true;
+  }catch(e){toast(e?.code==="invalid_argument"?"Log in as Leadership to do this.":"Couldn't save. Try again.")}
+  finally{btn.disabled=false}
+}
+async function leaderSave(btn){
+  const comment=($("#lead-comment")?.value||"").trim();
+  if(!comment){S.open.lead=true;const lc=$("#lead-comment");lc?.classList.add("missing");lc?.scrollIntoView({behavior:"smooth",block:"center"});toast("Add a comment explaining your changes for the PIC.");return}
+  const prev=S.plans[curId()], body=clone(S.form), changes=diffPlan(prev,body,S.key);
+  if(!changes.length){toast("No changes to send.");return}
+  Object.assign(body,{updatedAt:nowIso(),updatedBy:S.uid||null,log:withLog(prev,logEntry("Edited by leadership",comment,changes))});
+  btn.disabled=true;
+  try{await S.db.doc("plans/"+curId()).set(body);S.plans[curId()]=body;await writeReview("pic_review",comment);S.dirty=false;S.leaderEdit=false;S.leadComment="";loadForm();renderAll();toast("Changes saved and sent to the PIC for acceptance.")}
+  catch(e){toast("Couldn't save. Try again.")}finally{btn.disabled=false}
+}
+async function picRespond(resp,btn){
+  const note=($("#pic-note")?.value||"").trim();
+  if(resp==="discuss"&&!note){$("#pic-note").classList.add("missing");toast("Add a note on what you'd like to discuss.");return}
+  const p=S.plans[curId()]; btn.disabled=true;
+  try{await S.db.doc("plans/"+curId()).update({picResponse:{response:resp,note,at:nowIso(),by:S.uid||null},log:withLog(p,logEntry(resp==="accepted"?"PIC accepted leadership changes":"PIC requested a discussion",note))});
+    toast(resp==="accepted"?"Changes accepted. Your plan is approved.":"Discussion requested. Leadership will arrange a meeting.")}
+  catch(e){toast("Couldn't save. Try again.")}finally{btn.disabled=false}
+}
+async function requestEdit(btn){
+  const reason=($("#edit-reason")?.value||"").trim(); if(!reason){$("#edit-reason").classList.add("missing");toast("Tell leadership what you need to change.");return}
+  const p=S.plans[curId()]; btn.disabled=true;
+  try{await S.db.doc("plans/"+curId()).update({editRequest:{reason,at:nowIso(),by:S.uid||null},log:withLog(p,logEntry("Edit requested",reason))});toast("Edit request sent to leadership.")}
+  catch(e){toast("Couldn't send. Try again.")}finally{btn.disabled=false}
+}
+async function saveReport(i,btn){
+  const p=S.plans[curId()]; if(!p) return;
+  const g=n=>$(`#t${i}-${n}`)?.value;
+  const d={status:g("ds"),attendance:g("da")===""?"":Number(g("da")),actualCost:g("dc")===""?"":Number(g("dc")),feedback:g("df"),reportedAt:nowIso(),reportedBy:S.uid||null};
+  const tr=clone(p.trainings); const old=tr[i].delivery||{}; tr[i].delivery=d;
+  const ch=[]; if((old.status||"Planned")!==d.status)ch.push(`Training #${i+1} · Status: ${old.status||"Planned"} → ${d.status}`); if(String(old.attendance??"")!==String(d.attendance))ch.push(`Training #${i+1} · Attendance: ${short(old.attendance)} → ${short(d.attendance)}`); if(String(old.actualCost??"")!==String(d.actualCost))ch.push(`Training #${i+1} · Actual cost: ${rm(old.actualCost)} → ${rm(d.actualCost)}`);
+  btn.disabled=true;
+  try{await S.db.doc("plans/"+curId()).update({trainings:tr,log:withLog(p,logEntry(`Training #${i+1} report`,d.feedback,ch))});if(S.form&&!S.dirty)S.form.trainings[i].delivery=d;toast("Report saved.")}
+  catch(e){toast("Couldn't save the report. Try again.")}finally{btn.disabled=false}
+}
+async function attachPaper(input){
+  const file=input.files&&input.files[0]; if(!file) return;
+  if(file.size>10*1024*1024){toast("That file is over 10 MB. Scan at a lower resolution.");return}
+  const assets=await claude.use("assets"); if(!assets){toast("Log in as Leadership to attach files.");return}
+  toast("Uploading…");
+  try{
+    const a=await assets.upload(file), id=curId(), ref=S.db.doc("plans/"+id), cur=S.plans[id];
+    const rec={id:a.id,url:a.url||"",name:file.name,type:a.contentType,uploadedAt:nowIso(),by:S.uid||null};
+    const paperForms=[...((cur&&cur.paperForms)||[]),rec];
+    if(cur) await ref.update({paperForms,log:withLog(cur,logEntry("Paper form attached",file.name))});
+    else{const b=clone(S.form);Object.assign(b,{ministry:S.key,year:S.year,status:"draft",paperForms,updatedAt:rec.uploadedAt,updatedBy:S.uid||null});await ref.set(b)}
+    if(S.form) S.form.paperForms=paperForms;
+    const blk=document.querySelector(".attach"); if(blk){blk.outerHTML=paperBlock({paperForms});const u=$("#paper-file");if(u)u.onchange=()=>attachPaper(u)}
+    toast("Paper form attached to this plan.");
+  }catch(e){toast(e?.code==="unsupported_type"?"Use a PDF or an image file.":"Couldn't attach the file. Try again.")}
+  finally{input.value=""}
+}
+
+/* ================= Calendar ================= */
+const planRank=p=>(p.status==="submitted"||p.firstSubmittedAt?"0":"1")+(p.firstSubmittedAt||p.updatedAt||"9");
+function findConflicts(y){
+  const byWk={}; allEntries(y).forEach(e=>{const w=weekendKey(e.t.date);(byWk[w]=byWk[w]||[]).push(e)});
+  const groups=[];
+  for(const [wk,list] of Object.entries(byWk)){
+    const ks=[...new Set(list.map(e=>e.k))]; if(ks.length<2) continue;
+    if(ks.length===2&&PAIR[ks[0]]===ks[1]&&new Set(list.map(e=>e.t.date)).size===2) continue;
+    const order=[...ks].sort((a,b)=>planRank(list.find(e=>e.k===a).p).localeCompare(planRank(list.find(e=>e.k===b).p)));
+    const keep=new Set([order[0]]), keepDates=new Set(list.filter(e=>e.k===order[0]).map(e=>e.t.date)), partner=PAIR[order[0]];
+    if(partner&&ks.includes(partner)&&list.filter(e=>e.k===partner).every(e=>!keepDates.has(e.t.date))) keep.add(partner);
+    groups.push({wk,list,keep,move:list.filter(e=>!keep.has(e.k))});
+  }
+  return groups.sort((a,b)=>a.wk.localeCompare(b.wk));
+}
+function proposals(y){
+  const occ=occupancy(y), groups=findConflicts(y);
+  for(const g of groups) for(const e of g.move){ e.suggest=suggestDate(e,occ,y);
+    if(e.suggest){Object.values(occ).forEach(l=>{const ix=l.findIndex(x=>x.key===e.key);if(ix>=0)l.splice(ix,1)});const w=weekendKey(e.suggest);(occ[w]=occ[w]||[]).push({k:e.k,date:e.suggest,key:e.key})} }
+  return groups;
+}
+async function applyMove(id,i,to,btn){
+  const p=S.plans[id]; if(!p||!S.db) return; btn.disabled=true;
+  try{const tr=clone(p.trainings),from=tr[i].date;tr[i].date=to;
+    await S.db.doc("plans/"+id).update({trainings:tr,updatedAt:nowIso(),log:withLog(p,logEntry("Date moved to resolve a clash","",[`Training #${i+1} · Date: ${fmtDate(from)} → ${fmtDate(to)}`]))});
+    toast(`${minName(p.ministry)} Training #${i+1} moved to ${fmtDate(to)}.`)}
+  catch(e){toast(e?.code==="invalid_argument"?"You don't have permission to change this plan.":"Couldn't move the training. Try again.")}
+  finally{btn.disabled=false}
+}
+function timelineSvg(y,entries,clashKeys){
+  const keys=[...new Set(entries.map(e=>e.k))];
+  const lanes=orderedMins().filter(m=>keys.includes(m.key)||(!keys.length&&m.kpi));
+  const L=160,R=950,T=34,LH=34,Hh=T+Math.max(1,lanes.length)*LH+10, start=new Date(y,0,1), span=new Date(y+1,0,1)-start, X=s=>L+(pd(s)-start)/span*(R-L);
+  let g="";
+  for(let q=0;q<4;q++){const x1=X(iso(new Date(y,q*3,1))),x2=q<3?X(iso(new Date(y,q*3+3,1))):R;if(q%2===0)g+=`<rect x="${x1}" y="${T-6}" width="${x2-x1}" height="${Hh-T}" fill="#F3F5F1"/>`;g+=`<text x="${(x1+x2)/2}" y="11" text-anchor="middle" font-size="10" font-weight="700" fill="#8C948D">Q${q+1}</text>`}
+  for(let m=0;m<12;m++){const x=X(iso(new Date(y,m,1)));g+=`<line x1="${x}" y1="${T-6}" x2="${x}" y2="${Hh-4}" stroke="#DDE2DC"/><text x="${x+4}" y="${T-12}" font-size="10" fill="#7B847D">${MON[m]}</text>`}
+  const td=today(); if(td.startsWith(String(y))){const x=X(td);g+=`<line x1="${x}" y1="${T-6}" x2="${x}" y2="${Hh-4}" stroke="#D9B45A" stroke-width="2"/>`}
+  lanes.forEach((m,li)=>{const cy=T+li*LH+LH/2;
+    g+=`<line x1="${L}" y1="${cy}" x2="${R}" y2="${cy}" stroke="#DDE2DC" stroke-dasharray="2 3"/><text x="${L-10}" y="${cy+4}" text-anchor="end" font-size="11.5" font-weight="${m.parent?400:600}" fill="#1F2621" font-family="-apple-system,Segoe UI,Roboto,Arial,sans-serif">${m.parent?"↳ ":""}${esc(m.name)}</text>`;
+    entries.filter(e=>e.k===m.key).forEach(e=>{const x=X(e.t.date),col=laneColor(m.key),bad=clashKeys.has(e.key),draft=!e.p.firstSubmittedAt,d=pd(e.t.date),held=e.t.delivery?.status==="Held";
+      g+=`<g><title>${esc(m.name)} #${e.i+1} · ${esc(fmtDate(e.t.date))} · ${esc(courseLabel(e.k,e.t))}${bad?" · CLASH":""}${draft?" · draft":""}${held?" · held":""}</title>`;
+      if(bad)g+=`<circle cx="${x}" cy="${cy}" r="10" fill="none" stroke="#9C0006" stroke-width="2"/>`;
+      g+=`<circle cx="${x}" cy="${cy}" r="6" fill="${draft?"#ffffff":col}" stroke="${col}" stroke-width="2"/>`;
+      if(held)g+=`<path d="M${x-3} ${cy} l2 2 l4 -4" stroke="#fff" stroke-width="1.8" fill="none"/>`;
+      g+=`<text x="${x}" y="${cy-10}" text-anchor="middle" font-size="9" fill="${bad?"#9C0006":"#4A524C"}" font-weight="${bad?700:400}">${d.getDate()}/${d.getMonth()+1}</text></g>`})});
+  return `<svg viewBox="0 0 960 ${Hh}" role="img" aria-label="${y} training timeline by ministry">${g}</svg>`;
+}
+function renderCalendar(){
+  const v=$("#view-calendar"), y=S.year, entries=allEntries(y), groups=proposals(y);
+  const clashKeys=new Set(groups.flatMap(g=>g.list.map(e=>e.key))), nMove=groups.reduce((a,g)=>a+g.move.length,0);
+  const canApply=k=>S.isAdmin||(S.canWrite&&S.key===k);
+  const conflictHtml=groups.map(g=>{
+    const sat=pd(g.wk),sun=new Date(sat);sun.setDate(sat.getDate()+1);
+    const label=sat.getDay()===6?`Weekend of ${fmtDate(g.wk)} – ${fmtDate(iso(sun))}`:fmtDate(g.wk);
+    const who=g.list.map(e=>`<div class="small"><b>${esc(minName(e.k))}</b> #${e.i+1} · <span class="date">${esc(fmtDate(e.t.date))}</span> ${esc(fmtTime(e.t.start))} · <span class="muted">${esc(courseLabel(e.k,e.t))}</span> ${g.keep.has(e.k)?`<span class="pill ok">Keeps date</span>`:`<span class="pill bad">Move</span>`}</div>`).join("");
+    const fixes=g.move.map(e=>e.suggest?`<div class="fix"><span>Proposed: move <b>${esc(minName(e.k))} #${e.i+1}</b> from ${esc(fmtDate(e.t.date))} to <b>${esc(fmtDate(e.suggest))}</b>${Math.floor(pd(e.suggest).getMonth()/3)===Math.floor(pd(e.t.date).getMonth()/3)?" (same quarter)":""}.</span>${canApply(e.k)?`<button class="btn small" type="button" data-move="${esc(e.id)}|${e.i}|${e.suggest}">Move to ${esc(fmtDate(e.suggest))}</button>`:`<span class="small">The ${esc(minName(e.k))} PIC can make this change.</span>`}</div>`
+      :`<div class="fix none">No free weekend found near ${esc(fmtDate(e.t.date))} for ${esc(minName(e.k))} #${e.i+1}. Try a weekday night (Tue–Thu, 8–10pm) or agree a date with the other PIC.</div>`).join("");
+    return `<div class="card conf"><div class="row spread"><h3>${esc(label)}</h3><span class="pill bad">Clash</span></div><div class="who">${who}</div><div class="stack" style="gap:6px">${fixes}</div><div class="small muted" style="margin-top:6px">The ministry that submitted its plan first keeps the date.</div></div>`;
+  }).join("");
+  let body="",lastM=-1;
+  for(const e of entries){const m=pd(e.t.date).getMonth();if(m!==lastM){body+=`<tr class="month"><td colspan="5">${MONL[m]} ${y}</td></tr>`;lastM=m}
+    const code=wf(e.p,S.reviews[e.id]);
+    body+=`<tr><td class="date">${esc(fmtDate(e.t.date))}<div class="muted small">${esc(fmtTime(e.t.start))}${e.t.end?"–"+esc(fmtTime(e.t.end)):""}</div></td><td><b class="${MIN(e.k)?.parent?"childname":""}">${esc(minName(e.k))}</b> #${e.i+1}<div class="muted small">${esc(courseLabel(e.k,e.t))}</div></td><td>${esc(e.t.pic)}<div class="muted small">${esc([e.t.venue,e.t.venueDetail].filter(Boolean).join(" · "))}</div></td><td>${pill(code)}</td><td>${clashKeys.has(e.key)?`<span class="pill bad">Clash</span>`:e.t.delivery?.status==="Held"?`<span class="pill ok">Held</span>`:""}</td></tr>`}
+  v.innerHTML=pageHead(`${y} Training Calendar`,`Every ministry's saved training dates on one timeline. Two ministries on the same weekend are flagged as a clash with a proposed new date. Sound and Media may share a weekend on different days.`)+
+  `<div class="card row spread"><label class="f" style="display:flex;align-items:center;gap:8px">Year<select id="cal-year" style="width:auto;margin:0">${S.cfg.years.map(x=>`<option ${x===y?"selected":""}>${x}</option>`).join("")}</select></label>
+    <div class="row"><span class="pill sub">${entries.length} trainings</span>${groups.length?`<span class="pill bad">${groups.length} clash${groups.length>1?"es":""} · ${nMove} to move</span>`:entries.length?`<span class="pill ok">No clashes</span>`:""}
+    <button class="btn icon" type="button" id="cal-pdf" title="Download calendar (PDF)" aria-label="Download calendar (PDF)">${ICON.pdf}</button></div></div>
+  ${groups.length?sec("clashes","","Clashes to Resolve","",`<span class="pill bad">${groups.length}</span>`,conflictHtml):""}
+  ${sec("timeline","","Timeline","","",`<div class="tl">${timelineSvg(y,entries,clashKeys)}<div class="legend">${[...new Set(entries.map(e=>e.k))].map(k=>`<span><i style="background:${laneColor(k)}"></i>${esc(minName(k))}</span>`).join("")}<span><i style="background:#fff;border:2px solid #7B847D;width:8px;height:8px"></i>Draft</span><span><i style="background:#fff;border:2px solid #9C0006;width:10px;height:10px"></i>Clash</span><span><i style="background:#D9B45A;border-radius:0;width:2px;height:10px"></i>Today</span></div></div>`)}
+  ${sec("schedule","","Schedule","",`<span class="small muted">${entries.length}</span>`,entries.length?`<div class="tablewrap"><table><thead><tr><th>Date / Time</th><th>Ministry / Course</th><th>PIC / Venue</th><th>Plan</th><th></th></tr></thead><tbody>${body}</tbody></table></div>`:`<div class="empty">No trainings saved for ${y} yet. They appear here as ministries save their plans.</div>`)}`;
+  v.querySelectorAll("details.sec").forEach(d=>d.addEventListener("toggle",()=>{S.open[d.dataset.sec]=d.open}));
+  $("#cal-year").onchange=e=>{if(S.dirty&&!confirmLeave())return e.target.value=S.year;S.year=+e.target.value;loadForm();renderAll()};
+  $("#cal-pdf").onclick=e=>pdfOut(()=>calendarPdf(y),`TOW-Training-Calendar-${y}`,e.currentTarget);
+  v.querySelectorAll("[data-move]").forEach(b=>b.onclick=()=>{const [id,i,to]=b.dataset.move.split("|");applyMove(id,+i,to,b)});
+}
+
+/* ================= Overview ================= */
+function progressOf(p,k){
+  const want=Number(p?.frequency)||MIN(k)?.freq||4, ts=(p?.trainings)||[], td=today();
+  const segs=ts.map(t=>{const s=t.delivery?.status;if(s==="Held")return "held";if(s==="Deferred")return "def";if(s==="Cancelled")return "can";if(t.date&&t.date<td)return "due";return "up"});
+  const order={held:0,def:1,due:2,up:3,can:4}; segs.sort((a,b)=>order[a]-order[b]);
+  while(segs.length<want) segs.push("none");
+  return {segs,want,held:segs.filter(s=>s==="held").length};
+}
+function overviewRows(y){return orderedMins().map(m=>{const id=docId(y,m.key),p=S.plans[id],r=S.reviews[id];return {m,id,p,r,code:wf(p,r),pr:progressOf(p,m.key),spread:p?spreadIssues(p):[]}})}
+function renderOverview(){
+  const v=$("#view-overview"), y=S.year, rows=overviewRows(y), kpiRows=rows.filter(x=>x.m.kpi);
+  const sub=kpiRows.filter(x=>x.p?.firstSubmittedAt).length, appr=kpiRows.filter(x=>x.code==="approved").length;
+  const sess=rows.reduce((a,x)=>a+(x.p?.trainings?.length||0),0), held=rows.reduce((a,x)=>a+x.pr.held,0), total=rows.reduce((a,x)=>a+(x.p?planCost(x.p):0),0);
+  const bars=rows.map(x=>`<div class="bar"><span class="nm ${x.m.parent?"childname":""}" title="${esc(x.m.name)}">${esc(x.m.name)}</span><div class="track">${x.pr.segs.map(s=>`<span class="seg ${s==="none"?"":s}" title="${{held:"Held",def:"Deferred",due:"Report due",up:"Upcoming",can:"Cancelled",none:"Not planned yet"}[s]}"></span>`).join("")}</div><span class="ct">${x.pr.held}/${x.pr.want}</span></div>`).join("");
+  const table=rows.map(x=>`<tr><td><b class="${x.m.parent?"childname":""}">${esc(x.m.name)}</b><div class="muted small">${esc(x.p?.pic||x.m.pic)}</div></td><td>${pill(x.code)}${x.p?.paperForms?.length?` <span class="pill ok">Paper</span>`:""}${x.p?.submittedAt?`<div class="muted small">${esc(fmtDate(x.p.firstSubmittedAt||x.p.submittedAt))}${(x.p.firstSubmittedAt||"").slice(0,10)>dueDate(y)?" · late":""}</div>`:""}</td><td class="num">${x.p?.trainings?.length||0} / ${x.pr.want}</td><td>${x.p?.trainings?.length?(x.spread.length?`<span class="pill draft" title="Nothing in ${esc(x.spread.join(", "))}">Uneven</span>`:`<span class="pill ok">Even</span>`):"—"}</td><td class="num">${x.p?rm(planCost(x.p)):"—"}</td><td><button class="btn small ghost" type="button" data-open="${x.m.key}">Open</button></td></tr>`).join("");
+  v.innerHTML=pageHead(`${y} Plans Overview`,`Submission status and training progress for every ministry. Plans are due ${esc(fmtLong(dueDate(y)))}; on-time submission earns the "Plan on time" points in the Ministry Training KPI.`)+
+  `<div class="card row spread"><label class="f" style="display:flex;align-items:center;gap:8px">Year<select id="ov-year" style="width:auto;margin:0">${S.cfg.years.map(x=>`<option ${x===y?"selected":""}>${x}</option>`).join("")}</select></label>
+   <div class="row"><button class="btn small" type="button" id="ov-pdf">${ICON.pdf} PDF Report</button><button class="btn small" type="button" id="ov-csv">${ICON.csv} CSV</button></div></div>
+  <div class="kpi"><div><span>Plans submitted</span><b>${sub} / ${kpiRows.length}</b></div><div><span>Approved</span><b>${appr} / ${kpiRows.length}</b></div><div><span>Trainings held</span><b>${held} / ${sess}</b></div><div><span>Est. total cost</span><b>${rm(total)}</b></div></div>
+  ${sec("progress","","Training Progress","Held vs planned per ministry","",`<div class="bars">${bars}</div><div class="legend"><span><i style="background:var(--green);border-radius:2px"></i>Held</span><span><i style="background:#8fb3ad;border-radius:2px"></i>Upcoming</span><span><i style="background:#d9534f;border-radius:2px"></i>Report due</span><span><i style="background:#e0b24c;border-radius:2px"></i>Deferred</span><span><i style="background:var(--soft-2);border:1px dashed #c6cdc7;border-radius:2px"></i>Not planned yet</span></div>`)}
+  ${sec("plans","","Plans","","",`<div class="tablewrap"><table><thead><tr><th>Ministry</th><th>Status</th><th class="num">Trainings</th><th>Spread</th><th class="num">Est. cost</th><th></th></tr></thead><tbody>${table}</tbody></table></div>`)}`;
+  v.querySelectorAll("details.sec").forEach(d=>d.addEventListener("toggle",()=>{S.open[d.dataset.sec]=d.open}));
+  $("#ov-year").onchange=e=>{if(S.dirty&&!confirmLeave())return e.target.value=S.year;S.year=+e.target.value;loadForm();renderAll()};
+  v.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{if(S.dirty&&!confirmLeave())return;S.key=b.dataset.open;try{localStorage.setItem("towtp.key",S.key)}catch(_){}loadForm();setView("form")});
+  $("#ov-pdf").onclick=e=>pdfOut(()=>overviewPdf(y),`TOW-Training-Overview-${y}`,e.currentTarget);
+  $("#ov-csv").onclick=()=>exportCsv(y);
+}
+async function exportCsv(y){
+  const head=["Year","Ministry","Parent ministry","Plan status","Training #","Date","Day","Start","End","Course","Team","Headcount","PIC","What it covers","Expected outcome","Venue","Venue details","Trainer type","Trainer","Format",...COST_FIELDS.map(c=>c[1]+" (RM)"),"Total est. (RM)","Cost notes","Delivery status","Attendance","Actual cost (RM)","Feedback"];
+  const q=v=>{v=String(v??"");return /[",\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v};
+  const lines=[head.map(q).join(",")];
+  for(const m of orderedMins(false)){const p=S.plans[docId(y,m.key)];if(!p)continue;const code=WF[wf(p,S.reviews[docId(y,m.key)])][0];
+    (p.trainings||[]).forEach((t,i)=>lines.push([y,m.name,m.parent?minName(m.parent):"",code,i+1,t.date,t.date?DOW[pd(t.date).getDay()]:"",t.start,t.end,courseLabel(m.key,t),t.team,t.headcount,t.pic,t.covers,t.outcome,t.venue,t.venueDetail,t.trainerType,t.trainer,t.format,...COST_FIELDS.map(([k])=>Number(t.cost?.[k])||0),tCost(t),t.costNotes,t.delivery?.status||"Planned",t.delivery?.attendance??"",t.delivery?.actualCost??"",t.delivery?.feedback||""].map(q).join(",")))}
+  if(lines.length===1){toast("No plans saved for this year yet.");return}
+  await saveFile(`TOW-Training-Plans-${y}.csv`,"﻿"+lines.join("\n"));
+}
+
+/* ================= Settings (leadership only) ================= */
+function renderSettings(){
+  const v=$("#view-settings");
+  if(!S.isAdmin){v.innerHTML=`<div class="card empty">Settings are for the church admin only.</div>`;return}
+  if(!S.setDraft) S.setDraft=clone(S.cfg);
+  const d=S.setDraft;
+  const staffRows=d.staff.map((s,i)=>`<tr><td><input data-s="staff" data-i="${i}" value="${esc(s)}"></td><td><button class="btn small ghost" type="button" data-del="staff" data-i="${i}">Remove</button></td></tr>`).join("");
+  const tops=d.ministries.filter(m=>!m.parent);
+  const minRows=d.ministries.map((m,i)=>`<tr><td><input data-s="min" data-i="${i}" data-f="name" value="${esc(m.name)}"></td>
+    <td><select data-s="min" data-i="${i}" data-f="parent"><option value="">— (main ministry)</option>${tops.filter(t=>t.key!==m.key).map(t=>`<option value="${t.key}" ${m.parent===t.key?"selected":""}>${esc(t.name)}</option>`).join("")}</select></td>
+    <td><input data-s="min" data-i="${i}" data-f="pic" value="${esc(m.pic)}" list="set-staff"></td>
+    <td><input data-s="min" data-i="${i}" data-f="team" value="${esc(m.team)}"></td>
+    <td><input data-s="min" data-i="${i}" data-f="freq" type="number" min="1" max="12" value="${esc(m.freq)}" style="width:60px"></td>
+    <td style="text-align:center"><input type="checkbox" data-s="min" data-i="${i}" data-f="kpi" ${m.kpi?"checked":""} style="width:auto"></td>
+    <td style="text-align:center"><input type="checkbox" data-s="min" data-i="${i}" data-f="active" ${m.active!==false?"checked":""} style="width:auto"></td></tr>`).join("");
+  const ck=S.setCourseKey&&d.ministries.find(m=>m.key===S.setCourseKey)?S.setCourseKey:d.ministries[0]?.key;
+  const cl=d.courses[ck]||[];
+  const courseRows=cl.map((c,i)=>`<tr><td><input data-s="course" data-i="${i}" data-f="code" value="${esc(c.code)}" style="width:56px"></td><td><input data-s="course" data-i="${i}" data-f="title" value="${esc(c.title)}"></td><td><input data-s="course" data-i="${i}" data-f="covers" value="${esc(c.covers)}"></td><td><input data-s="course" data-i="${i}" data-f="outcome" value="${esc(c.outcome)}"></td><td><input data-s="course" data-i="${i}" data-f="by" value="${esc(c.by)}"></td><td><button class="btn small ghost" type="button" data-del="course" data-i="${i}">Remove</button></td></tr>`).join("");
+  const hy=S.setHolYear;
+  const holText=(d.holidays[hy]||[]).map(([a,b])=>`${a} ${b}`).join("\n");
+  v.innerHTML=pageHead("Settings","Only visible after the Leadership PIN is entered. Changes apply to everyone once saved.")+
+  sec("s-years","","Plan Years & Deadline","",`<span class="small muted">${d.years.join(", ")}</span>`,`<div class="row">${d.years.map(y=>`<span class="chip">${y} <button class="btn small ghost" type="button" data-del="year" data-y="${y}" title="Remove ${y}" aria-label="Remove ${y}">✕</button></span>`).join("")}<input id="set-newyear" type="number" placeholder="e.g. ${Math.max(...d.years)+1}" style="width:110px"><button class="btn small" type="button" id="set-addyear">Add Year</button></div>
+    <div class="grid"><label class="f">Plans due (month)<select id="set-duem">${MONL.map((n,i)=>`<option value="${i+1}" ${d.dueMonth===i+1?"selected":""}>${n}</option>`).join("")}</select></label><label class="f">Day<input id="set-dued" type="number" min="1" max="31" value="${d.dueDay}"></label></div><div class="small muted">Plans for a year are due on this date in the year before.</div>`)+
+  sec("s-staff","","Staff / PICs","",`<span class="small muted">${d.staff.length}</span>`,`<div class="tablewrap settings-table"><table><tbody>${staffRows}</tbody></table></div><div><button class="btn small" type="button" id="set-addstaff">+ Add Person</button></div>`)+
+  sec("s-min","","Ministries","Sub-ministries sit under a main ministry",`<span class="small muted">${d.ministries.length}</span>`,`<div class="tablewrap settings-table"><table><thead><tr><th>Name</th><th>Under</th><th>PIC</th><th>Default team</th><th>Per yr</th><th>KPI</th><th>Active</th></tr></thead><tbody>${minRows}</tbody></table></div><div class="row"><input id="set-newmin" placeholder="New ministry name" style="max-width:240px"><button class="btn small" type="button" id="set-addmin">+ Add Ministry</button></div><div class="small muted">Untick Active to hide a ministry without losing its past plans. Untick KPI if its training isn't scored yet.</div><datalist id="set-staff">${d.staff.map(s=>`<option value="${esc(s.replace(/\s*\(.*\)$/,""))}">`).join("")}</datalist>`)+
+  sec("s-courses","","Recommended Courses","","",`<label class="f" style="max-width:300px">Ministry<select id="set-ck">${d.ministries.map(m=>`<option value="${m.key}" ${m.key===ck?"selected":""}>${esc(m.name)}</option>`).join("")}</select></label><div class="tablewrap settings-table"><table><thead><tr><th>Code</th><th>Course</th><th>What it covers</th><th>Expected outcome</th><th>Trainer</th><th></th></tr></thead><tbody>${courseRows}</tbody></table></div><div><button class="btn small" type="button" id="set-addcourse">+ Add Course</button></div>`)+
+  sec("s-hol","","Public Holidays & Long Weekends","Used for warnings and suggested dates; not shown on the calendar","",`<label class="f" style="max-width:200px">Year<select id="set-hy">${d.years.map(y=>`<option ${String(y)===hy?"selected":""}>${y}</option>`).join("")}</select></label><label class="f">One per line: YYYY-MM-DD Name<textarea id="set-hol" style="min-height:180px;font-family:ui-monospace,Menlo,Consolas,monospace">${esc(holText)}</textarea></label>`)+
+  sec("s-wa","","WhatsApp Invite Template","","",`<label class="f">Template<textarea id="set-wa" style="min-height:220px">${esc(d.waInvite)}</textarea></label><div class="small muted">Placeholders: {ministry} {n} {course} {day} {date} {start} {end} {venue} {trainer} {covers} {outcome} {extras} {rsvp} {pic}. A line is left out when its placeholder is empty.</div>`)+
+  `<div class="row"><button class="btn primary" type="button" id="set-save" ${S.setDirty?"":"disabled"}>Save Settings</button><button class="btn" type="button" id="set-reset" ${S.setDirty?"":"disabled"}>Discard Changes</button>${S.setDirty?`<span class="small" style="color:var(--amber)">Unsaved changes</span>`:""}</div>`;
+  v.querySelectorAll("details.sec").forEach(x=>x.addEventListener("toggle",()=>{S.open[x.dataset.sec]=x.open}));
+  const dirty=()=>{S.setDirty=true;const sb=$("#set-save"),rb=$("#set-reset");sb.disabled=false;rb.disabled=false};
+  v.querySelectorAll('[data-s="staff"]').forEach(el=>el.oninput=()=>{d.staff[+el.dataset.i]=el.value;dirty()});
+  v.querySelectorAll('[data-s="min"]').forEach(el=>el[el.type==="checkbox"||el.tagName==="SELECT"?"onchange":"oninput"]=()=>{const m=d.ministries[+el.dataset.i],f=el.dataset.f;m[f]=el.type==="checkbox"?el.checked:el.type==="number"?Number(el.value):el.value;dirty();if(f==="parent")renderSettings()});
+  v.querySelectorAll('[data-s="course"]').forEach(el=>el.oninput=()=>{d.courses[ck][+el.dataset.i][el.dataset.f]=el.value;dirty()});
+  v.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const t=b.dataset.del;
+    if(t==="staff")d.staff.splice(+b.dataset.i,1);
+    if(t==="course")d.courses[ck].splice(+b.dataset.i,1);
+    if(t==="year"){const y=+b.dataset.y;if(Object.values(S.plans).some(p=>p.year===y)){toast(`${y} already has plans, so it can't be removed.`);return}d.years=d.years.filter(x=>x!==y)}
+    dirty();renderSettings()});
+  $("#set-addyear").onclick=()=>{const y=+$("#set-newyear").value;if(!(y>=2026&&y<=2100)){toast("Enter a year like 2029.");return}if(!d.years.includes(y)){d.years.push(y);d.years.sort();d.holidays[String(y)]=d.holidays[String(y)]||[]}dirty();renderSettings()};
+  $("#set-duem").onchange=e=>{d.dueMonth=+e.target.value;dirty()}; $("#set-dued").oninput=e=>{d.dueDay=Math.min(31,Math.max(1,+e.target.value||15));dirty()};
+  $("#set-addstaff").onclick=()=>{d.staff.push("");dirty();renderSettings()};
+  $("#set-addmin").onclick=()=>{const name=$("#set-newmin").value.trim();if(!name){toast("Type the ministry name first.");return}let key=name.toLowerCase().replace(/[^a-z0-9]+/g,"").slice(0,20)||"min";let k=key,n=2;while(d.ministries.some(m=>m.key===k))k=key+n++;d.ministries.push({key:k,name,parent:"",pic:"",team:`${name} team`,freq:4,kpi:true,active:true});d.courses[k]=d.courses[k]||[];dirty();renderSettings()};
+  $("#set-ck").onchange=e=>{S.setCourseKey=e.target.value;renderSettings()};
+  $("#set-addcourse").onclick=()=>{(d.courses[ck]=d.courses[ck]||[]).push({code:"",title:"",covers:"",outcome:"",by:"Internal"});dirty();renderSettings()};
+  $("#set-hy").onchange=e=>{S.setHolYear=e.target.value;renderSettings()};
+  $("#set-hol").oninput=e=>{d.holidays[hy]=e.target.value.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const m=l.match(/^(\d{4}-\d{2}-\d{2})\s+(.+)$/);return m?[m[1],m[2]]:null}).filter(Boolean);dirty()};
+  $("#set-wa").oninput=e=>{d.waInvite=e.target.value;dirty()};
+  $("#set-reset").onclick=()=>{S.setDraft=null;S.setDirty=false;renderSettings()};
+  $("#set-save").onclick=async e=>{const b=e.currentTarget;b.disabled=true;
+    d.staff=d.staff.map(s=>s.trim()).filter(Boolean);
+    try{await S.db.doc("leadership/settings").set(clone(d));S.cfg=mergeCfg(d);S.setDraft=null;S.setDirty=false;toast("Settings saved.");renderAll()}
+    catch(err){toast(err?.code==="invalid_argument"?"Log in as Leadership to change settings.":"Couldn't save settings. Try again.");b.disabled=false}};
+}
+function mergeCfg(doc){const c=clone(DEFAULTS);if(doc)for(const k of Object.keys(doc))c[k]=doc[k];return c}
+
+/* ================= PDF output ================= */
+const pdfSafe=s=>String(s??"").replace(/[–—]/g,"-").replace(/[→]/g,"->").replace(/[›]/g,">").replace(/[↳]/g,"").replace(/[^\x00-\xFF]/g,"").trim();
+const BRAND=[14,75,79], GOLDC=[217,180,90], INKC=[31,38,33], MUTE=[123,132,125], LINEC=[205,212,205], SOFTC=[243,245,241];
+async function saveFile(name,data){
+  try{const dl=await claude.use("downloads");if(!dl){toast("Downloads aren't available in this view.");return}
+    const r=await dl.save({filename:name,data});if(r?.status==="saved")toast("Saved.")}
+  catch(e){if(!["declined","cancelled"].includes(e?.code))toast("Couldn't save the file.")}
+}
+async function pdfOut(build,name,btn){
+  if(!window.jspdf){toast("The PDF tool didn't load. Check your connection and reopen the page.");return}
+  if(btn)btn.disabled=true;
+  try{const doc=build();await saveFile(name.replace(/[^A-Za-z0-9-]+/g,"-").replace(/-+/g,"-").replace(/-$/,"")+".pdf",doc.output("arraybuffer"))}
+  catch(e){console.error(e);toast("Couldn't build the PDF.")}
+  finally{if(btn)btn.disabled=false}
+}
+function pdfDoc(){return new window.jspdf.jsPDF({unit:"pt",format:"a4"})}
+function pdfHeader(doc,title,sub,right){
+  const W=doc.internal.pageSize.getWidth();
+  doc.setFillColor(...BRAND);doc.rect(0,0,W,74,"F");doc.setFillColor(...GOLDC);doc.rect(0,74,W,3,"F");
+  try{doc.addImage(LOGO,"PNG",40,14,26,38)}catch(_){}
+  doc.setTextColor(...GOLDC);doc.setFont("helvetica","bold");doc.setFontSize(7.5);doc.text("TABERNACLE OF WORSHIP",76,28);
+  doc.setTextColor(255,255,255);doc.setFontSize(15);doc.text(pdfSafe(title),76,46);
+  doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(215,232,228);doc.text(pdfSafe(sub),76,60);
+  if(right){doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(9.5);right.forEach((r,i)=>doc.text(pdfSafe(r),W-40,32+i*14,{align:"right"}))}
+  return 100;
+}
+function pdfFooters(doc,text){
+  const n=doc.getNumberOfPages(),W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
+  for(let i=1;i<=n;i++){doc.setPage(i);doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.setTextColor(...MUTE);doc.text(pdfSafe(text),40,H-22);doc.text(`Page ${i} of ${n}`,W-40,H-22,{align:"right"})}
+}
+function pLabel(doc,x,y,t){doc.setFont("helvetica","bold");doc.setFontSize(6.8);doc.setTextColor(...MUTE);doc.text(pdfSafe(t).toUpperCase(),x,y)}
+function pField(doc,x,y,w,label,val,h=20){
+  pLabel(doc,x,y,label);doc.setDrawColor(...LINEC);doc.setLineWidth(.7);doc.roundedRect(x,y+4,w,h,3,3,"S");
+  if(val){doc.setFont("helvetica","normal");let fs=9.5;doc.setFontSize(fs);const v=pdfSafe(val);while(fs>6.5&&doc.getTextWidth(v)>w-10){fs-=.5;doc.setFontSize(fs)}doc.setTextColor(...INKC);doc.text(v,x+5,y+4+h-6)}
+  return y+h+16;
+}
+function pText(doc,x,y,w,label,val,lines=3){
+  pLabel(doc,x,y,label);y+=6;
+  if(val){doc.setFont("helvetica","normal");doc.setFontSize(9);doc.setTextColor(...INKC);const ls=doc.splitTextToSize(pdfSafe(val),w);doc.text(ls,x,y+10);return y+ls.length*12+12}
+  doc.setDrawColor(...LINEC);doc.setLineWidth(.6);for(let i=1;i<=lines;i++)doc.line(x,y+i*17,x+w,y+i*17);return y+lines*17+14;
+}
+function pCheck(doc,x,y,label,on){doc.setDrawColor(...INKC);doc.setLineWidth(.7);doc.rect(x,y-7,8,8,"S");if(on){doc.setFont("helvetica","bold");doc.setFontSize(9);doc.text("x",x+1.8,y)}doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(...INKC);doc.text(pdfSafe(label),x+12,y);return x+12+doc.getTextWidth(pdfSafe(label))+14}
+function pBox(doc,x,y,w,h,title){doc.setFillColor(...SOFTC);doc.roundedRect(x,y,w,h,5,5,"F");doc.setFont("helvetica","bold");doc.setFontSize(7.5);doc.setTextColor(...BRAND);doc.text(pdfSafe(title).toUpperCase(),x+10,y+14);return y+28}
+function planPdf(k,p,y){
+  const doc=pdfDoc(), W=doc.internal.pageSize.getWidth(), M=40, CW=W-80, m=k?MIN(k):null, filled=!!p;
+  const right=[m?minFull(k):"Ministry: ____________________",`Plan year: ${y||"______"}`];
+  let yy=pdfHeader(doc,"Ministry Training Plan",filled?`Plan record · status: ${WF[wf(p,S.reviews[docId(y,k)])][0]}`:"Yearly planning form · Part A: plan details",right);
+  doc.setFont("helvetica","normal");doc.setFontSize(9);doc.setTextColor(...INKC);
+  const intro=doc.splitTextToSize(`Each ministry plans at least 4 team trainings a year, ideally one every quarter, on weekends that don't clash with other ministries. Fill in Part A, then one Part B page per training. Submit by ${fmtLong(dueDate(y||S.year))}.`,CW);doc.text(intro,M,yy);yy+=intro.length*12+10;
+  const half=(CW-14)/2;
+  pField(doc,M,yy,half,"Ministry",m?minFull(k):"");yy=pField(doc,M+half+14,yy,half,"Plan year",y?String(y):"");
+  pField(doc,M,yy,half,"Ministry lead / PIC",p?.pic||m?.pic||"");yy=pField(doc,M+half+14,yy,half,"Co-PICs / helpers",p?.coPics||"");
+  pField(doc,M,yy,120,"Trainings planned this year",p?String(p.frequency):"");yy=pField(doc,M+134,yy,CW-134,"If not 4, why?",p?.freqReason||"");
+  yy=pText(doc,M,yy,CW,"Main training goal for the year",p?.goal,3);
+  if(!filled){
+    const rules=["One ministry per weekend: many members serve in more than one ministry. Check the planner's Calendar or ask the office which dates are taken.","Spread them out: 4 a year = one every quarter; 2 a year = one every 6 months.","Usual slots: Sunday 12:30-3:30pm after English Service; Saturday 2-5pm (ends before the 7:30pm Chinese Service); weekday nights 8-10pm for make-ups.","Avoid Friday nights (Prayer Meeting), 2nd Sundays (BM Connect and Young Adults), festive and long weekends, and December.","Sound and Media may share a weekend (one on Saturday, one on Sunday)."];
+    let by=pBox(doc,M,yy,CW,24+rules.length*24,"Scheduling rules");
+    doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(...INKC);rules.forEach(r=>{const ls=doc.splitTextToSize(r,CW-30);doc.setFillColor(...GOLDC);doc.circle(M+14,by-3,1.6,"F");doc.text(ls,M+22,by);by+=ls.length*11+6});
+    yy+=24+rules.length*24+16;
+    const th=(CW-28)/3;pField(doc,M,yy,th,"PIC signature","");pField(doc,M+th+14,yy,th,"Date submitted","");yy=pField(doc,M+2*(th+14),yy,th,"Approved by (leadership)","");
+    doc.setDrawColor(...LINEC);doc.setLineDashPattern([3,3],0);doc.line(M,yy,W-M,yy);doc.setLineDashPattern([],0);yy+=16;pLabel(doc,M,yy,"For office use");yy+=16;
+    let x=pCheck(doc,M,yy,"Received   Date: ____________");x=pCheck(doc,x+20,yy,"Entered in Ministry Training Planner");pCheck(doc,x,yy,"Scan attached");
+  }else{
+    doc.setFont("helvetica","bold");doc.setFontSize(9);doc.setTextColor(...BRAND);doc.text(`Total estimated cost: ${rm(planCost(p))}`,M,yy+4);yy+=18;
+    if(p.submittedAt){doc.setFont("helvetica","normal");doc.setTextColor(...MUTE);doc.text(`Submitted ${fmtStamp(p.firstSubmittedAt||p.submittedAt)}${p.submittedAt!==p.firstSubmittedAt?` · last resubmitted ${fmtStamp(p.submittedAt)}`:""}`,M,yy);yy+=14}
+    const r=S.reviews[docId(y,k)]; if(r?.comment){const ls=doc.splitTextToSize("Leadership comment: "+pdfSafe(r.comment),CW);doc.setTextColor(...INKC);doc.text(ls,M,yy);yy+=ls.length*12}
+  }
+  const ts=filled?(p.trainings||[]):Array.from({length:m?.freq||4},()=>null);
+  ts.forEach((t,i)=>{doc.addPage();yy=trainingPdfPage(doc,k,t,i,y,right)});
+  // course library
+  doc.addPage();yy=pdfHeader(doc,"Ministry Training Plan","Recommended courses",right);
+  const keys=k?[k]:orderedMins().map(x=>x.key);
+  keys.forEach(kk=>{const cl=courses(kk);if(!cl.length)return;
+    doc.autoTable({startY:yy,margin:{left:M,right:M},head:[[{content:pdfSafe(minFull(kk)),colSpan:5,styles:{fillColor:BRAND,textColor:255}}],["Code","Course","What it covers","Expected outcome","Trainer"]],body:cl.map(c=>[c.code,c.title,c.covers,c.outcome,c.by].map(pdfSafe)),styles:{fontSize:8,cellPadding:4,textColor:INKC,lineColor:LINEC,lineWidth:.4},headStyles:{fillColor:SOFTC,textColor:MUTE,fontSize:7},columnStyles:{0:{cellWidth:34,fontStyle:"bold"},1:{cellWidth:100}},theme:"grid"});
+    yy=doc.lastAutoTable.finalY+16});
+  pdfFooters(doc,filled?`Generated ${fmtStamp(nowIso())} from the TOW Ministry Training Planner`:"Return the completed form to the church office. Admin enters it into the Ministry Training Planner for tracking.");
+  return doc;
+}
+function trainingPdfPage(doc,k,t,i,y,right){
+  const W=doc.internal.pageSize.getWidth(),M=40,CW=W-80;
+  let yy=pdfHeader(doc,"Ministry Training Plan",`Part B: training details · Training #${i+1}`,right);
+  doc.setFont("helvetica","bold");doc.setFontSize(13);doc.setTextColor(...BRAND);doc.text(`Training #${i+1}`,M,yy);
+  if(!t){doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(...MUTE);doc.text("Photocopy this page if you plan more trainings",W-M,yy,{align:"right"})}
+  yy+=16;
+  const cl=k?courses(k):[];
+  if(t){yy=pField(doc,M,yy,CW,"Course",courseLabel(k,t))}
+  else{const rows=Math.ceil(cl.length/2);let by=pBox(doc,M,yy,CW,30+rows*15+18,"Course (tick one)");const colw=(CW-20)/2;
+    cl.forEach((c,j)=>pCheck(doc,M+10+(j%2)*colw,by+Math.floor(j/2)*15,`${c.code} - ${c.title}`.slice(0,52)));
+    const cy=by+rows*15;const x=pCheck(doc,M+10,cy,"Custom course - title:");doc.setDrawColor(...LINEC);doc.line(x-8,cy+2,W-M-10,cy+2);yy+=30+rows*15+30}
+  const q=(CW-28)/3;pField(doc,M,yy,q*1.4,"Team(s) to be trained",t?.team||MIN(k)?.team||"");pField(doc,M+q*1.4+14,yy,q*.6,"Headcount",t?String(t.headcount||""):"");yy=pField(doc,M+2*q+28,yy,q,"PIC for this training",t?.pic||MIN(k)?.pic||"");
+  yy=pText(doc,M,yy,CW,"What it covers",t?.covers,3);yy=pText(doc,M,yy,CW,"Expected outcome",t?.outcome,2);
+  let by=pBox(doc,M,yy,CW,96,"Date, time & place");const q4=(CW-56)/4;
+  [["Date",t?.date?fmtLong(t.date):""],["Day",t?.date?DOWL[pd(t.date).getDay()]:""],["Start time",fmtTime(t?.start)],["End time",fmtTime(t?.end)]].forEach(([l,v],j)=>pField(doc,M+10+j*(q4+12),by-4,q4,l,v));
+  let vy=by+40;let x=pCheck(doc,M+10,vy,"TOW Premises",t?.venue==="TOW Premises");x=pCheck(doc,x,vy,"External Venue",t?.venue==="External Venue");doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.text("Details:",x,vy);
+  if(t?.venueDetail)doc.text(pdfSafe(t.venueDetail),x+38,vy);else{doc.setDrawColor(...LINEC);doc.line(x+38,vy+2,W-M-10,vy+2)}
+  yy+=108;
+  by=pBox(doc,M,yy,CW,66,"Trainer & format");x=pCheck(doc,M+10,by,"Internal",t?.trainerType==="Internal");x=pCheck(doc,x,by,"External - name / organisation:",t?.trainerType==="External");
+  if(t?.trainer){doc.text(pdfSafe(t.trainer),x,by)}else{doc.setDrawColor(...LINEC);doc.line(x,by+2,W-M-10,by+2)}
+  let fx=M+10,fy=by+17;FORMATS.forEach(f=>{if(fx+doc.getTextWidth(f)+30>W-M){fx=M+10;fy+=14}fx=pCheck(doc,fx,fy,f,t?.format===f)});
+  yy+=78;
+  const rows=[...COST_FIELDS,["total","Total estimated cost"]];by=pBox(doc,M,yy,CW,28+Math.ceil(rows.length/2)*20+22,"Estimated costs (RM)");const colw=(CW-30)/2;
+  rows.forEach(([ck,l],j)=>{const cx=M+10+(j%2)*(colw+10),cy=by+Math.floor(j/2)*20;doc.setFont("helvetica",ck==="total"?"bold":"normal");doc.setFontSize(8.5);doc.setTextColor(...(ck==="total"?BRAND:INKC));doc.text(pdfSafe(l),cx,cy+4);
+    doc.setDrawColor(...(ck==="total"?INKC:LINEC));doc.roundedRect(cx+colw-90,cy-7,90,15,2,2,"S");doc.setTextColor(...MUTE);doc.setFont("helvetica","normal");doc.text("RM",cx+colw-86,cy+4);
+    const val=t?(ck==="total"?tCost(t):Number(t.cost?.[ck])||0):null;if(t){doc.setTextColor(...INKC);doc.text(String(val.toLocaleString("en-MY")),cx+colw-6,cy+4,{align:"right"})}});
+  const ny=by+Math.ceil(rows.length/2)*20+4;doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(...INKC);doc.text("Cost notes:",M+10,ny);if(t?.costNotes)doc.text(pdfSafe(t.costNotes).slice(0,95),M+62,ny);else{doc.setDrawColor(...LINEC);doc.line(M+62,ny+2,W-M-10,ny+2)}
+  return yy;
+}
+function overviewPdf(y){
+  const doc=pdfDoc(),M=40;let yy=pdfHeader(doc,`${y} Ministry Training Overview`,`Generated ${fmtStamp(nowIso())}`,[`Plans due ${fmtLong(dueDate(y))}`]);
+  const rows=overviewRows(y);
+  doc.autoTable({startY:yy,margin:{left:M,right:M},head:[["Ministry","PIC","Status","Trainings","Held","Spread","Est. cost"]],body:rows.map(x=>[(x.m.parent?"   > ":"")+x.m.name,x.p?.pic||x.m.pic,WF[x.code][0],`${x.p?.trainings?.length||0} / ${x.pr.want}`,`${x.pr.held}`,x.p?.trainings?.length?(x.spread.length?"Uneven: "+x.spread.join(", "):"Even"):"-",x.p?rm(planCost(x.p)):"-"].map(pdfSafe)),styles:{fontSize:8.5,cellPadding:5,textColor:INKC,lineColor:LINEC,lineWidth:.4},headStyles:{fillColor:BRAND,textColor:255,fontSize:8},theme:"grid",columnStyles:{3:{halign:"right"},4:{halign:"right"},6:{halign:"right"}}});
+  yy=doc.lastAutoTable.finalY+20;
+  const body=[];rows.forEach(x=>(x.p?.trainings||[]).forEach((t,i)=>body.push([x.m.name,`#${i+1}`,t.date?fmtDate(t.date):"",`${fmtTime(t.start)}${t.end?"-"+fmtTime(t.end):""}`,courseLabel(x.m.key,t),t.pic,t.delivery?.status||"Planned",rm(tCost(t))].map(pdfSafe))));
+  if(body.length) doc.autoTable({startY:yy,margin:{left:M,right:M},head:[["Ministry","#","Date","Time","Course","PIC","Status","Est. cost"]],body,styles:{fontSize:8,cellPadding:4,textColor:INKC,lineColor:LINEC,lineWidth:.4},headStyles:{fillColor:SOFTC,textColor:MUTE,fontSize:7.5},theme:"grid",columnStyles:{7:{halign:"right"}}});
+  pdfFooters(doc,"TOW Ministry Training Planner");return doc;
+}
+function calendarPdf(y){
+  const doc=pdfDoc(),M=40;let yy=pdfHeader(doc,`${y} Training Calendar`,`Generated ${fmtStamp(nowIso())}`,[]);
+  const groups=proposals(y),clashKeys=new Set(groups.flatMap(g=>g.list.map(e=>e.key)));
+  if(groups.length){doc.autoTable({startY:yy,margin:{left:M,right:M},head:[["Clash weekend","Trainings involved","Proposed resolution"]],body:groups.map(g=>[fmtDate(g.wk),g.list.map(e=>`${minName(e.k)} #${e.i+1} (${fmtDate(e.t.date)})`).join("\n"),g.move.map(e=>e.suggest?`Move ${minName(e.k)} #${e.i+1} to ${fmtDate(e.suggest)}`:`No free weekend near ${fmtDate(e.t.date)} for ${minName(e.k)} #${e.i+1}`).join("\n")].map(pdfSafe)),styles:{fontSize:8.5,cellPadding:5,textColor:INKC,lineColor:LINEC,lineWidth:.4},headStyles:{fillColor:[156,0,6],textColor:255,fontSize:8},theme:"grid"});yy=doc.lastAutoTable.finalY+18}
+  const entries=allEntries(y);
+  doc.autoTable({startY:yy,margin:{left:M,right:M},head:[["Date","Time","Ministry","Course","PIC","Venue","Note"]],body:entries.map(e=>[fmtDate(e.t.date),`${fmtTime(e.t.start)}${e.t.end?"-"+fmtTime(e.t.end):""}`,minFull(e.k)+` #${e.i+1}`,courseLabel(e.k,e.t),e.t.pic,[e.t.venue,e.t.venueDetail].filter(Boolean).join(" - "),clashKeys.has(e.key)?"CLASH":e.t.delivery?.status==="Held"?"Held":""].map(pdfSafe)),styles:{fontSize:8,cellPadding:4,textColor:INKC,lineColor:LINEC,lineWidth:.4},headStyles:{fillColor:BRAND,textColor:255,fontSize:8},theme:"grid",didParseCell:d=>{if(d.section==="body"&&d.column.index===6&&d.cell.raw==="CLASH"){d.cell.styles.textColor=[156,0,6];d.cell.styles.fontStyle="bold"}}});
+  pdfFooters(doc,"TOW Ministry Training Planner");return doc;
+}
+
+/* ================= Views & boot ================= */
+function setView(v){
+  S.view=v;
+  for(const x of ["form","calendar","overview","settings"]){$("#view-"+x).hidden=x!==v;$("#tab-"+x).setAttribute("aria-selected",x===v)}
+  try{history.replaceState(null,"","#"+v)}catch(_){}
+  renderAll(); window.scrollTo(0,0);
+}
+function renderAll(){
+  $("#tab-settings").hidden=!S.isAdmin;
+  if(S.view==="form") renderForm(); else $("#savebar").hidden=true;
+  if(S.view==="calendar") renderCalendar();
+  if(S.view==="overview") renderOverview();
+  if(S.view==="settings") renderSettings();
+}
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>setView(b.dataset.view));
+window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(["form","calendar","overview","settings"].includes(h)&&h!==S.view)setView(h)});
+{const h0=location.hash.slice(1);if(["form","calendar","overview"].includes(h0))S.view=h0;}
+if(!S.cfg.years.includes(S.year)) S.year=S.cfg.years[0];
+loadForm(); setView(S.view);
+
+(async()=>{
+  const conn=$("#conn");
+  if(!window.claude||!claude.use){conn.hidden=false;conn.className="note warn";conn.textContent="Loading…";return}
+  const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+  S.db=db;S.user=user;
+  try{S.canUpload=!!(await claude.use("assets"))}catch(_){S.canUpload=false}
+  if(user){S.uid=await user.id();S.isAdmin=await user.canEdit();const w=await user.can("data.write");if(w===false)S.canWrite=false}
+  if(!db){conn.hidden=false;conn.className="note warn";conn.textContent="Plans can't be loaded right now.";S.canWrite=false;renderAll();return}
+  const timer=setTimeout(()=>{conn.hidden=false;conn.className="note warn";conn.textContent="Still connecting… saved plans may not be showing yet."},10000);
+  const rerender=()=>{if(S.view==="form"&&S.dirty){refreshDerived();renderActions()}else if(S.view==="settings"&&S.setDirty){}else renderAll()};
+  db.doc("leadership/settings").onSnapshot(s=>{if(s.exists){S.cfg=mergeCfg(s.data());if(!S.cfg.years.includes(S.year))S.year=S.cfg.years[0]}if(S.form&&!S.dirty)loadForm();rerender()},()=>{});
+  db.collection("plans").onSnapshot(snap=>{
+    if(!snap.metadata.fromCache){clearTimeout(timer);conn.hidden=true}
+    const next={};snap.docs.forEach(d=>{next[d.id]=d.data()});
+    const id=S.key?curId():null, strip=o=>{if(!o)return null;const {paperForms,log,...r}=o;return r};
+    const changedMine=id&&JSON.stringify(strip(next[id]))!==JSON.stringify(strip(S.plans[id]));
+    S.plans=next;
+    if(changedMine){if(S.dirty){S.remoteChanged=true;toast("Someone else just saved this plan. Save or reload to see their version.")}else loadForm()}
+    rerender();
+  },()=>{clearTimeout(timer);conn.hidden=false;conn.className="note warn";conn.textContent="Lost connection to saved plans. Reopen the page to reconnect."});
+  db.collection("leadership/review/plans").onSnapshot(snap=>{const next={};snap.docs.forEach(d=>{next[d.id]=d.data()});S.reviews=next;if(!S.dirty&&!S.leaderEdit)rerender()},()=>{});
+})();
+</script>
+<div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <h3 id="m-title"></h3><div id="m-body" class="stack" style="gap:10px;margin-top:10px"></div>
+</div></div>
+<script>
+/* ===== GitHub version: your name + leadership PIN ===== */
+(function(){
+  const {LS,SS,post}=window.TOWAPI;
+  const modal=$("#modal"),mt=$("#m-title"),mb=$("#m-body");
+  const close=()=>{modal.hidden=true};
+  modal.addEventListener("click",e=>{if(e.target===modal)close()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!modal.hidden)close()});
+  function paintHeader(){
+    const n=LS.get("towtp.name");
+    $("#who-btn").textContent=n?n:"Set your name";
+    $("#lead-btn").textContent=SS.get("towtp.pin")?"Leadership · Log out":"Leadership";
+    $("#lead-btn").classList.toggle("on",!!SS.get("towtp.pin"));
+  }
+  function askName(first){
+    mt.textContent="Your name";
+    mb.innerHTML=`<p class="small muted" style="margin:0">So the change history shows who made each change.${first?" You only need to do this once on this device.":""}</p>
+      <label class="f">Name<input id="m-name" list="staff-list-h" value="${esc(LS.get("towtp.name")||"")}" placeholder="e.g. Ps. Kenrick Kong"></label>
+      <datalist id="staff-list-h">${S.cfg.staff.map(s=>`<option value="${esc(s.replace(/\s*\(.*\)$/,""))}">`).join("")}</datalist>
+      <div class="row" style="justify-content:flex-end"><button class="btn" type="button" id="m-cancel">Later</button><button class="btn primary" type="button" id="m-ok">Save</button></div>`;
+    modal.hidden=false; setTimeout(()=>$("#m-name").focus(),30);
+    $("#m-cancel").onclick=close;
+    const ok=()=>{const v=$("#m-name").value.trim();if(!v){$("#m-name").classList.add("missing");return}LS.set("towtp.name",v);S.uid=v;paintHeader();close();toast(`Thanks, ${v}.`)};
+    $("#m-ok").onclick=ok; $("#m-name").onkeydown=e=>{if(e.key==="Enter")ok()};
+  }
+  function askPin(){
+    if(SS.get("towtp.pin")){SS.set("towtp.pin",null);S.isAdmin=false;S.canUpload=false;S.leaderEdit=false;paintHeader();if(S.view==="settings")S.view="form";renderAll();toast("Logged out of leadership.");return}
+    mt.textContent="Leadership login";
+    mb.innerHTML=`<p class="small muted" style="margin:0">Leadership can review and approve plans, edit them, attach scans and open Settings.</p>
+      <label class="f">PIN<input id="m-pin" type="password" inputmode="numeric" autocomplete="off"></label>
+      <div class="row" style="justify-content:flex-end"><button class="btn" type="button" id="m-cancel">Cancel</button><button class="btn primary" type="button" id="m-ok">Log in</button></div>`;
+    modal.hidden=false; setTimeout(()=>$("#m-pin").focus(),30);
+    $("#m-cancel").onclick=close;
+    const ok=async()=>{const pin=$("#m-pin").value.trim();if(!pin)return;$("#m-ok").disabled=true;
+      try{const j=await post({action:"checkPin",pin});if(!j.ok)throw 0;SS.set("towtp.pin",pin);S.isAdmin=true;S.canUpload=true;paintHeader();close();renderAll();toast("Leadership mode on.")}
+      catch(e){$("#m-pin").classList.add("missing");toast(e&&e.code==="unavailable"?"Couldn't reach the Google Sheet.":"Wrong PIN.")}
+      finally{const b=$("#m-ok");if(b)b.disabled=false}};
+    $("#m-ok").onclick=ok; $("#m-pin").onkeydown=e=>{if(e.key==="Enter")ok()};
+  }
+  $("#who-btn").onclick=()=>askName(false);
+  $("#lead-btn").onclick=askPin;
+  paintHeader();
+  if(!LS.get("towtp.name")) setTimeout(()=>askName(true),600);
+})();
+</script>
+
+</body>
+</html>
