@@ -171,6 +171,16 @@ select:disabled{cursor:default;background-image:none;padding-right:9px}
 .msel-search{padding:8px;border-bottom:1px solid var(--line);background:var(--soft)}
 .msel-list{max-height:340px;overflow:auto;padding:6px}
 .msel-opt{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer}
+.msel-grp{display:flex;align-items:center;gap:8px;padding:9px 10px 3px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--brand)}
+.msel-grp .gn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msel-grp .gl{margin-left:auto;font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%}
+.msel-grp.d1{padding-left:28px}
+.msel-opt{margin-left:18px}
+.msel-opt.d1{margin-left:36px}
+.msel .lang{flex:none;font-size:10px;font-weight:800;letter-spacing:.04em;width:30px;text-align:center;padding:3px 0;border-radius:5px}
+.msel .lang.en{background:#E2ECF6;color:#1F4F7A}
+.msel .lang.zh{background:#FBEBD9;color:#8A4B00}
+.msel .lang.all{background:#E4F1EC;color:#0E4B4F}
 .msel-opt.child{margin-left:22px;position:relative}
 .msel-opt.child::before{content:"";position:absolute;left:-12px;top:-4px;bottom:50%;width:9px;border-left:1.5px solid #c9d1ca;border-bottom:1.5px solid #c9d1ca;border-bottom-left-radius:5px}
 .msel-opt.active{background:var(--soft-2)}
@@ -306,7 +316,7 @@ const C=(code,title,covers,outcome,by)=>({code,title,covers,outcome,by});
 const DEFAULTS={
  years:[2027,2028],
  dueMonth:12, dueDay:15,
- v:2,
+ v:3,
  staff:["Ps. Derick Wong","Ps. Jocelyn Yoong","Ps. Kenrick Kong","Ps. Kevin Ong","Ps. Marianne Chow","Ps. Melissa Lai","Ps. Michael Lia","Ps. Viven Tan","Cheah Kok Hon","Iris Yap","Jeremy Ong","Jessica Lim","Leon Wong","Mary Jane","Priscilla Chin","Wendy Ngo","Winnie Phang"],
  ministries:[
   {key:"levites",name:"Levites (Worship)",parent:"",pic:"Ps. Kenrick Kong",picEn:"",picZh:"",team:"Worship team (musicians, vocalists, worship leaders)",freq:4,kpi:true,active:true},
@@ -322,8 +332,8 @@ const DEFAULTS={
   {key:"christianed",name:"Christian Education",parent:"",pic:"",picEn:"Mary Jane",picZh:"Iris Yap",team:"Christian Education teachers",freq:4,kpi:true,active:true},
   {key:"cafeteria",name:"Cafeteria",parent:"",pic:"Ps. Marianne Chow",picEn:"Priscilla Chin, Jessica Lim",picZh:"Wendy Ngo, Winnie Phang",team:"Cafeteria volunteers and food handlers",freq:4,kpi:true,active:true},
   {key:"ert",name:"ERT & Security",parent:"",pic:"Ps. Kevin Ong",picEn:"",picZh:"",team:"ERT and security team",freq:4,kpi:true,active:true},
-  {key:"youth",name:"Youth Network",parent:"",pic:"Ps. Derick Wong",picEn:"",picZh:"",team:"Youth leaders",freq:4,kpi:true,active:true},
-  {key:"ya",name:"Young Adults",parent:"",pic:"Ps. Derick Wong",picEn:"",picZh:"",team:"Young Adults leaders",freq:4,kpi:true,active:true},
+  {key:"youth",name:"Youth Network",parent:"",pic:"Ps. Derick Wong",picEn:"",picZh:"",team:"Youth leaders",freq:4,kpi:true,active:true,combined:true},
+  {key:"ya",name:"Young Adults",parent:"",pic:"Ps. Derick Wong",picEn:"",picZh:"",team:"Young Adults leaders",freq:4,kpi:true,active:true,combined:true},
   {key:"events",name:"Events",parent:"",pic:"Ps. Melissa Lai",picEn:"",picZh:"",team:"Events team",freq:4,kpi:true,active:true},
   {key:"offering",name:"Offering",parent:"",pic:"Jeremy Ong",picEn:"",picZh:"",team:"Offering counters and stewards",freq:4,kpi:true,active:true},
   {key:"bm",name:"BM Connect",parent:"",pic:"Ps. Michael Lia",picEn:"",picZh:"",team:"BM Connect team",freq:2,kpi:false,active:true},
@@ -414,22 +424,30 @@ function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTi
 
 /* settings accessors */
 const mins=()=>S.cfg.ministries;
-const MIN=k=>mins().find(m=>m.key===k);
+const LANG_UNITS=[["en","Eng","English"],["zh","Chi","Chinese"]];
+function unitsOf(m){if(m.combined)return [{key:m.key,base:m.key,unit:true,combined:true,lang:"Combined",short:"All",name:`${m.name} (Combined)`,parent:"",pic:m.pic||"",lead:m.pic||"",team:`${m.team} - combined English & Chinese`,freq:m.freq,kpi:m.kpi,active:m.active}];return LANG_UNITS.map(([sx,short,lang])=>({key:m.key+sx,base:m.key,unit:true,lang,short,name:`${m.name} (${short})`,parent:m.key,pic:(sx==="en"?m.picEn:m.picZh)||"",lead:m.pic||"",team:`${m.team} - ${lang} service`,freq:m.freq,kpi:m.kpi,active:m.active}))}
+let _uSrc=null,_uAll=[],_uSig="";
+function allUnits(){if(_uSrc!==S.cfg.ministries||_uSig!==JSON.stringify(S.cfg.ministries.map(m=>[m.key,!!m.combined,m.name,m.pic,m.picEn,m.picZh]))){_uSig=JSON.stringify(S.cfg.ministries.map(m=>[m.key,!!m.combined,m.name,m.pic,m.picEn,m.picZh]));_uSrc=S.cfg.ministries;_uAll=S.cfg.ministries.flatMap(unitsOf)}return _uAll}
+const MIN=k=>allUnits().find(u=>u.key===k)||mins().find(m=>m.key===k);
+const baseOf=k=>MIN(k)?.base||k;
+const sameBase=(a,b)=>baseOf(a)===baseOf(b);
+function leadOf(k){const m=MIN(k);if(!m)return "";const b=MIN(m.base||k);if(!b)return "";const par=b.parent&&MIN(b.parent);return [b.pic||"",par&&par.pic&&par.pic!==b.pic?`under ${par.pic}`:""].filter(Boolean).join(", ")}
 const minName=k=>MIN(k)?.name||k;
-const minFull=k=>{const m=MIN(k);if(!m)return k;return m.parent&&MIN(m.parent)?`${MIN(m.parent).name} › ${m.name}`:m.name};
+const minFull=k=>{const m=MIN(k);if(!m)return k;if(m.unit){const b=MIN(m.base);return b&&b.parent&&MIN(b.parent)?`${MIN(b.parent).name} › ${m.name}`:m.name}return m.parent&&MIN(m.parent)?`${MIN(m.parent).name} › ${m.name}`:m.name};
+const orderedUnits=(activeOnly=true)=>orderedMins(activeOnly).flatMap(unitsOf);
 function orderedMins(activeOnly=true){
   const all=mins().filter(m=>!activeOnly||m.active!==false), by=(a,b)=>a.name.localeCompare(b.name,"en",{sensitivity:"base"}), out=[];
   all.filter(m=>!m.parent||!all.find(x=>x.key===m.parent)).sort(by).forEach(p=>{out.push(p);all.filter(c=>c.parent===p.key).sort(by).forEach(c=>out.push(c))});
   return out;
 }
-const courses=k=>S.cfg.courses[k]||[];
+const courses=k=>S.cfg.courses[baseOf(k)]||[];
 const courseFor=(k,code)=>courses(k).find(c=>c.code===code);
 const courseLabel=(k,t)=>t.course==="custom"?(t.customTitle||"Custom course"):(()=>{const c=courseFor(k,t.course);return c?`${c.code} – ${c.title}`:""})();
 const holidays=y=>(S.cfg.holidays[String(y)]||[]);
-const laneColor=k=>LANE_COLORS[Math.max(0,mins().findIndex(m=>m.key===k))%LANE_COLORS.length];
+const laneColor=k=>LANE_COLORS[Math.max(0,mins().findIndex(m=>m.key===baseOf(k)))%LANE_COLORS.length];
 const dueDate=y=>`${y-1}-${String(S.cfg.dueMonth).padStart(2,"0")}-${String(S.cfg.dueDay).padStart(2,"0")}`;
-function blankTraining(k){const m=MIN(k);return {team:m?.team||"",lang:"Both teams",headcount:"",pic:m?.pic||"",course:"",customTitle:"",covers:"",outcome:"",date:"",start:"",end:"",venue:VENUES[0],venueDetail:"",trainerType:"Internal",trainer:"",format:FORMATS[0],cost:{},costNotes:"",delivery:{status:"Planned"}}}
-function blankPlan(k,y){const m=MIN(k);return {ministry:k,year:y,pic:m?.pic||"",picEn:m?.picEn||"",picZh:m?.picZh||"",coPics:m?.parent?`Under ${minName(m.parent)} (${MIN(m.parent)?.pic||""})`:"",frequency:m?.freq||4,freqReason:"",goal:"",trainings:[],status:"none"}}
+function blankTraining(k){const m=MIN(k);return {team:m?.team||"",headcount:"",pic:m?.pic||"",course:"",customTitle:"",covers:"",outcome:"",date:"",start:"",end:"",venue:VENUES[0],venueDetail:"",trainerType:"Internal",trainer:"",format:FORMATS[0],cost:{},costNotes:"",delivery:{status:"Planned"}}}
+function blankPlan(k,y){const m=MIN(k);return {ministry:k,year:y,pic:m?.pic||"",coPics:"",frequency:m?.freq||4,freqReason:"",goal:"",trainings:[],status:"none"}}
 
 /* ================= Workflow ================= */
 const WF={none:["Not started","none"],draft:["Draft","draft"],review:["Awaiting review","sub"],edit_requested:["Edit requested","draft"],changes:["Changes requested","bad"],reopened:["Open for edits","draft"],pic_review:["Awaiting PIC acceptance","sub"],meeting:["Meeting needed","bad"],approved:["Approved","ok"]};
@@ -453,7 +471,7 @@ const curCode=()=>wf(S.plans[curId()],S.reviews[curId()]);
 const formEditable=()=>S.canWrite&&!!S.key&&(picCanEdit(curCode())||(S.isAdmin&&S.leaderEdit));
 
 /* ================= Change log ================= */
-const P_LABELS={pic:"Ministry lead / PIC",picEn:"2nd PIC (English)",picZh:"2nd PIC (Chinese)",coPics:"Co-PICs",frequency:"Trainings planned",freqReason:"Reason for frequency",goal:"Main goal"};
+const P_LABELS={pic:"Team PIC",coPics:"Co-PICs",frequency:"Trainings planned",freqReason:"Reason for frequency",goal:"Main goal"};
 const T_LABELS={course:"Course",customTitle:"Course title",team:"Team",lang:"Language team",headcount:"Headcount",pic:"PIC",covers:"What it covers",outcome:"Expected outcome",date:"Date",start:"Start",end:"End",venue:"Venue",venueDetail:"Venue details",trainerType:"Trainer",trainer:"Trainer name",format:"Format",costNotes:"Cost notes"};
 const short=v=>{v=String(v??"").trim();return v.length>60?v.slice(0,57)+"…":(v||"(blank)")};
 function diffPlan(a,b,k){
@@ -482,17 +500,18 @@ function allEntries(y){
   return out.sort((a,b)=>a.t.date.localeCompare(b.t.date)||a.k.localeCompare(b.k));
 }
 function occupancy(y){const occ={};allEntries(y).forEach(e=>{const w=weekendKey(e.t.date);(occ[w]=occ[w]||[]).push({k:e.k,date:e.t.date,key:e.key})});return occ}
-const weekendFree=(occ,k,date,selfKey)=>(occ[weekendKey(date)]||[]).filter(x=>x.key!==selfKey).every(x=>techPair(k,x.k)&&x.date!==date);
+const canShare=(a,b,da,db)=>sameBase(a,b)||(techPair(baseOf(a),baseOf(b))&&da!==db);
+const weekendFree=(occ,k,date,selfKey)=>(occ[weekendKey(date)]||[]).filter(x=>x.key!==selfKey).every(x=>canShare(k,x.k,date,x.date));
 function dayOk(date,k,y){
   const d=pd(date);
   if(d.getFullYear()!==y||d.getMonth()===11||d.getDay()===5) return false;
-  if(isSecondSunday(date)&&k!=="ya"&&k!=="bm") return false;
+  if(isSecondSunday(date)&&baseOf(k)!=="ya"&&baseOf(k)!=="bm") return false;
   return !holidays(y).some(([hd])=>Math.abs(Math.round((pd(hd)-d)/864e5))<=2);
 }
 function secondSunday(y,m){const d=new Date(y,m,1);d.setDate(1+((7-d.getDay())%7)+7);return iso(d)}
 function suggestDate(e,occ,y){
   const base=pd(e.t.date), q=Math.floor(base.getMonth()/3), cands=[];
-  if(e.k==="ya"&&isSecondSunday(e.t.date)){for(let n=1;n<=4;n++)for(const s of [1,-1]){const m=base.getMonth()+s*n;if(m>=0&&m<12)cands.push(secondSunday(y,m))}}
+  if(baseOf(e.k)==="ya"&&isSecondSunday(e.t.date)){for(let n=1;n<=4;n++)for(const s of [1,-1]){const m=base.getMonth()+s*n;if(m>=0&&m<12)cands.push(secondSunday(y,m))}}
   else for(let n=1;n<=10;n++)for(const s of [1,-1]){const d=new Date(base);d.setDate(d.getDate()+s*n*7);cands.push(iso(d))}
   for(const sameQ of [true,false]) for(const c of cands){ if(sameQ&&Math.floor(pd(c).getMonth()/3)!==q)continue; if(dayOk(c,e.k,y)&&weekendFree(occ,e.k,c,e.key))return c; }
   return null;
@@ -502,14 +521,14 @@ function checksFor(k,t,year,idx,form){
   const d=pd(t.date), dow=d.getDay();
   if(d.getFullYear()!==year) res.push(["bad",`This date is not in ${year}.`]);
   for(const o of allEntries(year)){
-    if(o.k===k||weekendKey(o.t.date)!==weekendKey(t.date)) continue;
+    if(o.k===k||sameBase(o.k,k)||weekendKey(o.t.date)!==weekendKey(t.date)) continue;
     const who=`${minName(o.k)} Training #${o.i+1} (${fmtDate(o.t.date)})`;
-    if(techPair(k,o.k)&&o.t.date!==t.date) res.push(["info",`Shared Levites tech weekend with ${who}. Allowed, since the teams train on different days.`]);
+    if(techPair(baseOf(k),baseOf(o.k))&&o.t.date!==t.date) res.push(["info",`Shared Levites tech weekend with ${who}. Allowed, since the teams train on different days.`]);
     else{const sg=suggestDate({k,t,key:docId(year,k)+"#"+idx},occupancy(year),year);res.push(["bad",`Clash: ${who} is already on this ${o.t.date===t.date?"date":"weekend"}.${sg?` Nearest free weekend: ${fmtDate(sg)}.`:""}`])}
   }
-  form?.trainings.forEach((x,j)=>{if(j!==idx&&x.date&&weekendKey(x.date)===weekendKey(t.date)&&!(langTag(x)&&langTag(t)&&langTag(x)!==langTag(t)))res.push(["warn",`Training #${j+1} of this plan is on the same weekend.`])});
+  form?.trainings.forEach((x,j)=>{if(j!==idx&&x.date&&weekendKey(x.date)===weekendKey(t.date)&&true)res.push(["warn",`Training #${j+1} of this plan is on the same weekend.`])});
   if(dow===5) res.push(["warn","Friday night is Prayer Meeting (8:30pm)."]);
-  if(isSecondSunday(t.date)&&k!=="ya"&&k!=="bm") res.push(["warn","2nd Sunday: BM Connect and Young Adults meet that day."]);
+  if(isSecondSunday(t.date)&&baseOf(k)!=="ya"&&baseOf(k)!=="bm") res.push(["warn","2nd Sunday: BM Connect and Young Adults meet that day."]);
   if(dow===6&&t.end&&t.end>"19:00") res.push(["warn","Runs into the Chinese Service (Sat 7:30pm)."]);
   if(dow===0&&t.start&&t.start<"11:30") res.push(["warn","Starts during English Service (Sun 9:30am)."]);
   if(d.getMonth()===11) res.push(["warn","December is Christmas season. Avoid if possible."]);
@@ -556,6 +575,7 @@ function bindCopy(root){root.querySelectorAll("[data-copy]").forEach(b=>b.onclic
 
 /* ================= Plan Form ================= */
 function loadForm(){
+  if(S.key&&MIN(S.key)&&!MIN(S.key).unit&&!S.plans[curId()]){S.key=""}
   if(!S.key||!MIN(S.key)){S.form=null;return}
   const p=S.plans[curId()];
   S.form=p?clone(p):blankPlan(S.key,S.year);
@@ -585,9 +605,8 @@ function renderForm(){
   // plan details
   const want=Number(f.frequency)||0;
   const pBody=`<div class="grid">
-      <label class="f">Ministry lead / PIC<span class="req">*</span><input id="p-pic" data-p="pic" value="${esc(f.pic)}" list="staff-list" ${ro}></label>
-      <label class="f">2nd PIC · English team<input id="p-picen" data-p="picEn" value="${esc(f.picEn??m.picEn??"")}" list="staff-list" placeholder="None yet" ${ro}></label>
-      <label class="f">2nd PIC · Chinese team<input id="p-piczh" data-p="picZh" value="${esc(f.picZh??m.picZh??"")}" list="staff-list" placeholder="None yet" ${ro}></label>
+      <label class="f">${m.unit?(m.combined?"Team PIC":esc(m.lang)+" team PIC"):"Ministry lead / PIC"}<span class="req">*</span><input id="p-pic" data-p="pic" value="${esc(f.pic)}" list="staff-list" placeholder="Your name" ${ro}></label>
+      ${m.unit&&!m.combined?`<label class="f">Ministry lead (oversight)<input id="p-lead" value="${esc(leadOf(S.key)||"Not set")}" disabled></label>`:""}
       <label class="f">Co-PICs / helpers<input id="p-copics" data-p="coPics" value="${esc(f.coPics)}" placeholder="e.g. senior MD, team leaders" ${ro}></label>
       <label class="f">Trainings planned this year<input id="p-freq" data-p="frequency" type="number" min="1" max="12" value="${esc(f.frequency)}" ${ro}></label>
       <label class="f span-all" id="wrap-reason" ${want===4?"hidden":""}>Why not 4 trainings?<span class="req">*</span><input id="p-reason" data-p="freqReason" value="${esc(f.freqReason)}" placeholder="e.g. monthly rehearsal-based training; team is newly formed" ${ro}></label>
@@ -595,7 +614,7 @@ function renderForm(){
     </div>
     <div class="note info small" id="spreadnote"></div>
     <details class="plain"><summary>Dates already taken by other ministries in ${S.year}</summary><div class="chips" id="taken"></div></details>
-    ${ed&&SUG[S.key]&&S.year===2027&&f.trainings.length===0?`<div class="note info row spread"><span>Start from the suggested 2027 dates and courses, then adjust.</span><button class="btn small" id="btn-suggest" type="button">Fill suggested dates</button></div>`:""}
+    ${ed&&SUG[baseOf(S.key)]&&S.year===2027&&f.trainings.length===0?`<div class="note info row spread"><span>Start from the suggested 2027 dates and courses, then adjust.</span><button class="btn small" id="btn-suggest" type="button">Fill suggested dates</button></div>`:""}
     ${paperBlock(saved)}`;
   html+=sec("plan","Step 2","Plan Details","",`<span class="small muted">${f.trainings.length} of ${want} trainings</span>`,pBody);
   // trainings
@@ -657,7 +676,6 @@ function trainingSec(t,i,ro,code){
       <label class="f span-all" id="${id("ctw")}" ${t.course==="custom"?"":"hidden"}>Course title<span class="req">*</span><input id="${id("ct")}" data-t="${i}" data-k="customTitle" value="${esc(t.customTitle)}" ${ro}></label>
       ${c?`<div class="span-all small muted">Suggested trainer: ${esc(c.by)}</div>`:""}
       <label class="f">Team(s) to be trained<span class="req">*</span><input id="${id("team")}" data-t="${i}" data-k="team" value="${esc(t.team)}" ${ro}></label>
-      <label class="f">Language team<select id="${id("lang")}" data-t="${i}" data-k="lang" ${ro}>${sel(LANGS,t.lang||"Both teams")}</select></label>
       <label class="f">Expected headcount<input id="${id("hc")}" data-t="${i}" data-k="headcount" type="number" min="0" value="${esc(t.headcount)}" ${ro}></label>
       <label class="f">PIC for this training<span class="req">*</span><input id="${id("pic")}" data-t="${i}" data-k="pic" value="${esc(t.pic)}" list="staff-list" ${ro}></label>
       <label class="f span-all">What it covers<span class="req">*</span><textarea id="${id("cov")}" data-t="${i}" data-k="covers" ${ro}>${esc(t.covers)}</textarea></label>
@@ -720,18 +738,24 @@ function paperBlock(saved){
 const CARET='<svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
 function pickerHtml(){
   const cur=S.key&&MIN(S.key);
-  const inner=cur?`<span class="dot" style="background:${laneColor(cur.key)}"></span><span class="opt-main"><span class="nm">${cur.parent&&MIN(cur.parent)?`<span style="font-weight:500;color:var(--muted)">${esc(minName(cur.parent))} › </span>`:""}${esc(cur.name)}</span><span class="pc">${esc(picLine(cur))}</span></span>`
-    :`<span class="opt-main"><span class="nm" style="font-weight:500;color:var(--muted)">Choose your ministry…</span><span class="pc">${orderedMins().length} ministries</span></span>`;
+  const inner=cur?`<span class="dot" style="background:${laneColor(cur.key)}"></span><span class="opt-main"><span class="nm">${(()=>{const b=cur.unit?MIN(cur.base):null;const par=b&&b.parent?MIN(b.parent):(!cur.unit&&cur.parent?MIN(cur.parent):null);return par?`<span style="font-weight:500;color:var(--muted)">${esc(par.name)} › </span>`:""})()}${esc(cur.name)}</span><span class="pc">${esc(cur.unit?(cur.combined?(cur.pic||"PIC not set")+" · combined English & Chinese":(cur.pic||"PIC not set")+(leadOf(cur.key)?" · lead: "+leadOf(cur.key):"")):picLine(cur))}</span></span>`
+    :`<span class="opt-main"><span class="nm" style="font-weight:500;color:var(--muted)">Choose your ministry…</span><span class="pc">${orderedMins().length} ministries · English & Chinese teams</span></span>`;
   return `<div><span class="f" style="display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--label)" id="msel-label">Ministry</span>
     <div class="msel" id="msel"><button type="button" class="msel-btn" id="msel-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="msel-label msel-btn">${inner}${CARET}</button>
     <div class="msel-pop" id="msel-pop" hidden><div class="msel-search"><input id="msel-q" placeholder="Search ministry or PIC…" autocomplete="off" aria-label="Search ministry or PIC"></div><div class="msel-list" id="msel-list" role="listbox" aria-labelledby="msel-label"></div></div></div></div>`;
 }
 function pickerList(q){
   q=(q||"").toLowerCase().trim();
-  const list=orderedMins().filter(m=>!q||m.name.toLowerCase().includes(q)||(picLine(m)).toLowerCase().includes(q)||(m.parent&&minName(m.parent).toLowerCase().includes(q)));
-  if(!list.length) return `<div class="small muted" style="padding:10px">No ministry matches "${esc(q)}".</div>`;
-  return list.map(m=>{const id=docId(S.year,m.key),code=wf(S.plans[id],S.reviews[id]);
-    return `<div class="msel-opt ${m.parent&&!q?"child":""}" role="option" id="opt-${m.key}" data-k="${m.key}" aria-selected="${m.key===S.key}"><span class="dot" style="background:${laneColor(m.key)}"></span><span class="opt-main"><span class="nm">${m.parent&&q?`<span style="font-weight:500;color:var(--muted)">${esc(minName(m.parent))} › </span>`:""}${esc(m.name)}</span><span class="pc">${esc(picLine(m))}${m.kpi===false?" · not in KPI":""}</span></span>${pill(code)}</div>`}).join("");
+  const depth=m=>m.parent&&MIN(m.parent)?1:0;
+  let html="";
+  for(const m of orderedMins()){
+    const units=unitsOf(m).filter(u=>!q||u.name.toLowerCase().includes(q)||(u.pic||"").toLowerCase().includes(q)||(m.pic||"").toLowerCase().includes(q)||(m.parent&&minName(m.parent).toLowerCase().includes(q)));
+    if(!units.length) continue;
+    html+=`<div class="msel-grp d${depth(m)}"><span class="dot" style="background:${laneColor(m.key)}"></span><span class="gn">${m.parent&&q?`<span style="font-weight:500">${esc(minName(m.parent))} › </span>`:""}${esc(m.name)}</span><span class="gl">${esc(m.pic||"Lead not set")}${m.kpi===false?" · not in KPI":""}</span></div>`;
+    html+=units.map(u=>{const id=docId(S.year,u.key),code=wf(S.plans[id],S.reviews[id]);
+      return `<div class="msel-opt d${depth(m)}" role="option" id="opt-${u.key}" data-k="${u.key}" aria-selected="${u.key===S.key}"><span class="lang ${u.combined?"all":u.lang==="English"?"en":"zh"}">${u.short}</span><span class="opt-main"><span class="nm">${esc(u.name)}</span><span class="pc">${esc(u.combined?(u.pic||"PIC not set")+" · English & Chinese together":(u.pic||"PIC not set"))}</span></span>${pill(code)}</div>`}).join("");
+  }
+  return html||`<div class="small muted" style="padding:10px">No ministry matches "${esc(q)}".</div>`;
 }
 function bindPicker(onPick){
   const btn=$("#msel-btn"),pop=$("#msel-pop"),q=$("#msel-q"),list=$("#msel-list"); if(!btn) return;
@@ -785,7 +809,7 @@ function bindForm(){
     S.form.trainings.splice(i,1);markDirty();renderForm()});
   const add=$("#btn-add"); if(add) add.onclick=()=>{const n=S.form.trainings.length;S.form.trainings.push(blankTraining(S.key));S.open["t"+n]=true;markDirty();renderForm();document.querySelector(`[data-sec="t${n}"]`)?.scrollIntoView({behavior:"smooth",block:"start"})};
   const sug=$("#btn-suggest"); if(sug) sug.onclick=()=>{
-    S.form.trainings=SUG[S.key].map(([date,start,end,code,team])=>{const t=blankTraining(S.key),c=courseFor(S.key,code);Object.assign(t,{date,start,end,course:c?code:"",covers:c?.covers||"",outcome:c?.outcome||""});if(team)t.team=team;if(c&&/External/.test(c.by))t.trainerType="External";if(code==="E1"){t.venue="External Venue";t.format="Certification Course"}return t});
+    S.form.trainings=SUG[baseOf(S.key)].map(([date,start,end,code,team])=>{const t=blankTraining(S.key),c=courseFor(S.key,code);Object.assign(t,{date,start,end,course:c?code:"",covers:c?.covers||"",outcome:c?.outcome||""});if(team)t.team=team;if(c&&/External/.test(c.by))t.trainerType="External";if(code==="E1"){t.venue="External Venue";t.format="Certification Course"}return t});
     markDirty();renderForm();toast("Suggested dates filled. Review each training, then save.");
   };
   $("#btn-expand")?.addEventListener("click",()=>{v.querySelectorAll("details.sec").forEach(d=>d.open=true)});
@@ -954,10 +978,10 @@ function findConflicts(y){
   const groups=[];
   for(const [wk,list] of Object.entries(byWk)){
     const ks=[...new Set(list.map(e=>e.k))]; if(ks.length<2) continue;
-    if(ks.every(x=>TECH.has(x))&&ks.every(a=>ks.every(b=>a===b||!list.some(e=>e.k===a&&list.some(f=>f.k===b&&f.t.date===e.t.date))))) continue;
+    const ok=(a,b)=>list.filter(e=>e.k===a).every(e=>list.filter(f=>f.k===b).every(f=>canShare(a,b,e.t.date,f.t.date)));
+    if(ks.every(a=>ks.every(b=>a===b||ok(a,b)))) continue;
     const order=[...ks].sort((a,b)=>planRank(list.find(e=>e.k===a).p).localeCompare(planRank(list.find(e=>e.k===b).p)));
-    const keep=new Set([order[0]]), keepDates=new Set(list.filter(e=>e.k===order[0]).map(e=>e.t.date));
-    if(TECH.has(order[0])) order.slice(1).forEach(x=>{if(TECH.has(x)&&[...keep].every(kk=>TECH.has(kk))&&list.filter(e=>e.k===x).every(e=>!keepDates.has(e.t.date))){keep.add(x);list.filter(e=>e.k===x).forEach(e=>keepDates.add(e.t.date))}});
+    const keep=new Set([order[0]]); order.slice(1).forEach(x=>{if([...keep].every(kk=>ok(kk,x)))keep.add(x)});
     groups.push({wk,list,keep,move:list.filter(e=>!keep.has(e.k))});
   }
   return groups.sort((a,b)=>a.wk.localeCompare(b.wk));
@@ -978,14 +1002,14 @@ async function applyMove(id,i,to,btn){
 }
 function timelineSvg(y,entries,clashKeys){
   const keys=[...new Set(entries.map(e=>e.k))];
-  const lanes=orderedMins().filter(m=>keys.includes(m.key)||(!keys.length&&m.kpi));
-  const L=160,R=950,T=34,LH=34,Hh=T+Math.max(1,lanes.length)*LH+10, start=new Date(y,0,1), span=new Date(y+1,0,1)-start, X=s=>L+(pd(s)-start)/span*(R-L);
+  const lanes=orderedUnits().filter(m=>keys.includes(m.key)||(!keys.length&&m.kpi&&!MIN(m.base)?.parent));
+  const L=200,R=950,T=34,LH=34,Hh=T+Math.max(1,lanes.length)*LH+10, start=new Date(y,0,1), span=new Date(y+1,0,1)-start, X=s=>L+(pd(s)-start)/span*(R-L);
   let g="";
   for(let q=0;q<4;q++){const x1=X(iso(new Date(y,q*3,1))),x2=q<3?X(iso(new Date(y,q*3+3,1))):R;if(q%2===0)g+=`<rect x="${x1}" y="${T-6}" width="${x2-x1}" height="${Hh-T}" fill="#F3F5F1"/>`;g+=`<text x="${(x1+x2)/2}" y="11" text-anchor="middle" font-size="10" font-weight="700" fill="#8C948D">Q${q+1}</text>`}
   for(let m=0;m<12;m++){const x=X(iso(new Date(y,m,1)));g+=`<line x1="${x}" y1="${T-6}" x2="${x}" y2="${Hh-4}" stroke="#DDE2DC"/><text x="${x+4}" y="${T-12}" font-size="10" fill="#7B847D">${MON[m]}</text>`}
   const td=today(); if(td.startsWith(String(y))){const x=X(td);g+=`<line x1="${x}" y1="${T-6}" x2="${x}" y2="${Hh-4}" stroke="#D9B45A" stroke-width="2"/>`}
   lanes.forEach((m,li)=>{const cy=T+li*LH+LH/2;
-    g+=`<line x1="${L}" y1="${cy}" x2="${R}" y2="${cy}" stroke="#DDE2DC" stroke-dasharray="2 3"/><text x="${L-10}" y="${cy+4}" text-anchor="end" font-size="11.5" font-weight="${m.parent?400:600}" fill="#1F2621" font-family="-apple-system,Segoe UI,Roboto,Arial,sans-serif">${m.parent?"↳ ":""}${esc(m.name)}</text>`;
+    g+=`<line x1="${L}" y1="${cy}" x2="${R}" y2="${cy}" stroke="#DDE2DC" stroke-dasharray="2 3"/><text x="${L-10}" y="${cy+4}" text-anchor="end" font-size="11.5" font-weight="${MIN(m.base)?.parent?400:600}" fill="#1F2621" font-family="-apple-system,Segoe UI,Roboto,Arial,sans-serif">${MIN(m.base)?.parent?"↳ ":""}${esc(m.name)}</text>`;
     entries.filter(e=>e.k===m.key).forEach(e=>{const x=X(e.t.date),col=laneColor(m.key),bad=clashKeys.has(e.key),draft=!e.p.firstSubmittedAt,d=pd(e.t.date),held=e.t.delivery?.status==="Held";
       g+=`<g><title>${esc(m.name)} #${e.i+1} · ${esc(fmtDate(e.t.date))} · ${esc(courseLabel(e.k,e.t))}${bad?" · CLASH":""}${draft?" · draft":""}${held?" · held":""}</title>`;
       if(bad)g+=`<circle cx="${x}" cy="${cy}" r="10" fill="none" stroke="#9C0006" stroke-width="2"/>`;
@@ -1031,13 +1055,14 @@ function progressOf(p,k){
   while(segs.length<want) segs.push("none");
   return {segs,want,held:segs.filter(s=>s==="held").length};
 }
-function overviewRows(y){return orderedMins().map(m=>{const id=docId(y,m.key),p=S.plans[id],r=S.reviews[id];return {m,id,p,r,code:wf(p,r),pr:progressOf(p,m.key),spread:p?spreadIssues(p):[]}})}
+function overviewRows(y){return orderedUnits().map(m=>{const id=docId(y,m.key),p=S.plans[id],r=S.reviews[id];return {m,id,p,r,code:wf(p,r),pr:progressOf(p,m.key),spread:p?spreadIssues(p):[]}})}
 function renderOverview(){
   const v=$("#view-overview"), y=S.year, rows=overviewRows(y), kpiRows=rows.filter(x=>x.m.kpi);
   const sub=kpiRows.filter(x=>x.p?.firstSubmittedAt).length, appr=kpiRows.filter(x=>x.code==="approved").length;
   const sess=rows.reduce((a,x)=>a+(x.p?.trainings?.length||0),0), held=rows.reduce((a,x)=>a+x.pr.held,0), total=rows.reduce((a,x)=>a+(x.p?planCost(x.p):0),0);
-  const bars=rows.map(x=>`<div class="bar"><span class="nm ${x.m.parent?"childname":""}" title="${esc(x.m.name)}">${esc(x.m.name)}</span><div class="track">${x.pr.segs.map(s=>`<span class="seg ${s==="none"?"":s}" title="${{held:"Held",def:"Deferred",due:"Report due",up:"Upcoming",can:"Cancelled",none:"Not planned yet"}[s]}"></span>`).join("")}</div><span class="ct">${x.pr.held}/${x.pr.want}</span></div>`).join("");
-  const table=rows.map(x=>`<tr><td><b class="${x.m.parent?"childname":""}">${esc(x.m.name)}</b><div class="muted small">${esc(x.p?.pic||x.m.pic)}</div></td><td>${pill(x.code)}${x.p?.paperForms?.length?` <span class="pill ok">Paper</span>`:""}${x.p?.submittedAt?`<div class="muted small">${esc(fmtDate(x.p.firstSubmittedAt||x.p.submittedAt))}${(x.p.firstSubmittedAt||"").slice(0,10)>dueDate(y)?" · late":""}</div>`:""}</td><td class="num">${x.p?.trainings?.length||0} / ${x.pr.want}</td><td>${x.p?.trainings?.length?(x.spread.length?`<span class="pill draft" title="Nothing in ${esc(x.spread.join(", "))}">Uneven</span>`:`<span class="pill ok">Even</span>`):"—"}</td><td class="num">${x.p?rm(planCost(x.p)):"—"}</td><td><button class="btn small ghost" type="button" data-open="${x.m.key}">Open</button></td></tr>`).join("");
+  const grpHead=(x,i,tag)=>{if(i>0&&rows[i-1].m.base===x.m.base)return "";const b=MIN(x.m.base),par=b&&b.parent?MIN(b.parent):null;const label=`${par?par.name+" › ":""}${b?.name||""}`;return tag==="tr"?`<tr class="month"><td colspan="6">${esc(label)}<span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)"> · ${esc(b?.pic||"Lead not set")}</span></td></tr>`:`<div class="small" style="font-weight:700;color:var(--brand);margin-top:6px">${esc(label)}</div>`};
+  const bars=rows.map((x,i)=>grpHead(x,i,"div")+`<div class="bar"><span class="nm ${x.m.parent?"childname":""}" title="${esc(x.m.name)}">${esc(x.m.name)}</span><div class="track">${x.pr.segs.map(s=>`<span class="seg ${s==="none"?"":s}" title="${{held:"Held",def:"Deferred",due:"Report due",up:"Upcoming",can:"Cancelled",none:"Not planned yet"}[s]}"></span>`).join("")}</div><span class="ct">${x.pr.held}/${x.pr.want}</span></div>`).join("");
+  const table=rows.map((x,i)=>grpHead(x,i,"tr")+`<tr><td><b class="${x.m.parent?"childname":""}">${esc(x.m.name)}</b><div class="muted small">${esc(x.p?.pic||x.m.pic)}</div></td><td>${pill(x.code)}${x.p?.paperForms?.length?` <span class="pill ok">Paper</span>`:""}${x.p?.submittedAt?`<div class="muted small">${esc(fmtDate(x.p.firstSubmittedAt||x.p.submittedAt))}${(x.p.firstSubmittedAt||"").slice(0,10)>dueDate(y)?" · late":""}</div>`:""}</td><td class="num">${x.p?.trainings?.length||0} / ${x.pr.want}</td><td>${x.p?.trainings?.length?(x.spread.length?`<span class="pill draft" title="Nothing in ${esc(x.spread.join(", "))}">Uneven</span>`:`<span class="pill ok">Even</span>`):"—"}</td><td class="num">${x.p?rm(planCost(x.p)):"—"}</td><td><button class="btn small ghost" type="button" data-open="${x.m.key}">Open</button></td></tr>`).join("");
   v.innerHTML=pageHead(`${y} Plans Overview`,`Submission status and training progress for every ministry. Plans are due ${esc(fmtLong(dueDate(y)))}; on-time submission earns the "Plan on time" points in the Ministry Training KPI.`)+
   `<div class="card row spread"><label class="f" style="display:flex;align-items:center;gap:8px">Year<select id="ov-year" style="width:auto;margin:0">${S.cfg.years.map(x=>`<option ${x===y?"selected":""}>${x}</option>`).join("")}</select></label>
    <div class="row"><button class="btn small" type="button" id="ov-pdf">${ICON.pdf} PDF Report</button><button class="btn small" type="button" id="ov-csv">${ICON.csv} CSV</button></div></div>
@@ -1051,11 +1076,11 @@ function renderOverview(){
   $("#ov-csv").onclick=()=>exportCsv(y);
 }
 async function exportCsv(y){
-  const head=["Year","Ministry","Parent ministry","Plan status","Training #","Date","Day","Start","End","Course","Team","Language team","Headcount","PIC","What it covers","Expected outcome","Venue","Venue details","Trainer type","Trainer","Format",...COST_FIELDS.map(c=>c[1]+" (RM)"),"Total est. (RM)","Cost notes","Delivery status","Attendance","Actual cost (RM)","Feedback"];
+  const head=["Year","Team","Ministry","Plan status","Training #","Date","Day","Start","End","Course","Team","Language team","Headcount","PIC","What it covers","Expected outcome","Venue","Venue details","Trainer type","Trainer","Format",...COST_FIELDS.map(c=>c[1]+" (RM)"),"Total est. (RM)","Cost notes","Delivery status","Attendance","Actual cost (RM)","Feedback"];
   const q=v=>{v=String(v??"");return /[",\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v};
   const lines=[head.map(q).join(",")];
-  for(const m of orderedMins(false)){const p=S.plans[docId(y,m.key)];if(!p)continue;const code=WF[wf(p,S.reviews[docId(y,m.key)])][0];
-    (p.trainings||[]).forEach((t,i)=>lines.push([y,m.name,m.parent?minName(m.parent):"",code,i+1,t.date,t.date?DOW[pd(t.date).getDay()]:"",t.start,t.end,courseLabel(m.key,t),t.team,t.lang||"Both teams",t.headcount,t.pic,t.covers,t.outcome,t.venue,t.venueDetail,t.trainerType,t.trainer,t.format,...COST_FIELDS.map(([k])=>Number(t.cost?.[k])||0),tCost(t),t.costNotes,t.delivery?.status||"Planned",t.delivery?.attendance??"",t.delivery?.actualCost??"",t.delivery?.feedback||""].map(q).join(",")))}
+  for(const m of orderedUnits(false)){const p=S.plans[docId(y,m.key)];if(!p)continue;const code=WF[wf(p,S.reviews[docId(y,m.key)])][0];
+    (p.trainings||[]).forEach((t,i)=>lines.push([y,m.name,minFull(m.base),code,i+1,t.date,t.date?DOW[pd(t.date).getDay()]:"",t.start,t.end,courseLabel(m.key,t),t.team,m.lang,t.headcount,t.pic,t.covers,t.outcome,t.venue,t.venueDetail,t.trainerType,t.trainer,t.format,...COST_FIELDS.map(([k])=>Number(t.cost?.[k])||0),tCost(t),t.costNotes,t.delivery?.status||"Planned",t.delivery?.attendance??"",t.delivery?.actualCost??"",t.delivery?.feedback||""].map(q).join(",")))}
   if(lines.length===1){toast("No plans saved for this year yet.");return}
   await saveFile(`TOW-Training-Plans-${y}.csv`,"﻿"+lines.join("\n"));
 }
@@ -1075,6 +1100,7 @@ function renderSettings(){
     <td><input data-s="min" data-i="${i}" data-f="picZh" value="${esc(m.picZh||"")}" list="set-staff" placeholder="—"></td>
     <td><input data-s="min" data-i="${i}" data-f="team" value="${esc(m.team)}"></td>
     <td><input data-s="min" data-i="${i}" data-f="freq" type="number" min="1" max="12" value="${esc(m.freq)}" style="width:60px"></td>
+    <td style="text-align:center"><input type="checkbox" data-s="min" data-i="${i}" data-f="combined" ${m.combined?"checked":""} style="width:auto"></td>
     <td style="text-align:center"><input type="checkbox" data-s="min" data-i="${i}" data-f="kpi" ${m.kpi?"checked":""} style="width:auto"></td>
     <td style="text-align:center"><input type="checkbox" data-s="min" data-i="${i}" data-f="active" ${m.active!==false?"checked":""} style="width:auto"></td></tr>`).join("");
   const ck=S.setCourseKey&&d.ministries.find(m=>m.key===S.setCourseKey)?S.setCourseKey:d.ministries[0]?.key;
@@ -1087,7 +1113,7 @@ function renderSettings(){
   sec("s-years","","Plan Years & Deadline","",`<span class="small muted">${d.years.join(", ")}</span>`,`<div class="row">${d.years.map(y=>`<span class="chip">${y} <button class="btn small ghost" type="button" data-del="year" data-y="${y}" title="Remove ${y}" aria-label="Remove ${y}">✕</button></span>`).join("")}<input id="set-newyear" type="number" placeholder="e.g. ${Math.max(...d.years)+1}" style="width:110px"><button class="btn small" type="button" id="set-addyear">Add Year</button></div>
     <div class="grid"><label class="f">Plans due (month)<select id="set-duem">${MONL.map((n,i)=>`<option value="${i+1}" ${d.dueMonth===i+1?"selected":""}>${n}</option>`).join("")}</select></label><label class="f">Day<input id="set-dued" type="number" min="1" max="31" value="${d.dueDay}"></label></div><div class="small muted">Plans for a year are due on this date in the year before.</div>`)+
   sec("s-staff","","Staff / PICs","",`<span class="small muted">${d.staff.length}</span>`,`<div class="tablewrap settings-table"><table><tbody>${staffRows}</tbody></table></div><div><button class="btn small" type="button" id="set-addstaff">+ Add Person</button></div>`)+
-  sec("s-min","","Ministries","Sub-ministries sit under a main ministry",`<span class="small muted">${d.ministries.length}</span>`,`<div class="tablewrap settings-table"><table><thead><tr><th>Name</th><th>Under</th><th>Lead PIC</th><th>2nd PIC · EN</th><th>2nd PIC · 中文</th><th>Default team</th><th>Per yr</th><th>KPI</th><th>Active</th></tr></thead><tbody>${minRows}</tbody></table></div><div class="row"><input id="set-newmin" placeholder="New ministry name" style="max-width:240px"><button class="btn small" type="button" id="set-addmin">+ Add Ministry</button></div><div class="small muted">Untick Active to hide a ministry without losing its past plans. Untick KPI if its training isn't scored yet.</div><datalist id="set-staff">${d.staff.map(s=>`<option value="${esc(s.replace(/\s*\(.*\)$/,""))}">`).join("")}</datalist>`)+
+  sec("s-min","","Ministries","Each has an English and a Chinese team, unless marked Combined",`<span class="small muted">${d.ministries.length}</span>`,`<div class="tablewrap settings-table"><table><thead><tr><th>Name</th><th>Under</th><th>Ministry lead</th><th>English team PIC</th><th>Chinese team PIC</th><th>Default team</th><th>Per yr</th><th title="One combined team instead of separate English and Chinese teams">Combined</th><th>KPI</th><th>Active</th></tr></thead><tbody>${minRows}</tbody></table></div><div class="row"><input id="set-newmin" placeholder="New ministry name" style="max-width:240px"><button class="btn small" type="button" id="set-addmin">+ Add Ministry</button></div><div class="small muted">Untick Active to hide a ministry without losing its past plans. Untick KPI if its training isn't scored yet.</div><datalist id="set-staff">${d.staff.map(s=>`<option value="${esc(s.replace(/\s*\(.*\)$/,""))}">`).join("")}</datalist>`)+
   sec("s-courses","","Recommended Courses","","",`<label class="f" style="max-width:300px">Ministry<select id="set-ck">${d.ministries.map(m=>`<option value="${m.key}" ${m.key===ck?"selected":""}>${esc(m.name)}</option>`).join("")}</select></label><div class="tablewrap settings-table"><table><thead><tr><th>Code</th><th>Course</th><th>What it covers</th><th>Expected outcome</th><th>Trainer</th><th></th></tr></thead><tbody>${courseRows}</tbody></table></div><div><button class="btn small" type="button" id="set-addcourse">+ Add Course</button></div>`)+
   sec("s-hol","","Public Holidays & Long Weekends","Used for warnings and suggested dates; not shown on the calendar","",`<label class="f" style="max-width:200px">Year<select id="set-hy">${d.years.map(y=>`<option ${String(y)===hy?"selected":""}>${y}</option>`).join("")}</select></label><label class="f">One per line: YYYY-MM-DD Name<textarea id="set-hol" style="min-height:180px;font-family:ui-monospace,Menlo,Consolas,monospace">${esc(holText)}</textarea></label>`)+
   sec("s-wa","","WhatsApp Invite Template","","",`<label class="f">Template<textarea id="set-wa" style="min-height:220px">${esc(d.waInvite)}</textarea></label><div class="small muted">Placeholders: {ministry} {n} {course} {day} {date} {start} {end} {venue} {trainer} {covers} {outcome} {extras} {rsvp} {pic}. A line is left out when its placeholder is empty.</div>`)+
@@ -1120,13 +1146,14 @@ function renderSettings(){
 function mergeCfg(doc){
   const c=clone(DEFAULTS); if(!doc) return c;
   for(const k of Object.keys(doc)) c[k]=doc[k];
-  if((doc.v||1)<DEFAULTS.v){ // bring in the updated ministry list; keep custom ministries, courses and settings
+  if((doc.v||1)<2){ // bring in the updated ministry list; keep custom ministries, courses and settings
     const saved=doc.ministries||[];
     c.ministries=clone(DEFAULTS.ministries).map(dm=>{const x=saved.find(s=>s.key===dm.key);return x?Object.assign(dm,{freq:x.freq??dm.freq,kpi:x.kpi??dm.kpi,active:x.active??dm.active}):dm}).concat(saved.filter(x=>!DEFAULTS.ministries.some(d=>d.key===x.key)));
     c.courses=Object.assign(clone(DEFAULTS.courses),doc.courses||{});
     c.staff=[...new Set([...DEFAULTS.staff,...(doc.staff||[]).filter(s=>s!=="Kok Hon").map(s=>s.replace(/\s*\((Offering|Cafeteria)\)$/,""))])];
-    c.v=DEFAULTS.v;
+    c.v=2;
   }
+  if((c.v||1)<3){c.ministries=c.ministries.map(m=>["youth","ya"].includes(m.key)&&m.combined===undefined?Object.assign({},m,{combined:true}):m);c.v=3}
   return c;
 }
 
@@ -1182,8 +1209,8 @@ function planPdf(k,p,y){
   const intro=doc.splitTextToSize(`Each ministry plans at least 4 team trainings a year, ideally one every quarter, on weekends that don't clash with other ministries. Fill in Part A, then one Part B page per training. Submit by ${fmtLong(dueDate(y||S.year))}.`,CW);doc.text(intro,M,yy);yy+=intro.length*12+10;
   const half=(CW-14)/2;
   pField(doc,M,yy,half,"Ministry",m?minFull(k):"");yy=pField(doc,M+half+14,yy,half,"Plan year",y?String(y):"");
-  pField(doc,M,yy,half,"Ministry lead / PIC",p?.pic||m?.pic||"");yy=pField(doc,M+half+14,yy,half,"Co-PICs / helpers",p?.coPics||"");
-  pField(doc,M,yy,half,"2nd PIC - English team",p?(p.picEn??m?.picEn??""):(m?.picEn||""));yy=pField(doc,M+half+14,yy,half,"2nd PIC - Chinese team",p?(p.picZh??m?.picZh??""):(m?.picZh||""));
+  pField(doc,M,yy,half,"Team PIC",p?.pic||m?.pic||"");yy=pField(doc,M+half+14,yy,half,"Co-PICs / helpers",p?.coPics||"");
+  pField(doc,M,yy,half,"Ministry lead (oversight)",k?leadOf(k):"");yy=pField(doc,M+half+14,yy,half,"Service",m?.lang?(m.combined?"English & Chinese (combined)":m.lang+" service"):"English  /  Chinese  (circle one)");
   pField(doc,M,yy,120,"Trainings planned this year",p?String(p.frequency):"");yy=pField(doc,M+134,yy,CW-134,"If not 4, why?",p?.freqReason||"");
   yy=pText(doc,M,yy,CW,"Main training goal for the year",p?.goal,3);
   if(!filled){
@@ -1203,7 +1230,7 @@ function planPdf(k,p,y){
   ts.forEach((t,i)=>{doc.addPage();yy=trainingPdfPage(doc,k,t,i,y,right)});
   // course library
   doc.addPage();yy=pdfHeader(doc,"Ministry Training Plan","Recommended courses",right);
-  const keys=k?[k]:orderedMins().map(x=>x.key);
+  const keys=k?[baseOf(k)]:orderedMins().map(x=>x.key);
   keys.forEach(kk=>{const cl=courses(kk);if(!cl.length)return;
     doc.autoTable({startY:yy,margin:{left:M,right:M},head:[[{content:pdfSafe(minFull(kk)),colSpan:5,styles:{fillColor:BRAND,textColor:255}}],["Code","Course","What it covers","Expected outcome","Trainer"]],body:cl.map(c=>[c.code,c.title,c.covers,c.outcome,c.by].map(pdfSafe)),styles:{font:PF,fontSize:8,cellPadding:4,textColor:INKC,lineColor:LINEC,lineWidth:.4},headStyles:{font:PF,fontStyle:"bold",fillColor:SOFTC,textColor:MUTE,fontSize:7},columnStyles:{0:{cellWidth:34,fontStyle:"bold"},1:{cellWidth:100}},theme:"grid"});
     yy=doc.lastAutoTable.finalY+16});
@@ -1221,7 +1248,7 @@ function trainingPdfPage(doc,k,t,i,y,right){
   else{const rows=Math.ceil(cl.length/2);let by=pBox(doc,M,yy,CW,30+rows*15+18,"Course (tick one)");const colw=(CW-20)/2;
     cl.forEach((c,j)=>pCheck(doc,M+10+(j%2)*colw,by+Math.floor(j/2)*15,`${c.code} - ${c.title}`.slice(0,44)));
     const cy=by+rows*15;const x=pCheck(doc,M+10,cy,"Custom course - title:");doc.setDrawColor(...LINEC);doc.line(x-8,cy+2,W-M-10,cy+2);yy+=30+rows*15+30}
-  const q=(CW-28)/3;pField(doc,M,yy,q*1.4,t?"Team(s) to be trained":"Team(s) to be trained (English / Chinese / Both)",t?((t.team||"")+(langTag(t)?` (${langTag(t)})`:"")):(MIN(k)?.team||""));pField(doc,M+q*1.4+14,yy,q*.6,"Headcount",t?String(t.headcount||""):"");yy=pField(doc,M+2*q+28,yy,q,"PIC for this training",t?.pic||MIN(k)?.pic||"");
+  const q=(CW-28)/3;pField(doc,M,yy,q*1.4,"Team(s) to be trained",t?.team||MIN(k)?.team||"");pField(doc,M+q*1.4+14,yy,q*.6,"Headcount",t?String(t.headcount||""):"");yy=pField(doc,M+2*q+28,yy,q,"PIC for this training",t?.pic||MIN(k)?.pic||"");
   yy=pText(doc,M,yy,CW,"What it covers",t?.covers,3);yy=pText(doc,M,yy,CW,"Expected outcome",t?.outcome,2);
   let by=pBox(doc,M,yy,CW,96,"Date, time & place");const q4=(CW-56)/4;
   [["Date",t?.date?fmtLong(t.date):""],["Day",t?.date?DOWL[pd(t.date).getDay()]:""],["Start time",fmtTime(t?.start)],["End time",fmtTime(t?.end)]].forEach(([l,v],j)=>pField(doc,M+10+j*(q4+12),by-4,q4,l,v));
