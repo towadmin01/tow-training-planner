@@ -22,6 +22,7 @@ img{max-width:100%}
 .hbtn.sheet[hidden]{display:none}
 .hbtn.lead{display:inline-flex;align-items:center;gap:5px;background:var(--gold);color:var(--brand-dark);border-color:var(--gold)}
 .hbtn.lead svg{width:13px;height:13px}
+.hbtn#who-btn{display:inline-flex;align-items:center;gap:5px}
 .hbtn.on{background:var(--gold);color:var(--brand-dark);border-color:var(--gold)}
 .modal{position:fixed;inset:0;background:rgba(10,30,30,.5);z-index:30;display:flex;align-items:center;justify-content:center;padding:16px}
 .mbox{background:#fff;border-radius:12px;padding:18px;width:100%;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
@@ -189,6 +190,79 @@ select:disabled{cursor:default;background-image:none;padding-right:9px}
 .msel-opt .pill{flex:none}
 details.sec > summary{border-radius:11px 11px 0 0}
 details.sec:not([open]) > summary{border-radius:11px}
+
+#view-form{gap:18px}
+details.step{border-color:#c9d8d4;box-shadow:0 1px 3px rgba(9,53,56,.06)}
+details.step > summary{background:var(--brand);padding:12px 14px}
+details.step > summary .tt{color:#fff;font-size:15px}
+details.step > summary .chev{color:#fff}
+details.step > summary .meta,details.step > summary .meta .small{color:rgba(255,255,255,.85)}
+.stepnum{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--gold);color:var(--brand-dark);font-weight:800;font-size:12.5px;flex:none}
+.stephead{display:flex;align-items:center;gap:10px;background:var(--brand);color:#fff;border-radius:12px;padding:12px 14px;flex-wrap:wrap}
+.stephead b{font-size:15px}
+.stephead .row{margin-left:auto}
+.stephead .btn.ghost{color:#fff;opacity:.9}
+.step3{display:flex;flex-direction:column;gap:12px;padding-left:14px;border-left:3px solid var(--mint);margin-left:11px}
+.paper{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#FBF6E6;border:1px dashed #E1CC8E;border-radius:10px;padding:10px 12px}
+.paper .pi{width:34px;height:34px;border-radius:50%;background:#fff;display:grid;place-items:center;color:var(--brand);flex:none}
+.paper .pi svg{width:17px;height:17px}
+.paper .pt{flex:1;min-width:180px;font-size:12px;color:var(--ink-2);line-height:1.4}
+.paper .pt b{display:block;color:var(--ink);font-size:13px}
+.lang{flex:none;font-style:normal;font-size:10px;font-weight:800;letter-spacing:.04em;min-width:30px;text-align:center;padding:3px 4px;border-radius:5px;display:inline-block}
+.lang.en{background:#E2ECF6;color:#1F4F7A}.lang.zh{background:#FBEBD9;color:#8A4B00}.lang.all{background:#E4F1EC;color:#0E4B4F}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.fchips{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{font:600 12px var(--f-body);border:1px solid var(--line);background:#fff;color:var(--ink-2);border-radius:999px;padding:5px 10px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.fchip span{background:var(--soft-2);border-radius:999px;padding:0 7px;font-size:11px;color:var(--muted)}
+.fchip.on{background:var(--brand);color:#fff;border-color:var(--brand)}.fchip.on span{background:rgba(255,255,255,.22);color:#fff}
+.ov-list{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ov-grp{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--soft-2);border-top:1px solid var(--line)}
+.ov-grp:first-child{border-top:0}
+.ov-grp .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.ov-grp b{color:var(--brand);text-transform:uppercase;letter-spacing:.05em;font-size:11px}
+.ov-grp .gl{margin-left:auto;color:var(--muted);font-size:11.5px}
+.ov-row{display:grid;grid-template-columns:34px minmax(0,1.5fr) minmax(0,1.1fr) minmax(0,1.2fr) 64px 84px auto;gap:12px;align-items:center;padding:10px 14px;border-top:1px solid var(--line);cursor:pointer}
+.ov-row:hover{background:var(--soft)}
+.ov-name b{display:block;font-size:13px}.ov-name span{font-size:11.5px;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ov-status{display:flex;flex-direction:column;gap:2px;align-items:flex-start}.ov-status span.small{font-size:10.5px;color:var(--muted)}
+.ov-prog .track{display:flex;gap:2px;height:9px;margin-bottom:3px}
+.ov-prog .seg{flex:1;border-radius:3px;background:var(--soft-2);border:1px dashed #c6cdc7}
+.ov-prog .seg.held{background:var(--green);border:0}.ov-prog .seg.up{background:#8fb3ad;border:0}.ov-prog .seg.due{background:#d9534f;border:0}.ov-prog .seg.def{background:#e0b24c;border:0}.ov-prog .seg.can{background:#9aa29c;border:0}
+.ov-prog span{font-size:11px;color:var(--muted)}
+.ov-num{font-weight:700;font-size:13px;text-align:right;font-variant-numeric:tabular-nums}.ov-num span{display:block;font-weight:400;font-size:10.5px;color:var(--muted)}
+.ov-empty{padding:24px;text-align:center;color:var(--muted);font-size:13px}
+.segtabs{display:flex;gap:4px;flex-wrap:wrap;background:var(--soft-2);padding:4px;border-radius:10px}
+.segtabs button{flex:1 1 auto;font:600 12px var(--f-body);border:0;background:none;color:var(--ink-2);padding:8px 10px;border-radius:7px;cursor:pointer}
+.segtabs button[aria-selected="true"]{background:#fff;color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.mlist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.mrow{border-top:1px solid var(--line)}.mrow:first-child{border-top:0}
+.mrow.child .mhead{padding-left:36px}
+.mrow.off .mhead{opacity:.55}
+.mhead{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer}
+.mhead:hover{background:var(--soft)}
+.mhead .dot{width:10px;height:10px;border-radius:50%;flex:none}
+.mn{flex:1;min-width:0}.mn b{display:block;font-size:13.5px}.mn span{font-size:11.5px;color:var(--muted)}
+.mteams{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--ink-2);min-width:0;width:38%}
+.mteams span{display:flex;gap:6px;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.medit{padding:12px 14px;background:var(--soft);border-top:1px dashed var(--line)}
+label.ck{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--ink);text-transform:none;letter-spacing:0;font-weight:500}
+label.ck input{width:auto;margin:0}
+.ccard{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;background:#fff}
+.ccard .chead{display:flex;gap:10px;align-items:flex-end}
+.ccard .chead .code{width:84px;flex:none}.ccard .chead .ttl{flex:1;min-width:0}
+.chiplist{display:flex;flex-wrap:wrap;gap:6px}
+.chiplist .chip{display:inline-flex;align-items:center;gap:4px;padding:4px 4px 4px 10px;font-size:12.5px;background:var(--soft-2);border-radius:999px}
+.chiplist .chip button{border:0;background:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0 6px;line-height:1}
+.setbar{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:4;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;box-shadow:0 6px 18px rgba(9,53,56,.12);font-size:12.5px;color:var(--muted)}
+.setbar.dirty{border-color:var(--gold);color:var(--amber);font-weight:600}
+.waprev{white-space:pre-wrap;background:#E7F6EC;border:1px solid #cfe6d6;border-radius:10px;padding:12px;font-size:12.5px;line-height:1.5}
+@media (max-width:640px){
+ .ov-row{grid-template-columns:34px minmax(0,1fr) auto;row-gap:6px}
+ .ov-row .ov-status{grid-column:3;grid-row:1;align-items:flex-end}
+ .ov-row .ov-prog{grid-column:2/4}
+ .ov-row .ov-num,.ov-row .ov-open{display:none}
+ .mteams{display:none}
+}
 @media (max-width:540px){ details.sec > summary .meta .small{display:none} details.sec > summary .st,details.sec > summary .tt{white-space:nowrap} .savebar .sum{width:100%} .bar{grid-template-columns:100px 1fr auto} details.sec > summary .sub{display:none} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -227,6 +301,7 @@ details.sec:not([open]) > summary{border-radius:11px}
 /* ===== GitHub Pages version: Google Sheet + Apps Script backend =====
    1) Deploy Code.gs as a Web App (Execute as: Me, Who has access: Anyone)
    2) Paste the Web App URL below. */
+window.SHEET_URL = "https://docs.google.com/spreadsheets/d/140L4FqaQlUqMHmrLGZJfjX-c-kn-orw4g2JnORJMRfU/edit";
 const API_URL = "https://script.google.com/macros/s/AKfycbxhFuBDIHPN0KuQqW3U40yjwuCOiybPbOz12lEokjKmN9gVrLV9WDVXv4dljWXI0TlewQ/exec";
 
 (function(){
@@ -427,8 +502,8 @@ const LANG_UNITS=[["en","Eng","English"],["zh","Chi","Chinese"]];
 function unitsOf(m){
   const par=m.parent?S.cfg.ministries.find(x=>x.key===m.parent):null, leadPic=m.pic||par?.pic||"";
   const base={base:m.key,unit:true,lead:m.pic||"",freq:m.freq,kpi:m.kpi,active:m.active};
-  if(m.combined){const only=m.only||"";return [Object.assign({},base,{key:m.key,combined:true,only,lang:only?(only==="BM"?"Bahasa Malaysia":only):"Combined",short:only||"All",name:only?m.name:`${m.name} (Combined)`,parent:m.parent||"",pic:leadPic,picTemp:!m.pic&&!!leadPic,team:only?`${m.team} - ${only} service`:`${m.team} - combined English & Chinese`})]}
-  return LANG_UNITS.map(([sx,short,lang])=>{const own=(sx==="en"?m.picEn:m.picZh)||"";return Object.assign({},base,{key:m.key+sx,lang,short,name:`${m.name} (${short})`,parent:m.key,pic:own||leadPic,picTemp:!own&&!!leadPic,team:`${m.team} - ${lang} service`})});
+  if(m.combined){const only=m.only||"";return [Object.assign({},base,{key:m.key,combined:true,only,lang:only?(only==="BM"?"Bahasa Malaysia":only):"Combined",short:only||"All",name:only?m.name:`${m.name} (Combined)`,parent:m.parent||"",pic:leadPic,team:only?`${m.team} - ${only} service`:`${m.team} - combined English & Chinese`})]}
+  return LANG_UNITS.map(([sx,short,lang])=>{const own=(sx==="en"?m.picEn:m.picZh)||"";return Object.assign({},base,{key:m.key+sx,lang,short,name:`${m.name} (${short})`,parent:m.key,pic:leadPic,coord:own,team:`${m.team} - ${lang} service`})});
 }
 let _uSrc=null,_uAll=[],_uSig="";
 function allUnits(){if(_uSrc!==S.cfg.ministries||_uSig!==JSON.stringify(S.cfg.ministries.map(m=>[m.key,!!m.combined,m.only,m.parent,m.name,m.pic,m.picEn,m.picZh]))){_uSig=JSON.stringify(S.cfg.ministries.map(m=>[m.key,!!m.combined,m.only,m.parent,m.name,m.pic,m.picEn,m.picZh]));_uSrc=S.cfg.ministries;_uAll=S.cfg.ministries.flatMap(unitsOf)}return _uAll}
@@ -475,7 +550,7 @@ const curCode=()=>wf(S.plans[curId()],S.reviews[curId()]);
 const formEditable=()=>S.canWrite&&!!S.key&&(picCanEdit(curCode())||(S.isAdmin&&S.leaderEdit));
 
 /* ================= Change log ================= */
-const P_LABELS={pic:"Team PIC",coPics:"Co-PICs",frequency:"Trainings planned",freqReason:"Reason for frequency",goal:"Main goal"};
+const P_LABELS={pic:"Ministry lead",coPics:"Co-PICs",frequency:"Trainings planned",freqReason:"Reason for frequency",goal:"Main goal"};
 const T_LABELS={course:"Course",customTitle:"Course title",team:"Team",lang:"Language team",headcount:"Headcount",pic:"PIC",covers:"What it covers",outcome:"Expected outcome",date:"Date",start:"Start",end:"End",venue:"Venue",venueDetail:"Venue details",trainerType:"Trainer",trainer:"Trainer name",format:"Format",costNotes:"Cost notes"};
 const short=v=>{v=String(v??"").trim();return v.length>60?v.slice(0,57)+"…":(v||"(blank)")};
 function diffPlan(a,b,k){
@@ -588,7 +663,8 @@ function loadForm(){
 }
 function sec(id,step,title,sub,meta,body,cls=""){
   const open=S.open[id]!==undefined?S.open[id]:true;
-  return `<details class="sec ${cls}" data-sec="${id}" ${open?"open":""}><summary>${ICON.chev}${step?`<span class="st">${esc(step)}</span>`:""}<span class="tt">${title}</span>${sub?`<span class="sub">${sub}</span>`:""}<span class="meta">${meta||""}</span></summary><div class="body">${body}</div></details>`;
+  const sn=step&&/^Step (\d+)$/.exec(step); if(sn) cls+=" step";
+  return `<details class="sec ${cls}" data-sec="${id}" ${open?"open":""}><summary>${ICON.chev}${sn?`<span class="stepnum">${sn[1]}</span>`:step?`<span class="st">${esc(step)}</span>`:""}<span class="tt">${title}</span>${sub?`<span class="sub">${sub}</span>`:""}<span class="meta">${meta||""}</span></summary><div class="body">${body}</div></details>`;
 }
 function pageHead(title,text){return `<div class="pagehead"><h2>${esc(title)}</h2><p>${text}</p></div>`}
 
@@ -598,7 +674,7 @@ function renderForm(){
   let html=pageHead("Yearly Ministry Training Plan",`Each ministry plans at least 4 team trainings a year, ideally ${spreadWord(4)}, on weekends that don't clash with other ministries. Submit your plan by <b>${esc(fmtLong(dueDate(S.year)))}</b>. Your delivery counts toward your yearly KPI (Ministry Training, 10 points).`);
   if(!S.canWrite) html+=`<div class="note warn">You can view plans but not save them.</div>`;
   const pickBody=`<div class="grid">${pickerHtml()}<label class="f">Plan year<select id="sel-year">${yearOpts}</select></label></div>
-    <div class="row spread" style="border-top:1px solid var(--line);padding-top:10px"><span class="small muted">Prefer paper? Print the form, fill it in by hand and hand it to the church office.</span>
+    <div class="paper"><span class="pi">${ICON.print}</span><span class="pt"><b>Prefer paper?</b>Print the form, fill it in by hand and hand it to the church office.</span>
     <div class="row"><button class="btn icon" type="button" id="btn-blankpdf" title="Download printable form (PDF)" aria-label="Download printable form (PDF)">${ICON.print}</button>
     ${S.key&&S.plans[curId()]?`<button class="btn icon" type="button" id="btn-planpdf" title="Download this plan (PDF)" aria-label="Download this plan (PDF)">${ICON.pdf}</button>`:""}</div></div>`;
   html+=sec("pick","Step 1","Ministry & Year","",S.key?`<span class="small muted">${esc(minFull(S.key))} · ${S.year}</span>`:"",pickBody);
@@ -609,8 +685,8 @@ function renderForm(){
   // plan details
   const want=Number(f.frequency)||0;
   const pBody=`<div class="grid">
-      <label class="f">${m.unit?(m.combined?"Team PIC":esc(m.lang)+" team PIC"):"Ministry lead / PIC"}${m.picTemp?` <span style="text-transform:none;letter-spacing:0;font-weight:500;color:var(--amber)">(temporary: ministry lead)</span>`:""}<span class="req">*</span><input id="p-pic" data-p="pic" value="${esc(f.pic)}" list="staff-list" placeholder="Your name" ${ro}></label>
-      ${m.unit&&!m.combined?`<label class="f">Ministry lead (oversight)<input id="p-lead" value="${esc(leadOf(S.key)||"Not set")}" disabled></label>`:""}
+      <label class="f">Ministry lead<span class="req">*</span><input id="p-pic" data-p="pic" value="${esc(f.pic)}" list="staff-list" placeholder="Your name" ${ro}></label>
+      ${m.unit?`<label class="f">Service<input id="p-svc" value="${esc(m.combined?(m.only?m.lang:"English & Chinese together"):m.lang+" service")}" disabled></label>`:""}
       <label class="f">Co-PICs / helpers<input id="p-copics" data-p="coPics" value="${esc(f.coPics)}" placeholder="e.g. senior MD, team leaders" ${ro}></label>
       <label class="f">Trainings planned this year<input id="p-freq" data-p="frequency" type="number" min="1" max="12" value="${esc(f.frequency)}" ${ro}></label>
       <label class="f span-all" id="wrap-reason" ${want===4?"hidden":""}>Why not 4 trainings?<span class="req">*</span><input id="p-reason" data-p="freqReason" value="${esc(f.freqReason)}" placeholder="e.g. monthly rehearsal-based training; team is newly formed" ${ro}></label>
@@ -622,10 +698,9 @@ function renderForm(){
     ${paperBlock(saved)}`;
   html+=sec("plan","Step 2","Plan Details","",`<span class="small muted">${f.trainings.length} of ${want} trainings</span>`,pBody);
   // trainings
-  html+=`<div class="row spread"><div class="row"><span class="st" style="font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand)">Step 3</span><b>Trainings</b></div>
-    <div class="row"><button class="btn small ghost" type="button" id="btn-expand">Expand all</button><button class="btn small ghost" type="button" id="btn-collapse">Collapse all</button></div></div>`;
+  html+=`<div class="stephead"><span class="stepnum">3</span><b>Trainings</b><div class="row"><button class="btn small ghost" type="button" id="btn-expand">Expand all</button><button class="btn small ghost" type="button" id="btn-collapse">Collapse all</button></div></div><div class="step3">`;
   f.trainings.forEach((t,i)=>{html+=trainingSec(t,i,ro,code)});
-  html+=`<div class="row">${ed?`<button class="btn" id="btn-add" type="button">+ Add Training #${f.trainings.length+1}</button>`:""}<span class="muted small" id="countnote"></span></div>`;
+  html+=`<div class="row">${ed?`<button class="btn" id="btn-add" type="button">+ Add Training #${f.trainings.length+1}</button>`:""}<span class="muted small" id="countnote"></span></div></div>`;
   html+=historyBlock(saved);
   html+=`<datalist id="staff-list">${S.cfg.staff.map(s=>`<option value="${esc(s.replace(/\s*\(.*\)$/,""))}">`).join("")}</datalist>`;
   v.innerHTML=html;
@@ -640,7 +715,7 @@ function statusPanel(code,saved,rv){
       ${code==="edit_requested"?`<div class="note warn"><b>Edit requested:</b> ${esc(saved.editRequest?.reason||"")}</div>`:""}
       ${code==="meeting"?`<div class="note bad"><b>PIC asked to discuss:</b> ${esc(saved.picResponse?.note||"")} Arrange a meeting, then approve or edit the plan.</div>`:""}
       ${code==="pic_review"?`<div class="note info">Waiting for the PIC to accept your edits.</div>`:""}
-      <label class="f">Comment to the PIC<textarea id="lead-comment" placeholder="Feedback, reasons for changes, or what to fix">${esc(S.leadComment||"")}</textarea></label>
+      <label class="f">Comment to the ministry lead<textarea id="lead-comment" placeholder="Feedback, reasons for changes, or what to fix">${esc(S.leadComment||"")}</textarea></label>
       ${S.leaderEdit?`<div class="note warn">You are editing this plan as leadership. Make your changes below, then use <b>Save & Send to PIC</b>. Every change is recorded.</div>`:
       `<div class="row">
         ${code!=="approved"?`<button class="btn good" type="button" data-lead="approved">Approve</button>`:""}
@@ -648,7 +723,7 @@ function statusPanel(code,saved,rv){
         <button class="btn warn" type="button" data-lead="changes">Request Changes</button>
         ${code==="edit_requested"?`<button class="btn" type="button" data-lead="reopened">Allow PIC to Edit</button>`:""}
       </div>`}
-      ${rv?.decision&&["approved","changes","reopened","pic_review","meeting"].includes(code)?waBox("wa-pic",picNoticeText(S.key,S.year,code,rv),"Message to the PIC (WhatsApp)"):""}`;
+      ${rv?.decision&&["approved","changes","reopened","pic_review","meeting"].includes(code)?waBox("wa-pic",picNoticeText(S.key,S.year,code,rv),"Message to the ministry lead (WhatsApp)"):""}`;
     return sec("lead","Leadership","Review & Decision","",pill(code),body,"lead-panel");
   }
   // PIC view
@@ -742,7 +817,7 @@ function paperBlock(saved){
 const CARET='<svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
 function pickerHtml(){
   const cur=S.key&&MIN(S.key);
-  const inner=cur?`<span class="dot" style="background:${laneColor(cur.key)}"></span><span class="opt-main"><span class="nm">${(()=>{const b=cur.unit?MIN(cur.base):null;const par=b&&b.parent?MIN(b.parent):(!cur.unit&&cur.parent?MIN(cur.parent):null);return par?`<span style="font-weight:500;color:var(--muted)">${esc(par.name)} › </span>`:""})()}${esc(cur.name)}</span><span class="pc">${esc(cur.unit?(cur.combined?(cur.pic||"PIC not set")+(cur.picTemp?" (temporary: ministry lead)":"")+(cur.only?"":" · combined English & Chinese"):(cur.pic||"PIC not set")+(cur.picTemp?" (temporary: ministry lead)":"")+(leadOf(cur.key)&&!cur.picTemp?" · lead: "+leadOf(cur.key):"")):picLine(cur))}</span></span>`
+  const inner=cur?`<span class="dot" style="background:${laneColor(cur.key)}"></span><span class="opt-main"><span class="nm">${(()=>{const b=cur.unit?MIN(cur.base):null;const par=b&&b.parent?MIN(b.parent):(!cur.unit&&cur.parent?MIN(cur.parent):null);return par?`<span style="font-weight:500;color:var(--muted)">${esc(par.name)} › </span>`:""})()}${esc(cur.name)}</span><span class="pc">${esc(cur.unit?"Lead: "+(cur.pic||"not set")+(cur.combined?(cur.only?"":" · English & Chinese together"):" · "+cur.lang+" service"):picLine(cur))}</span></span>`
     :`<span class="opt-main"><span class="nm" style="font-weight:500;color:var(--muted)">Choose your ministry…</span><span class="pc">${orderedMins().length} ministries · English & Chinese teams</span></span>`;
   return `<div><span class="f" style="display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--label)" id="msel-label">Ministry</span>
     <div class="msel" id="msel"><button type="button" class="msel-btn" id="msel-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="msel-label msel-btn">${inner}${CARET}</button>
@@ -757,7 +832,7 @@ function pickerList(q){
     if(!units.length) continue;
     html+=`<div class="msel-grp d${depth(m)}"><span class="dot" style="background:${laneColor(m.key)}"></span><span class="gn">${m.parent&&q?`<span style="font-weight:500">${esc(minName(m.parent))} › </span>`:""}${esc(m.name)}</span><span class="gl">${esc(m.pic||"Lead not set")}${m.kpi===false?" · not in KPI":""}</span></div>`;
     html+=units.map(u=>{const id=docId(S.year,u.key),code=wf(S.plans[id],S.reviews[id]);
-      return `<div class="msel-opt d${depth(m)}" role="option" id="opt-${u.key}" data-k="${u.key}" aria-selected="${u.key===S.key}"><span class="lang ${u.combined?"all":u.lang==="English"?"en":"zh"}">${u.short}</span><span class="opt-main"><span class="nm">${esc(u.name)}</span><span class="pc">${esc((u.pic||"PIC not set")+(u.picTemp?" (temporary: ministry lead)":"")+(u.combined?(u.only?"":" · English & Chinese together"):""))}</span></span>${pill(code)}</div>`}).join("");
+      return `<div class="msel-opt d${depth(m)}" role="option" id="opt-${u.key}" data-k="${u.key}" aria-selected="${u.key===S.key}"><span class="lang ${u.combined?"all":u.lang==="English"?"en":"zh"}">${u.short}</span><span class="opt-main"><span class="nm">${esc(u.name)}</span><span class="pc">${esc(u.combined?(u.only?u.lang+" service":"English & Chinese together"):u.lang+" service team")}</span></span>${pill(code)}</div>`}).join("");
   }
   return html||`<div class="small muted" style="padding:10px">No ministry matches "${esc(q)}".</div>`;
 }
@@ -1037,7 +1112,7 @@ function renderCalendar(){
   let body="",lastM=-1;
   for(const e of entries){const m=pd(e.t.date).getMonth();if(m!==lastM){body+=`<tr class="month"><td colspan="5">${MONL[m]} ${y}</td></tr>`;lastM=m}
     const code=wf(e.p,S.reviews[e.id]);
-    body+=`<tr><td class="date">${esc(fmtDate(e.t.date))}<div class="muted small">${esc(fmtTime(e.t.start))}${e.t.end?"–"+esc(fmtTime(e.t.end)):""}</div></td><td><b class="${MIN(e.k)?.parent?"childname":""}">${esc(minName(e.k))}</b> #${e.i+1}${langTag(e.t)?` <span class="pill none">${esc(langTag(e.t))}</span>`:""}<div class="muted small">${esc(courseLabel(e.k,e.t))}</div></td><td>${esc(e.t.pic)}<div class="muted small">${esc([e.t.venue,e.t.venueDetail].filter(Boolean).join(" · "))}</div></td><td>${pill(code)}</td><td>${clashKeys.has(e.key)?`<span class="pill bad">Clash</span>`:e.t.delivery?.status==="Held"?`<span class="pill ok">Held</span>`:""}</td></tr>`}
+    body+=`<tr><td class="date">${esc(fmtDate(e.t.date))}<div class="muted small">${esc(fmtTime(e.t.start))}${e.t.end?"–"+esc(fmtTime(e.t.end)):""}</div></td><td><b class="${MIN(baseOf(e.k))?.parent?"childname":""}">${esc(minName(e.k))}</b> #${e.i+1}${langTag(e.t)?` <span class="pill none">${esc(langTag(e.t))}</span>`:""}<div class="muted small">${esc(courseLabel(e.k,e.t))}</div></td><td>${esc(e.t.pic)}<div class="muted small">${esc([e.t.venue,e.t.venueDetail].filter(Boolean).join(" · "))}</div></td><td>${pill(code)}</td><td>${clashKeys.has(e.key)?`<span class="pill bad">Clash</span>`:e.t.delivery?.status==="Held"?`<span class="pill ok">Held</span>`:""}</td></tr>`}
   v.innerHTML=pageHead(`${y} Training Calendar`,`Every ministry's saved training dates on one timeline. Two ministries on the same weekend are flagged as a clash with a proposed new date. Levites tech teams (Sound, Lighting, LED, Media) may share a weekend on different days.`)+
   `<div class="card row spread"><label class="f" style="display:flex;align-items:center;gap:8px">Year<select id="cal-year" style="width:auto;margin:0">${S.cfg.years.map(x=>`<option ${x===y?"selected":""}>${x}</option>`).join("")}</select></label>
     <div class="row"><span class="pill sub">${entries.length} trainings</span>${groups.length?`<span class="pill bad">${groups.length} clash${groups.length>1?"es":""} · ${nMove} to move</span>`:entries.length?`<span class="pill ok">No clashes</span>`:""}
@@ -1061,21 +1136,37 @@ function progressOf(p,k){
 }
 function overviewRows(y){return orderedUnits().map(m=>{const id=docId(y,m.key),p=S.plans[id],r=S.reviews[id];return {m,id,p,r,code:wf(p,r),pr:progressOf(p,m.key),spread:p?spreadIssues(p):[]}})}
 function renderOverview(){
-  const v=$("#view-overview"), y=S.year, rows=overviewRows(y), kpiRows=rows.filter(x=>x.m.kpi);
+  const v=$("#view-overview"), y=S.year, all=overviewRows(y), kpiRows=all.filter(x=>x.m.kpi), f=S.ovFilter||"all";
+  const inF=(k,x)=>k==="all"||(k==="none"&&x.code==="none")||(k==="draft"&&["draft","changes","reopened"].includes(x.code))||(k==="review"&&["review","edit_requested","pic_review","meeting"].includes(x.code))||(k==="approved"&&x.code==="approved");
+  const rows=all.filter(x=>inF(f,x));
   const sub=kpiRows.filter(x=>x.p?.firstSubmittedAt).length, appr=kpiRows.filter(x=>x.code==="approved").length;
-  const sess=rows.reduce((a,x)=>a+(x.p?.trainings?.length||0),0), held=rows.reduce((a,x)=>a+x.pr.held,0), total=rows.reduce((a,x)=>a+(x.p?planCost(x.p):0),0);
-  const grpHead=(x,i,tag)=>{if(i>0&&rows[i-1].m.base===x.m.base)return "";const b=MIN(x.m.base),par=b&&b.parent?MIN(b.parent):null;const label=`${par?par.name+" › ":""}${b?.name||""}`;return tag==="tr"?`<tr class="month"><td colspan="6">${esc(label)}<span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)"> · ${esc(b?.pic||"Lead not set")}</span></td></tr>`:`<div class="small" style="font-weight:700;color:var(--brand);margin-top:6px">${esc(label)}</div>`};
-  const bars=rows.map((x,i)=>grpHead(x,i,"div")+`<div class="bar"><span class="nm ${x.m.parent?"childname":""}" title="${esc(x.m.name)}">${esc(x.m.name)}</span><div class="track">${x.pr.segs.map(s=>`<span class="seg ${s==="none"?"":s}" title="${{held:"Held",def:"Deferred",due:"Report due",up:"Upcoming",can:"Cancelled",none:"Not planned yet"}[s]}"></span>`).join("")}</div><span class="ct">${x.pr.held}/${x.pr.want}</span></div>`).join("");
-  const table=rows.map((x,i)=>grpHead(x,i,"tr")+`<tr><td><b class="${x.m.parent?"childname":""}">${esc(x.m.name)}</b><div class="muted small">${esc(x.p?.pic||x.m.pic)}</div></td><td>${pill(x.code)}${x.p?.paperForms?.length?` <span class="pill ok">Paper</span>`:""}${x.p?.submittedAt?`<div class="muted small">${esc(fmtDate(x.p.firstSubmittedAt||x.p.submittedAt))}${(x.p.firstSubmittedAt||"").slice(0,10)>dueDate(y)?" · late":""}</div>`:""}</td><td class="num">${x.p?.trainings?.length||0} / ${x.pr.want}</td><td>${x.p?.trainings?.length?(x.spread.length?`<span class="pill draft" title="Nothing in ${esc(x.spread.join(", "))}">Uneven</span>`:`<span class="pill ok">Even</span>`):"—"}</td><td class="num">${x.p?rm(planCost(x.p)):"—"}</td><td><button class="btn small ghost" type="button" data-open="${x.m.key}">Open</button></td></tr>`).join("");
-  v.innerHTML=pageHead(`${y} Plans Overview`,`Submission status and training progress for every ministry. Plans are due ${esc(fmtLong(dueDate(y)))}; on-time submission earns the "Plan on time" points in the Ministry Training KPI.`)+
-  `<div class="card row spread"><label class="f" style="display:flex;align-items:center;gap:8px">Year<select id="ov-year" style="width:auto;margin:0">${S.cfg.years.map(x=>`<option ${x===y?"selected":""}>${x}</option>`).join("")}</select></label>
+  const sess=all.reduce((a,x)=>a+(x.p?.trainings?.length||0),0), held=all.reduce((a,x)=>a+x.pr.held,0), total=all.reduce((a,x)=>a+(x.p?planCost(x.p):0),0);
+  const chip=(k,l)=>`<button type="button" class="fchip ${f===k?"on":""}" data-filter="${k}">${l}<span>${all.filter(x=>inF(k,x)).length}</span></button>`;
+  const segName={held:"Held",def:"Deferred",due:"Report due",up:"Upcoming",can:"Cancelled",none:"Not planned yet"};
+  let list="",prev=null;
+  rows.forEach(x=>{
+    if(x.m.base!==prev){prev=x.m.base;const b=MIN(x.m.base),par=b&&b.parent?MIN(b.parent):null;
+      list+=`<div class="ov-grp"><span class="dot" style="background:${laneColor(x.m.key)}"></span><b>${esc((par?par.name+" › ":"")+(b?.name||""))}</b><span class="gl">${esc(b?.pic||"Lead not set")}</span></div>`}
+    const late=(x.p?.firstSubmittedAt||"").slice(0,10)>dueDate(y);
+    list+=`<div class="ov-row" data-open="${x.m.key}" tabindex="0" role="button" aria-label="Open ${esc(x.m.name)}">
+      <span class="lang ${x.m.combined?"all":x.m.lang==="English"?"en":"zh"}">${esc(x.m.short||"")}</span>
+      <div class="ov-name"><b>${esc(x.m.name)}</b><span>${esc(x.p?.pic||x.m.pic||"PIC not set")}</span></div>
+      <div class="ov-status">${pill(x.code)}${x.p?.firstSubmittedAt?`<span class="small">${late?"Late · ":""}${esc(fmtDate(x.p.firstSubmittedAt))}</span>`:""}</div>
+      <div class="ov-prog"><div class="track">${x.pr.segs.map(s=>`<span class="seg ${s==="none"?"":s}" title="${segName[s]}"></span>`).join("")}</div><span>${x.pr.held} of ${x.pr.want} held${x.spread.length&&x.p?.trainings?.length?" · uneven spread":""}</span></div>
+      <div class="ov-num">${x.p?.trainings?.length||0}/${x.pr.want}<span>planned</span></div>
+      <div class="ov-num">${x.p?rm(planCost(x.p)):"—"}<span>est. cost</span></div>
+      <button class="btn small ov-open" type="button" data-open="${x.m.key}">Open</button></div>`});
+  v.innerHTML=pageHead(`${y} Plans Overview`,`Submission status and training progress for every team. Plans are due ${esc(fmtLong(dueDate(y)))}; on-time submission earns the "Plan on time" points in the Ministry Training KPI.`)+
+  `<div class="card toolbar"><label class="f" style="display:flex;align-items:center;gap:8px">Year<select id="ov-year" style="width:auto;margin:0">${S.cfg.years.map(x=>`<option ${x===y?"selected":""}>${x}</option>`).join("")}</select></label>
    <div class="row"><button class="btn small" type="button" id="ov-pdf">${ICON.pdf} PDF Report</button><button class="btn small" type="button" id="ov-csv">${ICON.csv} CSV</button></div></div>
   <div class="kpi"><div><span>Plans submitted</span><b>${sub} / ${kpiRows.length}</b></div><div><span>Approved</span><b>${appr} / ${kpiRows.length}</b></div><div><span>Trainings held</span><b>${held} / ${sess}</b></div><div><span>Est. total cost</span><b>${rm(total)}</b></div></div>
-  ${sec("progress","","Training Progress","Held vs planned per ministry","",`<div class="bars">${bars}</div><div class="legend"><span><i style="background:var(--green);border-radius:2px"></i>Held</span><span><i style="background:#8fb3ad;border-radius:2px"></i>Upcoming</span><span><i style="background:#d9534f;border-radius:2px"></i>Report due</span><span><i style="background:#e0b24c;border-radius:2px"></i>Deferred</span><span><i style="background:var(--soft-2);border:1px dashed #c6cdc7;border-radius:2px"></i>Not planned yet</span></div>`)}
-  ${sec("plans","","Plans","","",`<div class="tablewrap"><table><thead><tr><th>Ministry</th><th>Status</th><th class="num">Trainings</th><th>Spread</th><th class="num">Est. cost</th><th></th></tr></thead><tbody>${table}</tbody></table></div>`)}`;
-  v.querySelectorAll("details.sec").forEach(d=>d.addEventListener("toggle",()=>{S.open[d.dataset.sec]=d.open}));
+  <div class="fchips">${chip("all","All")}${chip("none","Not started")}${chip("draft","In progress")}${chip("review","Waiting on review")}${chip("approved","Approved")}</div>
+  <div class="ov-list">${list||`<div class="ov-empty">No teams in this group.</div>`}</div>
+  <div class="legend"><span><i style="background:var(--green);border-radius:2px"></i>Held</span><span><i style="background:#8fb3ad;border-radius:2px"></i>Upcoming</span><span><i style="background:#d9534f;border-radius:2px"></i>Report due</span><span><i style="background:#e0b24c;border-radius:2px"></i>Deferred</span><span><i style="background:var(--soft-2);border:1px dashed #c6cdc7;border-radius:2px"></i>Not planned yet</span></div>`;
   $("#ov-year").onchange=e=>{if(S.dirty&&!confirmLeave())return e.target.value=S.year;S.year=+e.target.value;loadForm();renderAll()};
-  v.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{if(S.dirty&&!confirmLeave())return;S.key=b.dataset.open;try{localStorage.setItem("towtp.key",S.key)}catch(_){}loadForm();setView("form")});
+  v.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{S.ovFilter=b.dataset.filter;renderOverview()});
+  const open=k=>{if(S.dirty&&!confirmLeave())return;S.key=k;try{localStorage.setItem("towtp.key",S.key)}catch(_){}loadForm();setView("form")};
+  v.querySelectorAll(".ov-row").forEach(r=>{r.onclick=e=>{e.stopPropagation();open(r.dataset.open)};r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open(r.dataset.open)}}});
   $("#ov-pdf").onclick=e=>pdfOut(()=>overviewPdf(y),`TOW-Training-Overview-${y}`,e.currentTarget);
   $("#ov-csv").onclick=()=>exportCsv(y);
 }
@@ -1094,58 +1185,94 @@ function renderSettings(){
   const v=$("#view-settings");
   if(!S.isAdmin){v.innerHTML=`<div class="card empty">Settings are for the church admin only.</div>`;return}
   if(!S.setDraft) S.setDraft=clone(S.cfg);
-  const d=S.setDraft;
-  const staffRows=d.staff.map((s,i)=>`<tr><td><input data-s="staff" data-i="${i}" value="${esc(s)}"></td><td><button class="btn small ghost" type="button" data-del="staff" data-i="${i}">Remove</button></td></tr>`).join("");
-  const tops=d.ministries.filter(m=>!m.parent);
-  const minRows=d.ministries.map((m,i)=>`<tr><td><input data-s="min" data-i="${i}" data-f="name" value="${esc(m.name)}"></td>
-    <td><select data-s="min" data-i="${i}" data-f="parent"><option value="">— (main ministry)</option>${tops.filter(t=>t.key!==m.key).map(t=>`<option value="${t.key}" ${m.parent===t.key?"selected":""}>${esc(t.name)}</option>`).join("")}</select></td>
-    <td><input data-s="min" data-i="${i}" data-f="pic" value="${esc(m.pic)}" list="set-staff"></td>
-    <td><input data-s="min" data-i="${i}" data-f="picEn" value="${esc(m.picEn||"")}" list="set-staff" placeholder="—"></td>
-    <td><input data-s="min" data-i="${i}" data-f="picZh" value="${esc(m.picZh||"")}" list="set-staff" placeholder="—"></td>
-    <td><input data-s="min" data-i="${i}" data-f="team" value="${esc(m.team)}"></td>
-    <td><input data-s="min" data-i="${i}" data-f="freq" type="number" min="1" max="12" value="${esc(m.freq)}" style="width:60px"></td>
-    <td style="text-align:center"><input type="checkbox" data-s="min" data-i="${i}" data-f="combined" ${m.combined?"checked":""} style="width:auto"></td>
-    <td style="text-align:center"><input type="checkbox" data-s="min" data-i="${i}" data-f="kpi" ${m.kpi?"checked":""} style="width:auto"></td>
-    <td style="text-align:center"><input type="checkbox" data-s="min" data-i="${i}" data-f="active" ${m.active!==false?"checked":""} style="width:auto"></td></tr>`).join("");
-  const ck=S.setCourseKey&&d.ministries.find(m=>m.key===S.setCourseKey)?S.setCourseKey:d.ministries[0]?.key;
-  const cl=d.courses[ck]||[];
-  const courseRows=cl.map((c,i)=>`<tr><td><input data-s="course" data-i="${i}" data-f="code" value="${esc(c.code)}" style="width:56px"></td><td><input data-s="course" data-i="${i}" data-f="title" value="${esc(c.title)}"></td><td><input data-s="course" data-i="${i}" data-f="covers" value="${esc(c.covers)}"></td><td><input data-s="course" data-i="${i}" data-f="outcome" value="${esc(c.outcome)}"></td><td><input data-s="course" data-i="${i}" data-f="by" value="${esc(c.by)}"></td><td><button class="btn small ghost" type="button" data-del="course" data-i="${i}">Remove</button></td></tr>`).join("");
-  const hy=S.setHolYear;
-  const holText=(d.holidays[hy]||[]).map(([a,b])=>`${a} ${b}`).join("\n");
-  v.innerHTML=pageHead("Settings","Only visible after the Leadership PIN is entered. Changes apply to everyone once saved.")+
-  `<div class="card row spread"><span class="small"><b>Google Sheet</b> · all plans, reviews, settings and the change log are stored here.</span><a class="btn small" href="https://docs.google.com/spreadsheets/d/140L4FqaQlUqMHmrLGZJfjX-c-kn-orw4g2JnORJMRfU/edit" target="_blank" rel="noopener">Open Sheet</a></div>`+
-  sec("s-years","","Plan Years & Deadline","",`<span class="small muted">${d.years.join(", ")}</span>`,`<div class="row">${d.years.map(y=>`<span class="chip">${y} <button class="btn small ghost" type="button" data-del="year" data-y="${y}" title="Remove ${y}" aria-label="Remove ${y}">✕</button></span>`).join("")}<input id="set-newyear" type="number" placeholder="e.g. ${Math.max(...d.years)+1}" style="width:110px"><button class="btn small" type="button" id="set-addyear">Add Year</button></div>
-    <div class="grid"><label class="f">Plans due (month)<select id="set-duem">${MONL.map((n,i)=>`<option value="${i+1}" ${d.dueMonth===i+1?"selected":""}>${n}</option>`).join("")}</select></label><label class="f">Day<input id="set-dued" type="number" min="1" max="31" value="${d.dueDay}"></label></div><div class="small muted">Plans for a year are due on this date in the year before.</div>`)+
-  sec("s-staff","","Staff / PICs","",`<span class="small muted">${d.staff.length}</span>`,`<div class="tablewrap settings-table"><table><tbody>${staffRows}</tbody></table></div><div><button class="btn small" type="button" id="set-addstaff">+ Add Person</button></div>`)+
-  sec("s-min","","Ministries","Each has an English and a Chinese team, unless marked Combined",`<span class="small muted">${d.ministries.length}</span>`,`<div class="tablewrap settings-table"><table><thead><tr><th>Name</th><th>Under</th><th>Ministry lead</th><th>English team PIC</th><th>Chinese team PIC</th><th>Default team</th><th>Per yr</th><th title="One combined team instead of separate English and Chinese teams">Combined</th><th>KPI</th><th>Active</th></tr></thead><tbody>${minRows}</tbody></table></div><div class="row"><input id="set-newmin" placeholder="New ministry name" style="max-width:240px"><button class="btn small" type="button" id="set-addmin">+ Add Ministry</button></div><div class="small muted">Untick Active to hide a ministry without losing its past plans. Untick KPI if its training isn't scored yet.</div><datalist id="set-staff">${d.staff.map(s=>`<option value="${esc(s.replace(/\s*\(.*\)$/,""))}">`).join("")}</datalist>`)+
-  sec("s-courses","","Recommended Courses","","",`<label class="f" style="max-width:300px">Ministry<select id="set-ck">${d.ministries.map(m=>`<option value="${m.key}" ${m.key===ck?"selected":""}>${esc(m.name)}</option>`).join("")}</select></label><div class="tablewrap settings-table"><table><thead><tr><th>Code</th><th>Course</th><th>What it covers</th><th>Expected outcome</th><th>Trainer</th><th></th></tr></thead><tbody>${courseRows}</tbody></table></div><div><button class="btn small" type="button" id="set-addcourse">+ Add Course</button></div>`)+
-  sec("s-hol","","Public Holidays & Long Weekends","Used for warnings and suggested dates; not shown on the calendar","",`<label class="f" style="max-width:200px">Year<select id="set-hy">${d.years.map(y=>`<option ${String(y)===hy?"selected":""}>${y}</option>`).join("")}</select></label><label class="f">One per line: YYYY-MM-DD Name<textarea id="set-hol" style="min-height:180px;font-family:ui-monospace,Menlo,Consolas,monospace">${esc(holText)}</textarea></label>`)+
-  sec("s-wa","","WhatsApp Invite Template","","",`<label class="f">Template<textarea id="set-wa" style="min-height:220px">${esc(d.waInvite)}</textarea></label><div class="small muted">Placeholders: {ministry} {n} {course} {day} {date} {start} {end} {venue} {trainer} {covers} {outcome} {extras} {rsvp} {pic}. A line is left out when its placeholder is empty.</div>`)+
-  `<div class="row"><button class="btn primary" type="button" id="set-save" ${S.setDirty?"":"disabled"}>Save Settings</button><button class="btn" type="button" id="set-reset" ${S.setDirty?"":"disabled"}>Discard Changes</button>${S.setDirty?`<span class="small" style="color:var(--amber)">Unsaved changes</span>`:""}</div>`;
-  v.querySelectorAll("details.sec").forEach(x=>x.addEventListener("toggle",()=>{S.open[x.dataset.sec]=x.open}));
-  const dirty=()=>{S.setDirty=true;const sb=$("#set-save"),rb=$("#set-reset");sb.disabled=false;rb.disabled=false};
-  v.querySelectorAll('[data-s="staff"]').forEach(el=>el.oninput=()=>{d.staff[+el.dataset.i]=el.value;dirty()});
-  v.querySelectorAll('[data-s="min"]').forEach(el=>el[el.type==="checkbox"||el.tagName==="SELECT"?"onchange":"oninput"]=()=>{const m=d.ministries[+el.dataset.i],f=el.dataset.f;m[f]=el.type==="checkbox"?el.checked:el.type==="number"?Number(el.value):el.value;dirty();if(f==="parent")renderSettings()});
-  v.querySelectorAll('[data-s="course"]').forEach(el=>el.oninput=()=>{d.courses[ck][+el.dataset.i][el.dataset.f]=el.value;dirty()});
-  v.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const t=b.dataset.del;
-    if(t==="staff")d.staff.splice(+b.dataset.i,1);
-    if(t==="course")d.courses[ck].splice(+b.dataset.i,1);
-    if(t==="year"){const y=+b.dataset.y;if(Object.values(S.plans).some(p=>p.year===y)){toast(`${y} already has plans, so it can't be removed.`);return}d.years=d.years.filter(x=>x!==y)}
-    dirty();renderSettings()});
-  $("#set-addyear").onclick=()=>{const y=+$("#set-newyear").value;if(!(y>=2026&&y<=2100)){toast("Enter a year like 2029.");return}if(!d.years.includes(y)){d.years.push(y);d.years.sort();d.holidays[String(y)]=d.holidays[String(y)]||[]}dirty();renderSettings()};
-  $("#set-duem").onchange=e=>{d.dueMonth=+e.target.value;dirty()}; $("#set-dued").oninput=e=>{d.dueDay=Math.min(31,Math.max(1,+e.target.value||15));dirty()};
-  $("#set-addstaff").onclick=()=>{d.staff.push("");dirty();renderSettings()};
-  $("#set-addmin").onclick=()=>{const name=$("#set-newmin").value.trim();if(!name){toast("Type the ministry name first.");return}let key=name.toLowerCase().replace(/[^a-z0-9]+/g,"").slice(0,20)||"min";let k=key,n=2;while(d.ministries.some(m=>m.key===k))k=key+n++;d.ministries.push({key:k,name,parent:"",pic:"",picEn:"",picZh:"",team:`${name} team`,freq:4,kpi:true,active:true});d.courses[k]=d.courses[k]||[];dirty();renderSettings()};
-  $("#set-ck").onchange=e=>{S.setCourseKey=e.target.value;renderSettings()};
-  $("#set-addcourse").onclick=()=>{(d.courses[ck]=d.courses[ck]||[]).push({code:"",title:"",covers:"",outcome:"",by:"Internal"});dirty();renderSettings()};
-  $("#set-hy").onchange=e=>{S.setHolYear=e.target.value;renderSettings()};
-  $("#set-hol").oninput=e=>{d.holidays[hy]=e.target.value.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const m=l.match(/^(\d{4}-\d{2}-\d{2})\s+(.+)$/);return m?[m[1],m[2]]:null}).filter(Boolean);dirty()};
-  $("#set-wa").oninput=e=>{d.waInvite=e.target.value;dirty()};
+  const d=S.setDraft, tab=S.setTab||"ministries", gh=typeof TOWAPI!=="undefined";
+  const byName=(a,b)=>a.name.localeCompare(b.name,"en",{sensitivity:"base"});
+  const staffOpts=`<datalist id="set-staff">${d.staff.map(s=>`<option value="${esc(s.replace(/\s*\(.*\)$/,""))}">`).join("")}</datalist>`;
+  const tabs=[["ministries","Ministries"],["staff","Names"],["courses","Courses"],["years","Years & Deadline"],["holidays","Holidays"],["wa","WhatsApp"]];
+  let body="";
+  if(tab==="ministries"){
+    const tops=d.ministries.filter(m=>!m.parent||!d.ministries.some(x=>x.key===m.parent)).sort(byName), ordered=[];
+    tops.forEach(t=>{ordered.push(t);d.ministries.filter(c=>c.parent===t.key).sort(byName).forEach(c=>ordered.push(c))});
+    const rows=ordered.map(m=>{const i=d.ministries.indexOf(m),open=S.setEdit===m.key;
+      const mode=m.combined?(m.only?`${m.only} only`:"One combined team"):"English & Chinese teams";
+      const teams=m.combined?`<span><i class="lang all">${esc(m.only||"All")}</i>${m.only?esc(m.only)+" service":"Combined team"}</span>`:`<span><i class="lang en">Eng</i>English service</span><span><i class="lang zh">Chi</i>Chinese service</span>`;
+      const fld=(f,label,extra="")=>`<label class="f">${label}<input data-m="${i}" data-f="${f}" value="${esc(m[f]??"")}" ${extra}></label>`;
+      return `<div class="mrow ${m.parent?"child":""} ${m.active===false?"off":""}">
+        <div class="mhead" data-edit="${m.key}" role="button" tabindex="0" aria-expanded="${open}"><span class="dot" style="background:${LANE_COLORS[i%LANE_COLORS.length]}"></span>
+          <div class="mn"><b>${esc(m.name||"(no name)")}</b><span>Lead: ${esc(m.pic||"not set")} · ${mode}${m.kpi===false?" · not in KPI":""}${m.active===false?" · inactive":""}</span></div>
+          <span class="btn small">${open?"Done":"Edit"}</span></div>
+        ${open?`<div class="medit"><div class="grid">
+          ${fld("name","Name")}
+          <label class="f">Under<select data-m="${i}" data-f="parent"><option value="">— Main ministry</option>${tops.filter(t=>t.key!==m.key&&!t.parent).map(t=>`<option value="${t.key}" ${m.parent===t.key?"selected":""}>${esc(t.name)}</option>`).join("")}</select></label>
+          ${fld("pic","Ministry lead",'list="set-staff"')}
+          <label class="f">Teams<select data-m="${i}" data-f="mode"><option value="split" ${!m.combined?"selected":""}>English & Chinese teams</option><option value="combined" ${m.combined&&!m.only?"selected":""}>One combined team</option><option value="bm" ${m.combined&&m.only==="BM"?"selected":""}>BM only</option></select></label>
+          ${!m.combined?fld("picEn","English coordinator (optional)",'list="set-staff" placeholder="Not shown in the app for now"')+fld("picZh","Chinese coordinator (optional)",'list="set-staff" placeholder="Not shown in the app for now"'):""}
+          ${fld("team","Default team description")}
+          <label class="f">Trainings per year<input data-m="${i}" data-f="freq" type="number" min="1" max="12" value="${esc(m.freq)}"></label>
+          <div class="span-all row"><label class="ck"><input type="checkbox" data-m="${i}" data-f="kpi" ${m.kpi!==false?"checked":""}> Counts in KPI</label><label class="ck"><input type="checkbox" data-m="${i}" data-f="active" ${m.active!==false?"checked":""}> Active</label></div>
+          <div class="span-all small muted">The ministry lead plans for both teams. Untick Active to hide a ministry without losing its past plans.</div>
+        </div></div>`:""}</div>`}).join("");
+    body=`<div class="row spread"><span class="small muted">${d.ministries.length} ministries · tap one to edit</span><div class="row"><input id="set-newmin" placeholder="New ministry name" style="width:200px"><button class="btn small" type="button" id="set-addmin">+ Add Ministry</button></div></div><div class="mlist">${rows}</div>${staffOpts}`;
+  }
+  if(tab==="staff") body=`<div class="small muted">Names offered when filling in PIC fields.</div><div class="chiplist">${d.staff.map((s,i)=>`<span class="chip">${esc(s)}<button type="button" data-del-staff="${i}" aria-label="Remove ${esc(s)}">✕</button></span>`).join("")}</div><div class="row"><input id="set-newstaff" placeholder="Full name" style="max-width:260px"><button class="btn small" type="button" id="set-addstaff">+ Add Person</button></div>`;
+  if(tab==="courses"){
+    const ck=S.setCourseKey&&d.ministries.some(m=>m.key===S.setCourseKey)?S.setCourseKey:(d.ministries[0]?.key||""); S.setCourseKey=ck;
+    const list=(d.courses[ck]=d.courses[ck]||[]);
+    const ordered=[];d.ministries.filter(m=>!m.parent).sort(byName).forEach(t=>{ordered.push(t);d.ministries.filter(c=>c.parent===t.key).sort(byName).forEach(c=>ordered.push(c))});
+    body=`<label class="f" style="max-width:320px">Ministry<select id="set-ck">${ordered.map(m=>`<option value="${m.key}" ${m.key===ck?"selected":""}>${m.parent?"  ↳ ":""}${esc(m.name)}</option>`).join("")}</select></label>
+      <div class="small muted">Shared by this ministry's English and Chinese teams.</div>
+      ${list.map((c,i)=>`<div class="ccard"><div class="chead"><label class="f code">Code<input data-c="${i}" data-f="code" value="${esc(c.code)}"></label><label class="f ttl">Course title<input data-c="${i}" data-f="title" value="${esc(c.title)}"></label><button class="btn small ghost" type="button" data-del-course="${i}">Remove</button></div>
+        <label class="f">What it covers<textarea data-c="${i}" data-f="covers">${esc(c.covers)}</textarea></label>
+        <div class="grid"><label class="f">Expected outcome<input data-c="${i}" data-f="outcome" value="${esc(c.outcome)}"></label><label class="f">Suggested trainer<input data-c="${i}" data-f="by" value="${esc(c.by)}"></label></div></div>`).join("")||`<div class="small muted">No courses yet.</div>`}
+      <div><button class="btn small" type="button" id="set-addcourse">+ Add Course</button></div>`;
+  }
+  if(tab==="years") body=`<div><b class="small">Plan years</b><div class="chiplist" style="margin-top:6px">${d.years.map(y=>`<span class="chip">${y}<button type="button" data-del-year="${y}" aria-label="Remove ${y}">✕</button></span>`).join("")}</div></div>
+      <div class="row"><input id="set-newyear" type="number" placeholder="e.g. ${Math.max(...d.years)+1}" style="width:120px"><button class="btn small" type="button" id="set-addyear">+ Add Year</button></div>
+      <div class="grid" style="max-width:420px"><label class="f">Plans due (month)<select id="set-duem">${MONL.map((n,i)=>`<option value="${i+1}" ${d.dueMonth===i+1?"selected":""}>${n}</option>`).join("")}</select></label><label class="f">Day<input id="set-dued" type="number" min="1" max="31" value="${d.dueDay}"></label></div>
+      <div class="small muted">Plans for a year are due on this date in the year before. For ${d.years[0]||""}: ${esc(fmtLong(`${(d.years[0]||2027)-1}-${String(d.dueMonth).padStart(2,"0")}-${String(d.dueDay).padStart(2,"0")}`))}.</div>`;
+  if(tab==="holidays"){const hy=S.setHolYear&&d.years.map(String).includes(S.setHolYear)?S.setHolYear:String(d.years[0]);S.setHolYear=hy;
+    body=`<div class="small muted">Used for warnings and suggested dates. Not shown on the calendar.</div><label class="f" style="max-width:200px">Year<select id="set-hy">${d.years.map(y=>`<option ${String(y)===hy?"selected":""}>${y}</option>`).join("")}</select></label>
+      <label class="f">One per line: YYYY-MM-DD Name<textarea id="set-hol" style="min-height:240px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px">${esc((d.holidays[hy]||[]).map(([a,b])=>`${a} ${b}`).join("\n"))}</textarea></label><span class="small muted" id="hol-count">${(d.holidays[hy]||[]).length} dates</span>`}
+  if(tab==="wa") body=`<div class="grid"><label class="f">Invite template<textarea id="set-wa" style="min-height:300px">${esc(d.waInvite)}</textarea></label><div><span class="f" style="display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--label);margin-bottom:4px">Preview</span><div class="waprev" id="wa-prev"></div></div></div>
+      <div class="small muted">Placeholders: {ministry} {n} {course} {day} {date} {start} {end} {venue} {trainer} {covers} {outcome} {extras} {rsvp} {pic}. A line is left out when its placeholder is empty.</div>`;
+  v.innerHTML=pageHead("Settings",gh?"Only visible after the admin PIN is entered. Changes apply to everyone once saved.":"Only you and other editors see this tab. Changes apply to everyone once saved.")+
+    (window.SHEET_URL?`<div class="card row spread"><span class="small"><b>Google Sheet</b> · all plans, reviews, settings and the change log are stored here.</span><a class="btn small" href="${esc(window.SHEET_URL)}" target="_blank" rel="noopener">Open Sheet</a></div>`:"")+
+    `<div class="segtabs" role="tablist">${tabs.map(([k,l])=>`<button type="button" role="tab" aria-selected="${k===tab}" data-tab="${k}">${l}</button>`).join("")}</div>
+    <div class="card stack">${body}</div>
+    <div class="setbar ${S.setDirty?"dirty":""}"><span id="set-state">${S.setDirty?"You have unsaved changes":"All changes saved"}</span><div class="row"><button class="btn" type="button" id="set-reset" ${S.setDirty?"":"disabled"}>Discard</button><button class="btn primary" type="button" id="set-save" ${S.setDirty?"":"disabled"}>Save Settings</button></div></div>`;
+  const dirty=()=>{S.setDirty=true;const b=$(".setbar");b.classList.add("dirty");$("#set-state").textContent="You have unsaved changes";$("#set-save").disabled=false;$("#set-reset").disabled=false};
+  v.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.setTab=b.dataset.tab;renderSettings()});
+  // ministries
+  v.querySelectorAll(".mhead").forEach(h=>{const t=()=>{S.setEdit=S.setEdit===h.dataset.edit?null:h.dataset.edit;renderSettings()};h.onclick=t;h.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();t()}}});
+  v.querySelectorAll("[data-m]").forEach(el=>{const m=d.ministries[+el.dataset.m],f=el.dataset.f;
+    if(el.type==="checkbox"||el.tagName==="SELECT") el.onchange=()=>{if(f==="mode"){m.combined=el.value!=="split";if(el.value==="bm")m.only="BM";else delete m.only}else m[f]=el.type==="checkbox"?el.checked:el.value;dirty();renderSettings()};
+    else el.oninput=()=>{m[f]=el.type==="number"?Number(el.value):el.value;dirty()}});
+  $("#set-addmin")?.addEventListener("click",()=>{const name=$("#set-newmin").value.trim();if(!name){toast("Type the ministry name first.");return}let key=name.toLowerCase().replace(/[^a-z0-9]+/g,"").slice(0,20)||"min";let k=key,n=2;while(d.ministries.some(m=>m.key===k))k=key+n++;d.ministries.push({key:k,name,parent:"",pic:"",picEn:"",picZh:"",team:`${name} team`,freq:4,kpi:true,active:true});d.courses[k]=d.courses[k]||[];S.setEdit=k;dirty();renderSettings()});
+  // staff
+  v.querySelectorAll("[data-del-staff]").forEach(b=>b.onclick=()=>{d.staff.splice(+b.dataset.delStaff,1);dirty();renderSettings()});
+  const addStaff=()=>{const n=$("#set-newstaff").value.trim();if(!n)return;if(!d.staff.includes(n))d.staff.push(n);dirty();renderSettings();$("#set-newstaff")?.focus()};
+  $("#set-addstaff")?.addEventListener("click",addStaff); $("#set-newstaff")?.addEventListener("keydown",e=>{if(e.key==="Enter")addStaff()});
+  // courses
+  $("#set-ck")?.addEventListener("change",e=>{S.setCourseKey=e.target.value;renderSettings()});
+  v.querySelectorAll("[data-c]").forEach(el=>el.oninput=()=>{d.courses[S.setCourseKey][+el.dataset.c][el.dataset.f]=el.value;dirty()});
+  v.querySelectorAll("[data-del-course]").forEach(b=>b.onclick=()=>{d.courses[S.setCourseKey].splice(+b.dataset.delCourse,1);dirty();renderSettings()});
+  $("#set-addcourse")?.addEventListener("click",()=>{d.courses[S.setCourseKey].push({code:"",title:"",covers:"",outcome:"",by:"Internal"});dirty();renderSettings()});
+  // years
+  v.querySelectorAll("[data-del-year]").forEach(b=>b.onclick=()=>{const y=+b.dataset.delYear;if(Object.values(S.plans).some(p=>p.year===y)){toast(`${y} already has plans, so it can't be removed.`);return}d.years=d.years.filter(x=>x!==y);dirty();renderSettings()});
+  $("#set-addyear")?.addEventListener("click",()=>{const y=+$("#set-newyear").value;if(!(y>=2026&&y<=2100)){toast("Enter a year like 2029.");return}if(!d.years.includes(y)){d.years.push(y);d.years.sort();d.holidays[String(y)]=d.holidays[String(y)]||[]}dirty();renderSettings()});
+  $("#set-duem")?.addEventListener("change",e=>{d.dueMonth=+e.target.value;dirty()}); $("#set-dued")?.addEventListener("input",e=>{d.dueDay=Math.min(31,Math.max(1,+e.target.value||15));dirty()});
+  // holidays
+  $("#set-hy")?.addEventListener("change",e=>{S.setHolYear=e.target.value;renderSettings()});
+  $("#set-hol")?.addEventListener("input",e=>{d.holidays[S.setHolYear]=e.target.value.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const m=l.match(/^(\d{4}-\d{2}-\d{2})\s+(.+)$/);return m?[m[1],m[2]]:null}).filter(Boolean);$("#hol-count").textContent=`${d.holidays[S.setHolYear].length} dates`;dirty()});
+  // whatsapp
+  const prev=()=>{const el=$("#wa-prev");if(el)el.textContent=fillTemplate(d.waInvite||"",{ministry:"Kids Church (Eng)",n:2,course:"Bible Storytelling by Age Group",day:"Sunday",date:"25 April 2027",start:"12:30pm",end:"3:30pm",venue:"TOW Premises - Main hall",trainer:"Ps. Viven Tan",covers:"Telling stories for ages 3-5, 6-9, 10-12",outcome:"Lessons that hold attention",extras:"🍱 Meals / refreshments provided",rsvp:"18 April 2027",pic:"Siew Boon Ping"})};
+  $("#set-wa")?.addEventListener("input",e=>{d.waInvite=e.target.value;prev();dirty()}); prev();
+  // save
   $("#set-reset").onclick=()=>{S.setDraft=null;S.setDirty=false;renderSettings()};
   $("#set-save").onclick=async e=>{const b=e.currentTarget;b.disabled=true;
     d.staff=d.staff.map(s=>s.trim()).filter(Boolean);
     try{await S.db.doc("leadership/settings").set(clone(d));S.cfg=mergeCfg(d);S.setDraft=null;S.setDirty=false;toast("Settings saved.");renderAll()}
-    catch(err){toast(err?.code==="invalid_argument"?"Log in as Leadership to change settings.":"Couldn't save settings. Try again.");b.disabled=false}};
+    catch(err){toast(err?.code==="invalid_argument"?"Only admins can change settings.":"Couldn't save settings. Try again.");b.disabled=false}};
 }
 function mergeCfg(doc){
   const c=clone(DEFAULTS); if(!doc) return c;
@@ -1222,8 +1349,8 @@ function planPdf(k,p,y){
   const intro=doc.splitTextToSize(`Each ministry plans at least 4 team trainings a year, ideally one every quarter, on weekends that don't clash with other ministries. Fill in Part A, then one Part B page per training. Submit by ${fmtLong(dueDate(y||S.year))}.`,CW);doc.text(intro,M,yy);yy+=intro.length*12+10;
   const half=(CW-14)/2;
   pField(doc,M,yy,half,"Ministry",m?minFull(k):"");yy=pField(doc,M+half+14,yy,half,"Plan year",y?String(y):"");
-  pField(doc,M,yy,half,"Team PIC",p?.pic||m?.pic||"");yy=pField(doc,M+half+14,yy,half,"Co-PICs / helpers",p?.coPics||"");
-  pField(doc,M,yy,half,"Ministry lead (oversight)",k?leadOf(k):"");yy=pField(doc,M+half+14,yy,half,"Service",m?.lang?(m.combined?(m.only?m.lang+" service":"English & Chinese (combined)"):m.lang+" service"):"English  /  Chinese  (circle one)");
+  pField(doc,M,yy,half,"Ministry lead",p?.pic||m?.pic||"");yy=pField(doc,M+half+14,yy,half,"Co-PICs / helpers",p?.coPics||"");
+  yy=pField(doc,M,yy,CW,"Service",m?.lang?(m.combined?(m.only?m.lang+" service":"English & Chinese (combined)"):m.lang+" service"):"English  /  Chinese  (circle one)");
   pField(doc,M,yy,120,"Trainings planned this year",p?String(p.frequency):"");yy=pField(doc,M+134,yy,CW-134,"If not 4, why?",p?.freqReason||"");
   yy=pText(doc,M,yy,CW,"Main training goal for the year",p?.goal,3);
   if(!filled){
@@ -1355,15 +1482,15 @@ loadForm(); setView(S.view);
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!modal.hidden)close()});
   function paintHeader(){
     const n=LS.get("towtp.name");
-    $("#who-btn").textContent=n?n:"Set your name";
+    $("#who-btn").innerHTML=`<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg> ${esc(n||"Who are you?")}`;$("#who-btn").title="Your name on this device. Tap to change.";
     $("#lead-btn").innerHTML=(SS.get("towtp.pin")?LOCK_OPEN+" Admin · Log out":LOCK+" Admin Login");
     $("#lead-btn").classList.toggle("on",!!SS.get("towtp.pin"));
     $("#sheet-btn").hidden=!SS.get("towtp.pin");
   }
   function askName(first){
-    const cur=LS.get("towtp.name")||"", names=S.cfg.staff.map(x=>x.replace(/\s*\(.*\)$/,"")), known=names.includes(cur);
+    const cur=LS.get("towtp.name")||"", leads=[...new Set(S.cfg.ministries.filter(m=>m.active!==false&&m.pic).map(m=>m.pic))].sort((a,b)=>(/^Ps\./.test(b)-/^Ps\./.test(a))||a.localeCompare(b)), names=["Church Admin",...leads], known=names.includes(cur);
     mt.textContent="Who are you?";
-    mb.innerHTML=`<p class="small muted" style="margin:0">So the change history shows who made each change.${first?" You only need to do this once on this device.":""}</p>
+    mb.innerHTML=`<p class="small muted" style="margin:0">Only ministry leads plan trainings. Your name is shown in the change history.${first?" You only need to choose once on this device.":""}</p>
       <label class="f">Your name<select id="m-sel"><option value="">Choose your name…</option>${names.map(n=>`<option ${n===cur?"selected":""}>${esc(n)}</option>`).join("")}<option value="__other" ${cur&&!known?"selected":""}>Someone else (type your name)</option></select></label>
       <label class="f" id="m-otherwrap" ${cur&&!known?"":"hidden"}>Type your name<input id="m-name" value="${esc(cur&&!known?cur:"")}" placeholder="Full name"></label>
       <div class="row" style="justify-content:space-between"><button class="btn ghost small" type="button" id="m-admin">${LOCK} Church admin? Log in</button><div class="row"><button class="btn" type="button" id="m-cancel">Later</button><button class="btn primary" type="button" id="m-ok">Save</button></div></div>`;
