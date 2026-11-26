@@ -316,27 +316,26 @@ const C=(code,title,covers,outcome,by)=>({code,title,covers,outcome,by});
 const DEFAULTS={
  years:[2027,2028],
  dueMonth:12, dueDay:15,
- v:3,
- staff:["Ps. Derick Wong","Ps. Jocelyn Yoong","Ps. Kenrick Kong","Ps. Kevin Ong","Ps. Marianne Chow","Ps. Melissa Lai","Ps. Michael Lia","Ps. Viven Tan","Cheah Kok Hon","Iris Yap","Jeremy Ong","Jessica Lim","Leon Wong","Mary Jane","Priscilla Chin","Wendy Ngo","Winnie Phang"],
+ v:4,
+ staff:["Ps. Derick Wong","Ps. Jocelyn Yoong","Ps. Kenrick Kong","Ps. Kevin Ong","Ps. Marianne Chow","Ps. Melissa Lai","Ps. Michael Lia","Ps. Viven Tan","Cheah Kok Hon","Iris Yap","Jeremy Ong","Jessica Lim","Leon Wong","Mary Jane","Priscilla Chin","Siew Boon Ping","Wendy Ngo","Winnie Phang"],
  ministries:[
   {key:"levites",name:"Levites (Worship)",parent:"",pic:"Ps. Kenrick Kong",picEn:"",picZh:"",team:"Worship team (musicians, vocalists, worship leaders)",freq:4,kpi:true,active:true},
-  {key:"sound",name:"Sound",parent:"levites",pic:"Cheah Kok Hon",picEn:"",picZh:"",team:"Sound team",freq:4,kpi:true,active:true},
   {key:"lighting",name:"Lighting",parent:"levites",pic:"Ps. Kenrick Kong",picEn:"",picZh:"",team:"Lighting team",freq:4,kpi:true,active:true},
-  {key:"led",name:"LED",parent:"levites",pic:"Leon Wong",picEn:"",picZh:"",team:"LED wall team",freq:4,kpi:true,active:true},
-  {key:"media",name:"Media",parent:"levites",pic:"Leon Wong",picEn:"",picZh:"",team:"Media / livestream / slides team",freq:4,kpi:true,active:true},
-  {key:"kids",name:"Kids Church",parent:"",pic:"Ps. Viven Tan",picEn:"",picZh:"",team:"Kids Church teachers and helpers",freq:4,kpi:true,active:true},
-  {key:"connect",name:"Connect & Hospitality",parent:"",pic:"Ps. Jocelyn Yoong",picEn:"",picZh:"",team:"Connect & Hospitality team",freq:4,kpi:true,active:true},
-  {key:"ushers",name:"Ushers",parent:"connect",pic:"",picEn:"",picZh:"",team:"Ushers and communion servers",freq:4,kpi:true,active:true},
-  {key:"lounge",name:"Connect Lounge",parent:"connect",pic:"",picEn:"",picZh:"",team:"Connect Lounge hosts",freq:4,kpi:true,active:true},
+  {key:"sound",name:"Levites – Sound",parent:"",pic:"Cheah Kok Hon",picEn:"",picZh:"",team:"Sound team",freq:4,kpi:true,active:true},
+  {key:"led",name:"Levites – LED",parent:"",pic:"Leon Wong",picEn:"",picZh:"",team:"LED wall team",freq:4,kpi:true,active:true},
+  {key:"media",name:"Levites – Media",parent:"",pic:"Leon Wong",picEn:"",picZh:"",team:"Media / livestream / slides team",freq:4,kpi:true,active:true},
+  {key:"kids",name:"Kids Church",parent:"",pic:"Ps. Viven Tan",picEn:"Siew Boon Ping",picZh:"Siew Boon Ping",team:"Kids Church teachers and helpers",freq:4,kpi:true,active:true},
+  {key:"lounge",name:"Connect",parent:"",pic:"Ps. Jocelyn Yoong",picEn:"",picZh:"",team:"Connect Lounge hosts and follow-up team",freq:4,kpi:true,active:true},
+  {key:"ushers",name:"Ushers",parent:"",pic:"Ps. Jocelyn Yoong",picEn:"",picZh:"",team:"Ushers and communion servers",freq:4,kpi:true,active:true},
   {key:"smallgroup",name:"Small Group",parent:"",pic:"Ps. Marianne Chow",picEn:"",picZh:"Ps. Viven Tan",team:"Small group leaders",freq:4,kpi:true,active:true},
-  {key:"christianed",name:"Christian Education",parent:"",pic:"",picEn:"Mary Jane",picZh:"Iris Yap",team:"Christian Education teachers",freq:4,kpi:true,active:true},
+  {key:"christianed",name:"Christian Education",parent:"",pic:"Ps. Marianne Chow",picEn:"Mary Jane",picZh:"Iris Yap",team:"Christian Education teachers",freq:4,kpi:true,active:true},
   {key:"cafeteria",name:"Cafeteria",parent:"",pic:"Ps. Marianne Chow",picEn:"Priscilla Chin, Jessica Lim",picZh:"Wendy Ngo, Winnie Phang",team:"Cafeteria volunteers and food handlers",freq:4,kpi:true,active:true},
   {key:"ert",name:"ERT & Security",parent:"",pic:"Ps. Kevin Ong",picEn:"",picZh:"",team:"ERT and security team",freq:4,kpi:true,active:true},
   {key:"youth",name:"Youth Network",parent:"",pic:"Ps. Derick Wong",picEn:"",picZh:"",team:"Youth leaders",freq:4,kpi:true,active:true,combined:true},
   {key:"ya",name:"Young Adults",parent:"",pic:"Ps. Derick Wong",picEn:"",picZh:"",team:"Young Adults leaders",freq:4,kpi:true,active:true,combined:true},
   {key:"events",name:"Events",parent:"",pic:"Ps. Melissa Lai",picEn:"",picZh:"",team:"Events team",freq:4,kpi:true,active:true},
   {key:"offering",name:"Offering",parent:"",pic:"Jeremy Ong",picEn:"",picZh:"",team:"Offering counters and stewards",freq:4,kpi:true,active:true},
-  {key:"bm",name:"BM Connect",parent:"",pic:"Ps. Michael Lia",picEn:"",picZh:"",team:"BM Connect team",freq:2,kpi:false,active:true},
+  {key:"bm",name:"BM Connect",parent:"",pic:"Ps. Michael Lia",picEn:"",picZh:"",team:"BM Connect team",freq:2,kpi:false,active:true,combined:true,only:"BM"},
  ],
  courses:{
   levites:[C("L1","Heart of Worship","Biblical basis of worship, the Levite calling, character and conduct on and off stage","Team shares one vision and a written standard of conduct","Internal"),C("L2","Band Dynamics & Arrangement","Playing as a band, dynamics, transitions, click/tracks, rehearsal discipline","Tighter Sunday sets with fewer stops in rehearsal","Internal or guest MD"),C("L3","Vocal Technique & Harmony","Breathing, pitch, blend, building 3-part harmony, mic technique","Vocalists sing in tune and blend; harmonies prepared before rehearsal","External vocal coach"),C("L4","Worship Leading & Flow","Song selection, keys, linking songs, spontaneous moments, leading the congregation","More team members ready to lead a set","Internal"),C("L5","Music Theory & Number System","Chords, keys, Nashville Number System, reading charts","Musicians can transpose and follow charts on the spot","Internal")],
@@ -425,9 +424,14 @@ function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTi
 /* settings accessors */
 const mins=()=>S.cfg.ministries;
 const LANG_UNITS=[["en","Eng","English"],["zh","Chi","Chinese"]];
-function unitsOf(m){if(m.combined)return [{key:m.key,base:m.key,unit:true,combined:true,lang:"Combined",short:"All",name:`${m.name} (Combined)`,parent:"",pic:m.pic||"",lead:m.pic||"",team:`${m.team} - combined English & Chinese`,freq:m.freq,kpi:m.kpi,active:m.active}];return LANG_UNITS.map(([sx,short,lang])=>({key:m.key+sx,base:m.key,unit:true,lang,short,name:`${m.name} (${short})`,parent:m.key,pic:(sx==="en"?m.picEn:m.picZh)||"",lead:m.pic||"",team:`${m.team} - ${lang} service`,freq:m.freq,kpi:m.kpi,active:m.active}))}
+function unitsOf(m){
+  const par=m.parent?S.cfg.ministries.find(x=>x.key===m.parent):null, leadPic=m.pic||par?.pic||"";
+  const base={base:m.key,unit:true,lead:m.pic||"",freq:m.freq,kpi:m.kpi,active:m.active};
+  if(m.combined){const only=m.only||"";return [Object.assign({},base,{key:m.key,combined:true,only,lang:only?(only==="BM"?"Bahasa Malaysia":only):"Combined",short:only||"All",name:only?m.name:`${m.name} (Combined)`,parent:m.parent||"",pic:leadPic,picTemp:!m.pic&&!!leadPic,team:only?`${m.team} - ${only} service`:`${m.team} - combined English & Chinese`})]}
+  return LANG_UNITS.map(([sx,short,lang])=>{const own=(sx==="en"?m.picEn:m.picZh)||"";return Object.assign({},base,{key:m.key+sx,lang,short,name:`${m.name} (${short})`,parent:m.key,pic:own||leadPic,picTemp:!own&&!!leadPic,team:`${m.team} - ${lang} service`})});
+}
 let _uSrc=null,_uAll=[],_uSig="";
-function allUnits(){if(_uSrc!==S.cfg.ministries||_uSig!==JSON.stringify(S.cfg.ministries.map(m=>[m.key,!!m.combined,m.name,m.pic,m.picEn,m.picZh]))){_uSig=JSON.stringify(S.cfg.ministries.map(m=>[m.key,!!m.combined,m.name,m.pic,m.picEn,m.picZh]));_uSrc=S.cfg.ministries;_uAll=S.cfg.ministries.flatMap(unitsOf)}return _uAll}
+function allUnits(){if(_uSrc!==S.cfg.ministries||_uSig!==JSON.stringify(S.cfg.ministries.map(m=>[m.key,!!m.combined,m.only,m.parent,m.name,m.pic,m.picEn,m.picZh]))){_uSig=JSON.stringify(S.cfg.ministries.map(m=>[m.key,!!m.combined,m.only,m.parent,m.name,m.pic,m.picEn,m.picZh]));_uSrc=S.cfg.ministries;_uAll=S.cfg.ministries.flatMap(unitsOf)}return _uAll}
 const MIN=k=>allUnits().find(u=>u.key===k)||mins().find(m=>m.key===k);
 const baseOf=k=>MIN(k)?.base||k;
 const sameBase=(a,b)=>baseOf(a)===baseOf(b);
@@ -605,7 +609,7 @@ function renderForm(){
   // plan details
   const want=Number(f.frequency)||0;
   const pBody=`<div class="grid">
-      <label class="f">${m.unit?(m.combined?"Team PIC":esc(m.lang)+" team PIC"):"Ministry lead / PIC"}<span class="req">*</span><input id="p-pic" data-p="pic" value="${esc(f.pic)}" list="staff-list" placeholder="Your name" ${ro}></label>
+      <label class="f">${m.unit?(m.combined?"Team PIC":esc(m.lang)+" team PIC"):"Ministry lead / PIC"}${m.picTemp?` <span style="text-transform:none;letter-spacing:0;font-weight:500;color:var(--amber)">(temporary: ministry lead)</span>`:""}<span class="req">*</span><input id="p-pic" data-p="pic" value="${esc(f.pic)}" list="staff-list" placeholder="Your name" ${ro}></label>
       ${m.unit&&!m.combined?`<label class="f">Ministry lead (oversight)<input id="p-lead" value="${esc(leadOf(S.key)||"Not set")}" disabled></label>`:""}
       <label class="f">Co-PICs / helpers<input id="p-copics" data-p="coPics" value="${esc(f.coPics)}" placeholder="e.g. senior MD, team leaders" ${ro}></label>
       <label class="f">Trainings planned this year<input id="p-freq" data-p="frequency" type="number" min="1" max="12" value="${esc(f.frequency)}" ${ro}></label>
@@ -738,7 +742,7 @@ function paperBlock(saved){
 const CARET='<svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
 function pickerHtml(){
   const cur=S.key&&MIN(S.key);
-  const inner=cur?`<span class="dot" style="background:${laneColor(cur.key)}"></span><span class="opt-main"><span class="nm">${(()=>{const b=cur.unit?MIN(cur.base):null;const par=b&&b.parent?MIN(b.parent):(!cur.unit&&cur.parent?MIN(cur.parent):null);return par?`<span style="font-weight:500;color:var(--muted)">${esc(par.name)} › </span>`:""})()}${esc(cur.name)}</span><span class="pc">${esc(cur.unit?(cur.combined?(cur.pic||"PIC not set")+" · combined English & Chinese":(cur.pic||"PIC not set")+(leadOf(cur.key)?" · lead: "+leadOf(cur.key):"")):picLine(cur))}</span></span>`
+  const inner=cur?`<span class="dot" style="background:${laneColor(cur.key)}"></span><span class="opt-main"><span class="nm">${(()=>{const b=cur.unit?MIN(cur.base):null;const par=b&&b.parent?MIN(b.parent):(!cur.unit&&cur.parent?MIN(cur.parent):null);return par?`<span style="font-weight:500;color:var(--muted)">${esc(par.name)} › </span>`:""})()}${esc(cur.name)}</span><span class="pc">${esc(cur.unit?(cur.combined?(cur.pic||"PIC not set")+(cur.picTemp?" (temporary: ministry lead)":"")+(cur.only?"":" · combined English & Chinese"):(cur.pic||"PIC not set")+(cur.picTemp?" (temporary: ministry lead)":"")+(leadOf(cur.key)&&!cur.picTemp?" · lead: "+leadOf(cur.key):"")):picLine(cur))}</span></span>`
     :`<span class="opt-main"><span class="nm" style="font-weight:500;color:var(--muted)">Choose your ministry…</span><span class="pc">${orderedMins().length} ministries · English & Chinese teams</span></span>`;
   return `<div><span class="f" style="display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--label)" id="msel-label">Ministry</span>
     <div class="msel" id="msel"><button type="button" class="msel-btn" id="msel-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="msel-label msel-btn">${inner}${CARET}</button>
@@ -753,7 +757,7 @@ function pickerList(q){
     if(!units.length) continue;
     html+=`<div class="msel-grp d${depth(m)}"><span class="dot" style="background:${laneColor(m.key)}"></span><span class="gn">${m.parent&&q?`<span style="font-weight:500">${esc(minName(m.parent))} › </span>`:""}${esc(m.name)}</span><span class="gl">${esc(m.pic||"Lead not set")}${m.kpi===false?" · not in KPI":""}</span></div>`;
     html+=units.map(u=>{const id=docId(S.year,u.key),code=wf(S.plans[id],S.reviews[id]);
-      return `<div class="msel-opt d${depth(m)}" role="option" id="opt-${u.key}" data-k="${u.key}" aria-selected="${u.key===S.key}"><span class="lang ${u.combined?"all":u.lang==="English"?"en":"zh"}">${u.short}</span><span class="opt-main"><span class="nm">${esc(u.name)}</span><span class="pc">${esc(u.combined?(u.pic||"PIC not set")+" · English & Chinese together":(u.pic||"PIC not set"))}</span></span>${pill(code)}</div>`}).join("");
+      return `<div class="msel-opt d${depth(m)}" role="option" id="opt-${u.key}" data-k="${u.key}" aria-selected="${u.key===S.key}"><span class="lang ${u.combined?"all":u.lang==="English"?"en":"zh"}">${u.short}</span><span class="opt-main"><span class="nm">${esc(u.name)}</span><span class="pc">${esc((u.pic||"PIC not set")+(u.picTemp?" (temporary: ministry lead)":"")+(u.combined?(u.only?"":" · English & Chinese together"):""))}</span></span>${pill(code)}</div>`}).join("");
   }
   return html||`<div class="small muted" style="padding:10px">No ministry matches "${esc(q)}".</div>`;
 }
@@ -1153,7 +1157,16 @@ function mergeCfg(doc){
     c.staff=[...new Set([...DEFAULTS.staff,...(doc.staff||[]).filter(s=>s!=="Kok Hon").map(s=>s.replace(/\s*\((Offering|Cafeteria)\)$/,""))])];
     c.v=2;
   }
-  if((c.v||1)<3){c.ministries=c.ministries.map(m=>["youth","ya"].includes(m.key)&&m.combined===undefined?Object.assign({},m,{combined:true}):m);c.v=3}
+  if((doc.v||1)<4){ // Nov 2026 structure: Levites tech teams split out, Connect/Ushers on their own, BM only, new PICs
+    const upd={christianed:{pic:"Ps. Marianne Chow"},kids:{picEn:"Siew Boon Ping",picZh:"Siew Boon Ping"},smallgroup:{picZh:"Ps. Viven Tan"},
+      sound:{parent:"",name:"Levites – Sound"},led:{parent:"",name:"Levites – LED"},media:{parent:"",name:"Levites – Media"},
+      lounge:{parent:"",name:"Connect",pic:"Ps. Jocelyn Yoong"},ushers:{parent:"",pic:"Ps. Jocelyn Yoong"},bm:{combined:true,only:"BM"}};
+    c.ministries=(c.ministries||[]).filter(m=>m.key!=="connect").map(m=>upd[m.key]?Object.assign({},m,upd[m.key]):m);
+    if(!c.ministries.some(m=>m.key==="lighting")) c.ministries.push(clone(DEFAULTS.ministries.find(m=>m.key==="lighting")));
+    if(!c.staff.includes("Siew Boon Ping")) c.staff=[...c.staff,"Siew Boon Ping"];
+  }
+  if((doc.v||1)<3){c.ministries=c.ministries.map(m=>["youth","ya"].includes(m.key)&&m.combined===undefined?Object.assign({},m,{combined:true}):m)}
+  c.v=DEFAULTS.v;
   return c;
 }
 
@@ -1210,7 +1223,7 @@ function planPdf(k,p,y){
   const half=(CW-14)/2;
   pField(doc,M,yy,half,"Ministry",m?minFull(k):"");yy=pField(doc,M+half+14,yy,half,"Plan year",y?String(y):"");
   pField(doc,M,yy,half,"Team PIC",p?.pic||m?.pic||"");yy=pField(doc,M+half+14,yy,half,"Co-PICs / helpers",p?.coPics||"");
-  pField(doc,M,yy,half,"Ministry lead (oversight)",k?leadOf(k):"");yy=pField(doc,M+half+14,yy,half,"Service",m?.lang?(m.combined?"English & Chinese (combined)":m.lang+" service"):"English  /  Chinese  (circle one)");
+  pField(doc,M,yy,half,"Ministry lead (oversight)",k?leadOf(k):"");yy=pField(doc,M+half+14,yy,half,"Service",m?.lang?(m.combined?(m.only?m.lang+" service":"English & Chinese (combined)"):m.lang+" service"):"English  /  Chinese  (circle one)");
   pField(doc,M,yy,120,"Trainings planned this year",p?String(p.frequency):"");yy=pField(doc,M+134,yy,CW-134,"If not 4, why?",p?.freqReason||"");
   yy=pText(doc,M,yy,CW,"Main training goal for the year",p?.goal,3);
   if(!filled){
