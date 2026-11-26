@@ -263,6 +263,21 @@ label.ck input{width:auto;margin:0}
  .ov-row .ov-num,.ov-row .ov-open{display:none}
  .mteams{display:none}
 }
+
+.life{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+.life-overdue,.life-unfulfilled{border-color:#efc3c3;background:#FFF8F8}
+.life-due{border-color:#F0DC9C;background:#FFFCF2}
+.life-upcoming{border-color:#C9DCEF;background:#F7FAFE}
+.life-held{border-color:#CBE7D4;background:#F6FBF7}
+.prep{display:flex;flex-direction:column;gap:5px}
+.repview{display:flex;flex-direction:column;gap:6px;font-size:12.5px}.repview b{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--label)}
+.wa-btn{color:var(--green);border-color:#cfe6d6;text-decoration:none}
+.rem-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.rem-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 12px;border-top:1px solid var(--line)}
+.rem-row:first-child{border-top:0}
+.rem-main b{display:block;font-size:13px}.rem-main span{display:block;font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ov-prog .seg.unf,.bar .seg.unf{background:#7a1f1f;border:0}
+@media (max-width:640px){.rem-row{grid-template-columns:34px minmax(0,1fr) auto}.rem-row .rem-act{grid-column:2/4}}
 @media (max-width:540px){ details.sec > summary .meta .small{display:none} details.sec > summary .st,details.sec > summary .tt{white-space:nowrap} .savebar .sum{width:100%} .bar{grid-template-columns:100px 1fr auto} details.sec > summary .sub{display:none} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -279,6 +294,7 @@ label.ck input{width:auto;margin:0}
     <button id="tab-form" role="tab" aria-selected="true" data-view="form">Plan Form</button>
     <button id="tab-calendar" role="tab" aria-selected="false" data-view="calendar">Calendar</button>
     <button id="tab-overview" role="tab" aria-selected="false" data-view="overview">Overview</button>
+    <button id="tab-reminders" role="tab" aria-selected="false" data-view="reminders">Reminders</button>
     <button id="tab-settings" role="tab" aria-selected="false" data-view="settings" hidden>Settings</button>
   </nav>
 </div></header>
@@ -288,6 +304,7 @@ label.ck input{width:auto;margin:0}
   <section id="view-form" class="stack"></section>
   <section id="view-calendar" class="stack" hidden></section>
   <section id="view-overview" class="stack" hidden></section>
+  <section id="view-reminders" class="stack" hidden></section>
   <section id="view-settings" class="stack" hidden></section>
 </main>
 
@@ -631,6 +648,149 @@ function spreadIssues(p){
   return ps.filter(r=>!ts.some(t=>{const m=pd(t.date).getMonth();return m>=r.a&&m<=r.b})).map(r=>r.name);
 }
 
+/* ================= Training lifecycle & reminders ================= */
+const DAYMS=864e5, REPORT_DAYS=7, GRACE_DAYS=30, UPCOMING_DAYS=14;
+const addDays=(s,n)=>{const d=pd(s);d.setDate(d.getDate()+n);return iso(d)};
+const daysBetween=(a,b)=>Math.round((pd(b)-pd(a))/DAYMS);
+const isLive=code=>["approved","edit_requested"].includes(code);
+function life(t,code){
+  const d=t.delivery||{}, td=today();
+  if(d.status==="Held") return {k:"held",label:d.late?"Held · late report":"Held",cls:"ok"};
+  if(d.status==="Cancelled") return {k:"cancelled",label:"Cancelled",cls:"none"};
+  if(d.status==="Unfulfilled") return {k:"unfulfilled",label:"Unfulfilled",cls:"bad"};
+  if(t.request) return {k:"request",label:t.request.type==="change"?"Date change requested":"Extension requested",cls:"draft"};
+  if(!t.date) return {k:"nodate",label:"No date",cls:"none"};
+  const left=daysBetween(td,t.date);
+  if(left>=0){ if(!isLive(code)) return {k:"planned",label:"Planned",cls:"none"}; return left<=UPCOMING_DAYS?{k:"upcoming",label:left===0?"Today":left===1?"Tomorrow":`In ${left} days`,cls:"sub",days:left}:{k:"planned",label:"Planned",cls:"none"} }
+  if(!isLive(code)) return {k:"notapproved",label:"Date passed · not approved",cls:"draft"};
+  const past=-left, deadline=t.extendedTo||addDays(t.date,GRACE_DAYS);
+  if(past<=REPORT_DAYS) return {k:"due",label:"Report due",cls:"draft",past,deadline};
+  if(td<=deadline) return {k:"overdue",label:`Overdue · ${past} days`,cls:"bad",past,deadline};
+  return {k:"unfulfilled",label:"Unfulfilled",cls:"bad",auto:true,past};
+}
+const lifePill=l=>`<span class="pill ${l.cls}">${esc(l.label)}</span>`;
+const PREP=[["venue","Venue booked (Space & Events Portal)"],["trainer","Trainer / speaker confirmed"],["invite","Invites sent to the team"],["materials","Materials & equipment ready"],["meals","Meals / refreshments arranged"]];
+const waLink=(text,label)=>`<a class="btn small wa-btn" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">${esc(label)}</a>`;
+function reminderText(k,p,t,i,L){
+  const lead=(p&&p.pic)||MIN(k)?.pic||"", what=`${minName(k)} Training #${i+1}${courseLabel(k,t)?` (${courseLabel(k,t).replace(/^\w+\d+ – /,"")})`:""}`;
+  if(L.k==="upcoming") return `Hi ${lead},\n\nReminder: *${what}* is on *${t.date?DOWL[pd(t.date).getDay()]+", "+fmtLong(t.date):""}*${t.start?`, ${fmtTime(t.start)}${t.end?"-"+fmtTime(t.end):""}`:""}${t.venue?` at ${[t.venue,t.venueDetail].filter(Boolean).join(" - ")}`:""}.\n\nPlease make sure the venue is booked, the trainer is confirmed and the team has been invited.\n\nThank you!`;
+  if(L.k==="due") return `Hi ${lead},\n\n*${what}* was planned for ${fmtLong(t.date)}. Please mark it done and send the short post-training report in the Ministry Training Planner within ${REPORT_DAYS} days.\n\nThank you!`;
+  if(L.k==="overdue") return `Hi ${lead},\n\nThe report for *${what}* (planned ${fmtLong(t.date)}) is now ${L.past} days overdue. Please submit it in the Ministry Training Planner by ${fmtLong(L.deadline)}. If the training did not happen, please request a new date or an extension.\n\nThank you!`;
+  return `Hi ${lead},\n\n*${what}* (planned ${fmtLong(t.date)}) has been marked *Unfulfilled* as no report was received. Please speak to leadership if you would like to reschedule.\n\nThank you!`;
+}
+function reportView(d){return `<div class="repview">${d.feedback?`<div><b>Summary</b>${esc(d.feedback)}</div>`:""}${d.wentWell?`<div><b>What went well</b>${esc(d.wentWell)}</div>`:""}${d.improve?`<div><b>To improve</b>${esc(d.improve)}</div>`:""}${d.followUp?`<div><b>Follow-up</b>${esc(d.followUp)}</div>`:""}<div class="small muted">${d.attendance!==""&&d.attendance!=null?`Attendance ${esc(d.attendance)} · `:""}${d.actualCost!==""&&d.actualCost!=null?`Actual cost ${rm(d.actualCost)} · `:""}${d.heldOn?`Held ${esc(fmtDate(d.heldOn))}`:""}</div></div>`}
+function lifePanel(t,i,code,L){
+  const id=n=>`t${i}-${n}`, k=S.key, d=t.delivery||{}, can=S.canWrite, p=S.plans[curId()];
+  if(!isLive(code)&&!["held","cancelled","unfulfilled"].includes(L.k)) return `<div class="life"><div class="small muted">Reminders, the post-training report and date changes start once the plan is approved.</div></div>`;
+  let h=`<div class="life life-${L.k}"><div class="row spread"><b class="small" style="color:var(--brand)">Status & follow-up</b>${t.date?lifePill(L):""}</div>`;
+  if(t.originalDate&&t.originalDate!==t.date) h+=`<div class="small muted">Rescheduled from ${esc(fmtDate(t.originalDate))}${t.rescheduled>1?` (${t.rescheduled} times)`:""}.</div>`;
+  if(t.extendedTo&&!["held","cancelled"].includes(L.k)) h+=`<div class="small muted">Report extension approved until ${esc(fmtDate(t.extendedTo))}.</div>`;
+  if(t.request){const r=t.request;
+    h+=`<div class="note warn"><b>${r.type==="change"?"Date change requested":"Extension requested"}:</b> ${r.type==="change"?`move to ${esc(fmtDate(r.newDate))}`:`send report by ${esc(fmtDate(r.newDate))}`}. ${esc(r.reason||"")}</div>`;
+    h+=S.isAdmin?`<div class="row"><button class="btn good small" type="button" data-req="approve" data-i="${i}">Approve</button><button class="btn warn small" type="button" data-req="decline" data-i="${i}">Decline</button></div>`:`<div class="small muted">Waiting for leadership to approve.</div>`;
+  }
+  if(L.k==="upcoming"||L.k==="planned"){const pr=t.prep||{}, done=PREP.filter(([pk])=>pr[pk]).length;
+    h+=`<div class="small muted">${L.k==="upcoming"?"Coming up soon. Tick off what's ready":"Preparation checklist"} (${done}/${PREP.length}):</div><div class="prep">${PREP.map(([pk,pl])=>`<label class="ck"><input type="checkbox" data-prep="${i}" data-pk="${pk}" ${pr[pk]?"checked":""} ${can?"":"disabled"}> ${pl}</label>`).join("")}</div>`;
+  }
+  const showReport=["due","overdue","unfulfilled","held"].includes(L.k)||(L.k==="upcoming"&&L.days===0);
+  if(showReport&&can&&d.status!=="Unfulfilled"){
+    if(L.k==="overdue") h+=`<div class="note bad">The report is overdue. Submit it now, or ask leadership for an extension or a new date. After ${esc(fmtDate(L.deadline))} this training is marked Unfulfilled.</div>`;
+    if(L.k==="unfulfilled") h+=`<div class="note bad">No report was received within ${GRACE_DAYS} days, so this training is marked Unfulfilled. You can still send a late report.</div>`;
+    h+=`<details class="plain" ${L.k!=="held"?"open":""}><summary>${L.k==="held"?"View or edit the post-training report":"Post-training report"}</summary><div class="grid" style="margin-top:8px">
+      <label class="f">Outcome<select id="${id("ds")}">${["Held","Cancelled"].map(o=>`<option ${(d.status||"Held")===o?"selected":""}>${o}</option>`).join("")}</select></label>
+      <label class="f">Date held<input id="${id("dh")}" type="date" value="${esc(d.heldOn||t.date||"")}"></label>
+      <label class="f">Attendance<input id="${id("da")}" type="number" min="0" value="${esc(d.attendance??"")}"></label>
+      <label class="f">Actual cost (RM)<input id="${id("dc")}" type="number" min="0" value="${esc(d.actualCost??"")}"></label>
+      <label class="f span-all">Short summary<span class="req">*</span><textarea id="${id("df")}" placeholder="How did it go? What was covered?">${esc(d.feedback||"")}</textarea></label>
+      <label class="f span-all">What went well<textarea id="${id("dw")}">${esc(d.wentWell||"")}</textarea></label>
+      <label class="f span-all">What to improve next time<textarea id="${id("di")}">${esc(d.improve||"")}</textarea></label>
+      <label class="f span-all">Follow-up actions<input id="${id("du")}" value="${esc(d.followUp||"")}" placeholder="e.g. refresher in Q3; buy two new wireless mics"></label>
+      <div class="span-all row"><button class="btn small primary" type="button" data-report="${i}">${L.k==="held"?"Update Report":"Mark Done & Submit Report"}</button>${d.reportedAt?`<span class="small muted">Reported ${esc(fmtStamp(d.reportedAt))}</span>`:`<span class="small muted">Due within ${REPORT_DAYS} days of the training.</span>`}</div></div></details>`;
+  } else if(L.k==="held"||d.status==="Unfulfilled") h+=reportView(d);
+  if(can&&!t.request&&["upcoming","planned","due","overdue","unfulfilled"].includes(L.k)&&d.status!=="Unfulfilled"){
+    h+=`<details class="plain"><summary>Need a new date or more time?</summary><div class="grid" style="margin-top:8px">
+      <label class="f">Request<select id="${id("rt")}"><option value="change">Change the training date</option>${["due","overdue","unfulfilled"].includes(L.k)?`<option value="extension">More time to send the report</option>`:""}</select></label>
+      <label class="f">New date<input id="${id("rd")}" type="date"></label>
+      <label class="f span-all">Reason<input id="${id("rr")}" placeholder="e.g. trainer unavailable; clashes with church camp"></label>
+      <div class="span-all"><button class="btn small" type="button" data-askreq="${i}">Send to Leadership</button></div></div></details>`;
+  }
+  if(S.isAdmin){
+    const btns=[];
+    if(["upcoming","due","overdue","unfulfilled"].includes(L.k)) btns.push(waLink(reminderText(k,p,t,i,L),"WhatsApp reminder to lead"));
+    if(["due","overdue","unfulfilled"].includes(L.k)&&d.status!=="Unfulfilled") btns.push(`<button class="btn small warn" type="button" data-unful="${i}">Mark Unfulfilled</button>`);
+    if(d.status==="Unfulfilled") btns.push(`<button class="btn small" type="button" data-reopen="${i}">Undo Unfulfilled</button>`);
+    if(btns.length) h+=`<div class="row">${btns.join("")}</div>`;
+  }
+  return h+`</div>`;
+}
+async function updateTraining(pid,i,mut,action,note,changes,okMsg){
+  const p=S.plans[pid]; if(!p||!S.db) return false;
+  const tr=clone(p.trainings); mut(tr[i]);
+  try{await S.db.doc("plans/"+pid).update({trainings:tr,updatedAt:nowIso(),log:withLog(p,logEntry(action,note||"",changes||[]))});
+    p.trainings=tr; if(pid===curId()&&S.form&&!S.dirty) S.form.trainings=clone(tr);
+    if(okMsg) toast(okMsg); renderAll(); return true}
+  catch(e){toast(e?.code==="invalid_argument"?"You don't have permission to do this.":"Couldn't save. Try again.");return false}
+}
+async function decideRequest(pid,i,approve){
+  const p=S.plans[pid]; const t=p?.trainings?.[i]; if(!t?.request) return;
+  const r=t.request, note=(document.getElementById("lead-comment")?.value||"").trim();
+  if(!approve) return updateTraining(pid,i,x=>{delete x.request},`Training #${i+1}: request declined`,note,[],"Request declined. Let the lead know on WhatsApp.");
+  if(r.type==="change") return updateTraining(pid,i,x=>{x.originalDate=x.originalDate||x.date;x.date=r.newDate;x.rescheduled=(x.rescheduled||0)+1;delete x.request;delete x.extendedTo},`Training #${i+1}: date change approved`,note,[`Training #${i+1} · Date: ${fmtDate(t.date)} → ${fmtDate(r.newDate)}`],"New date approved.");
+  return updateTraining(pid,i,x=>{x.extendedTo=r.newDate;delete x.request},`Training #${i+1}: extension approved`,note,[`Training #${i+1} · Report due by ${fmtDate(r.newDate)}`],"Extension approved.");
+}
+function actionItems(y){
+  const it={review:[],requests:[],upcoming:[],due:[],overdue:[],unfulfilled:[]};
+  for(const u of orderedUnits()){const id=docId(y,u.key),p=S.plans[id];if(!p)continue;const code=wf(p,S.reviews[id]);
+    if(["review","edit_requested","meeting"].includes(code)) it.review.push({u,p,id,code});
+    (p.trainings||[]).forEach((t,i)=>{const L=life(t,code),x={u,p,t,i,L,id,code};
+      if(t.request) it.requests.push(x); else if(it[L.k]) it[L.k].push(x)});
+  }
+  for(const k of ["upcoming","due","overdue","unfulfilled","requests"]) it[k].sort((a,b)=>(a.t.date||"").localeCompare(b.t.date||""));
+  return it;
+}
+function renderReminders(){
+  const v=$("#view-reminders"), y=S.year, it=actionItems(y);
+  const row=(x,extra)=>`<div class="rem-row"><span class="lang ${x.u.combined?"all":x.u.lang==="English"?"en":"zh"}">${esc(x.u.short||"")}</span>
+    <div class="rem-main"><b>${esc(x.u.name)}${x.t?` · Training #${x.i+1}`:""}</b><span>${x.t?`${esc(courseLabel(x.u.key,x.t)||"No course")} · ${esc(fmtDate(x.t.date))} · `:""}Lead: ${esc(x.p.pic||x.u.pic||"not set")}</span></div>
+    <div class="rem-st">${x.t?lifePill(x.L):pill(x.code)}</div><div class="row rem-act">${extra||""}<button class="btn small" type="button" data-go="${x.u.key}" data-ti="${x.t?x.i:""}">Open</button></div></div>`;
+  const section=(key,title,desc,list,extra)=>sec("rm-"+key,"",title,desc,`<span class="pill ${list.length?(key==="overdue"||key==="unfulfilled"?"bad":key==="upcoming"?"sub":"draft"):"none"}">${list.length}</span>`,list.length?`<div class="rem-list">${list.map(x=>row(x,extra?extra(x):"")).join("")}</div>`:`<div class="small muted">Nothing here.</div>`);
+  const wa=x=>S.isAdmin?waLink(reminderText(x.u.key,x.p,x.t,x.i,x.L),"WhatsApp"):"";
+  let html=pageHead(`${y} Reminders`,`What needs attention now. Leads get a reminder ${UPCOMING_DAYS} days before each training, the report is due within ${REPORT_DAYS} days after it, and a training with no report after ${GRACE_DAYS} days is marked Unfulfilled unless leadership approves a new date or an extension.`);
+  html+=`<div class="card toolbar"><label class="f" style="display:flex;align-items:center;gap:8px">Year<select id="rm-year" style="width:auto;margin:0">${S.cfg.years.map(x=>`<option ${x===y?"selected":""}>${x}</option>`).join("")}</select></label><span class="small muted">WhatsApp buttons open a ready message to send to the lead.</span></div>`;
+  if(S.isAdmin){
+    html+=section("review","Plans Waiting for Leadership","Approve, edit or ask the lead to revise",it.review);
+    html+=section("requests","Date Change & Extension Requests","",it.requests,x=>`<button class="btn small good" type="button" data-rq="approve" data-pid="${x.id}" data-i="${x.i}">Approve</button><button class="btn small warn" type="button" data-rq="decline" data-pid="${x.id}" data-i="${x.i}">Decline</button>`);
+  } else if(it.requests.length) html+=section("requests","Requests Waiting for Leadership","",it.requests);
+  html+=section("upcoming",`Coming Up (next ${UPCOMING_DAYS} days)`,"Make sure everything is set",it.upcoming,wa);
+  html+=section("due","Report Due","Training date has passed; mark done and send the report",it.due,wa);
+  html+=section("overdue","Overdue","No report yet; will become Unfulfilled",it.overdue,wa);
+  html+=section("unfulfilled","Unfulfilled","Not carried out or no report",it.unfulfilled,wa);
+  v.innerHTML=html;
+  v.querySelectorAll("details.sec").forEach(d=>d.addEventListener("toggle",()=>{S.open[d.dataset.sec]=d.open}));
+  $("#rm-year").onchange=e=>{if(S.dirty&&!confirmLeave())return e.target.value=S.year;S.year=+e.target.value;loadForm();renderAll()};
+  v.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{if(S.dirty&&!confirmLeave())return;S.key=b.dataset.go;try{localStorage.setItem("towtp.key",S.key)}catch(_){};if(b.dataset.ti!=="")S.open["t"+b.dataset.ti]=true;loadForm();setView("form");if(b.dataset.ti!=="")setTimeout(()=>document.querySelector(`[data-sec="t${b.dataset.ti}"]`)?.scrollIntoView({behavior:"smooth",block:"start"}),60)});
+  v.querySelectorAll("[data-rq]").forEach(b=>b.onclick=()=>{b.disabled=true;decideRequest(b.dataset.pid,+b.dataset.i,b.dataset.rq==="approve")});
+}
+function remindersCount(){if(!S.plans)return 0;const it=actionItems(S.year);return it.due.length+it.overdue.length+it.requests.length+(S.isAdmin?it.review.length:0)}
+function yearEndPdf(y){
+  const doc=pdfDoc(),M=40;let yy=pdfHeader(doc,`${y} Ministry Training: Year-End Report`,`Generated ${fmtStamp(nowIso())}`,[]);
+  const rows=overviewRows(y); let T={planned:0,held:0,unf:0,can:0,open:0,resched:0,att:0,est:0,act:0};
+  const per=rows.filter(x=>x.p).map(x=>{const ts=x.p.trainings||[];let c={planned:ts.length,held:0,unf:0,can:0,open:0,att:0,est:planCost(x.p),act:0};
+    ts.forEach(t=>{const L=life(t,x.code);if(L.k==="held"){c.held++;c.att+=Number(t.delivery?.attendance)||0;c.act+=Number(t.delivery?.actualCost)||0}else if(L.k==="unfulfilled")c.unf++;else if(L.k==="cancelled")c.can++;else c.open++;if(t.rescheduled)T.resched+=t.rescheduled});
+    for(const k of ["planned","held","unf","can","open","att","est","act"])T[k]+=c[k];return {x,c}});
+  const pct=(a,b)=>b?Math.round(a*100/b)+"%":"-";
+  doc.setFont(PF,"normal");doc.setFontSize(10);doc.setTextColor(...INKC);
+  const lines=[`Trainings planned: ${T.planned}   Held: ${T.held}   Unfulfilled: ${T.unf}   Cancelled: ${T.can}   Still open: ${T.open}`,`Completion rate: ${pct(T.held,T.planned-T.can)} of trainings that went ahead   Rescheduled: ${T.resched} time(s)`,`Total attendance: ${T.att}   Estimated cost: ${rm(T.est)}   Actual cost: ${rm(T.act)}`];
+  lines.forEach(l=>{doc.text(pdfSafe(l),M,yy);yy+=15});yy+=6;
+  doc.autoTable({startY:yy,margin:{left:M,right:M},head:[["Team","Lead","Plan","Planned","Held","Unfulfilled","Cancelled","Done","Attend.","Est. RM","Actual RM"]],body:per.map(({x,c})=>[x.m.name,x.p.pic||x.m.pic,WF[x.code][0],c.planned,c.held,c.unf,c.can,pct(c.held,c.planned-c.can),c.att,(c.est||0).toLocaleString("en-MY"),(c.act||0).toLocaleString("en-MY")].map(v=>pdfSafe(String(v)))),styles:{font:PF,fontSize:7.5,cellPadding:3.5,textColor:INKC,lineColor:LINEC,lineWidth:.4},headStyles:{font:PF,fontStyle:"bold",fillColor:BRAND,textColor:255,fontSize:7.5},theme:"grid",columnStyles:{3:{halign:"right"},4:{halign:"right"},5:{halign:"right"},6:{halign:"right"},7:{halign:"right"},8:{halign:"right"},9:{halign:"right"},10:{halign:"right"}}});
+  const missing=rows.filter(x=>x.m.kpi&&!x.p).map(x=>x.m.name);
+  yy=doc.lastAutoTable.finalY+14;
+  if(missing.length){const ls=doc.splitTextToSize(pdfSafe("No plan submitted: "+missing.join(", ")),doc.internal.pageSize.getWidth()-2*M);doc.setFontSize(8.5);doc.setTextColor(156,0,6);doc.text(ls,M,yy);yy+=ls.length*11+8}
+  const body=[];per.forEach(({x})=>(x.p.trainings||[]).forEach((t,i)=>{const L=life(t,x.code),d=t.delivery||{};body.push([x.m.name,`#${i+1}`,t.date?fmtDate(t.date):"",courseLabel(x.m.key,t),L.label,d.attendance??"",[d.feedback,d.wentWell?"Well: "+d.wentWell:"",d.improve?"Improve: "+d.improve:""].filter(Boolean).join("\n")].map(v=>pdfSafe(String(v??""))))}));
+  if(body.length) doc.autoTable({startY:yy,margin:{left:M,right:M},head:[["Team","#","Date","Course","Status","Att.","Report & reflection"]],body,styles:{font:PF,fontSize:7.5,cellPadding:3.5,textColor:INKC,lineColor:LINEC,lineWidth:.4,valign:"top"},headStyles:{font:PF,fontStyle:"bold",fillColor:SOFTC,textColor:MUTE,fontSize:7.5},theme:"grid",columnStyles:{0:{cellWidth:78},1:{cellWidth:20},2:{cellWidth:52},3:{cellWidth:90},4:{cellWidth:62},5:{cellWidth:26,halign:"right"}},didParseCell:dd=>{if(dd.section==="body"&&dd.column.index===4&&/Unfulfilled|Overdue/.test(dd.cell.raw)){dd.cell.styles.textColor=[156,0,6];dd.cell.styles.fontStyle="bold"}}});
+  pdfFooters(doc,"TOW Ministry Training Planner · Year-End Report");return doc;
+}
+
 /* ================= WhatsApp ================= */
 function fillTemplate(tpl,vals){
   return tpl.split("\n").filter(line=>{const keys=[...line.matchAll(/\{(\w+)\}/g)].map(m=>m[1]);return keys.every(k=>String(vals[k]??"").trim()!=="")})
@@ -749,7 +909,8 @@ function trainingSec(t,i,ro,code){
   const delivery=t.delivery||{status:"Planned"};
   const dStat=delivery.status||"Planned";
   const past=t.date&&t.date<=today();
-  const meta=`${dStat!=="Planned"?`<span class="pill ${dStat==="Held"?"ok":dStat==="Deferred"?"draft":"none"}">${esc(dStat)}</span>`:past?`<span class="pill bad">Report due</span>`:""}<span class="small money" id="${id("total")}"></span>${ro?"":`<button class="btn small ghost" type="button" data-rm="${i}">Remove</button>`}`;
+  const L=life(t,code);
+  const meta=`${t.date?lifePill(L):""}<span class="small money" id="${id("total")}"></span>${ro?"":`<button class="btn small ghost" type="button" data-rm="${i}">Remove</button>`}`;
   const canReport=S.canWrite&&["approved","pic_review","meeting","edit_requested"].includes(code);
   const body=`
     <div class="grid">
@@ -781,15 +942,7 @@ function trainingSec(t,i,ro,code){
       <label class="f span-all">Cost notes<input id="${id("cn")}" data-t="${i}" data-k="costNotes" value="${esc(t.costNotes)}" placeholder="e.g. lunch for 20 at RM12; CPR cert RM150 per person" ${ro}></label>
     </div></fieldset>
     ${code==="approved"&&t.date?waBox(id("wa"),inviteText(k,t,i),"WhatsApp invite for participants"):""}
-    <details class="plain" ${canReport&&past?"open":""}><summary>After the training: report</summary>
-      ${canReport?`<div class="grid" style="margin-top:8px">
-        <label class="f">Status<select id="${id("ds")}">${sel(DELIVERY,dStat)}</select></label>
-        <label class="f">Attendance<input id="${id("da")}" type="number" min="0" value="${esc(delivery.attendance??"")}"></label>
-        <label class="f">Actual cost (RM)<input id="${id("dc")}" type="number" min="0" value="${esc(delivery.actualCost??"")}"></label>
-        <label class="f span-all">Summary & feedback<textarea id="${id("df")}" placeholder="What went well, what to improve; new date if deferred">${esc(delivery.feedback||"")}</textarea></label>
-        <div class="span-all row"><button class="btn small" type="button" data-report="${i}">Save Report</button>${delivery.reportedAt?`<span class="small muted">Last reported ${esc(fmtStamp(delivery.reportedAt))}</span>`:""}</div>
-      </div>`:`<div class="small muted" style="margin-top:6px">Available once the plan is approved. Send attendance, feedback and actual cost within 7 days of the training.</div>`}
-    </details>`;
+    ${lifePanel(t,i,code,L)}`;
   const sub=[courseLabel(k,t),langTag(t),t.date?fmtDate(t.date):""].filter(Boolean).join(" · ");
   return sec("t"+i,"",`Training #${i+1}`,`<span id="${id("sub")}">${esc(sub)}</span>`,meta,body,"tsec");
 }
@@ -902,6 +1055,18 @@ function bindForm(){
   v.querySelectorAll("[data-pic]").forEach(b=>b.onclick=()=>picRespond(b.dataset.pic,b));
   $("#btn-reqedit")?.addEventListener("click",e=>requestEdit(e.currentTarget));
   v.querySelectorAll("[data-report]").forEach(b=>b.onclick=()=>saveReport(+b.dataset.report,b));
+  v.querySelectorAll("[data-prep]").forEach(c=>c.onchange=()=>{const i=+c.dataset.prep,pk=c.dataset.pk,lbl=PREP.find(x=>x[0]===pk)?.[1]||pk;updateTraining(curId(),i,x=>{x.prep=Object.assign({},x.prep,{[pk]:c.checked})},`Training #${i+1} checklist`,`${c.checked?"Done":"Not done"}: ${lbl}`,[],"")});
+  v.querySelectorAll("[data-askreq]").forEach(b=>b.onclick=()=>{const i=+b.dataset.askreq,type=$(`#t${i}-rt`).value,nd=$(`#t${i}-rd`).value,reason=$(`#t${i}-rr`).value.trim();
+    if(!nd){$(`#t${i}-rd`).classList.add("missing");toast("Choose the new date.");return}
+    if(nd<=today()){$(`#t${i}-rd`).classList.add("missing");toast("The new date must be in the future.");return}
+    if(type==="change"&&pd(nd).getFullYear()!==S.year){toast(`Choose a date in ${S.year}.`);return}
+    if(!reason){$(`#t${i}-rr`).classList.add("missing");toast("Add a short reason for leadership.");return}
+    updateTraining(curId(),i,x=>{x.request={type,newDate:nd,reason,at:nowIso(),by:S.uid||null}},`Training #${i+1}: ${type==="change"?"date change":"extension"} requested`,reason,[`Training #${i+1} · Requested ${type==="change"?"new date":"report by"}: ${fmtDate(nd)}`],"Request sent to leadership.")});
+  v.querySelectorAll("[data-req]").forEach(b=>b.onclick=()=>{b.disabled=true;decideRequest(curId(),+b.dataset.i,b.dataset.req==="approve")});
+  v.querySelectorAll("[data-unful]").forEach(b=>b.onclick=()=>{const i=+b.dataset.unful;if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="Click again to confirm";setTimeout(()=>{b.dataset.armed="";b.textContent="Mark Unfulfilled"},4000);return}
+    const note=($("#lead-comment")?.value||"").trim();updateTraining(curId(),i,x=>{x.delivery={status:"Unfulfilled",note,at:nowIso(),by:S.uid||null};delete x.request},`Training #${i+1} marked unfulfilled`,note,[],"Marked Unfulfilled.")});
+  v.querySelectorAll("[data-reopen]").forEach(b=>b.onclick=()=>{const i=+b.dataset.reopen;updateTraining(curId(),i,x=>{delete x.delivery},`Training #${i+1}: Unfulfilled undone`,"",[],"Unfulfilled removed.")});
+
 }
 let leaveArmed=0;
 function confirmLeave(){ if(Date.now()-leaveArmed<5000){S.dirty=false;return true} leaveArmed=Date.now(); toast("You have unsaved changes. Save first, or choose again to discard them."); return false; }
@@ -1028,12 +1193,13 @@ async function requestEdit(btn){
 async function saveReport(i,btn){
   const p=S.plans[curId()]; if(!p) return;
   const g=n=>$(`#t${i}-${n}`)?.value;
-  const d={status:g("ds"),attendance:g("da")===""?"":Number(g("da")),actualCost:g("dc")===""?"":Number(g("dc")),feedback:g("df"),reportedAt:nowIso(),reportedBy:S.uid||null};
-  const tr=clone(p.trainings); const old=tr[i].delivery||{}; tr[i].delivery=d;
+  const summary=(g("df")||"").trim(); if(!summary){$(`#t${i}-df`)?.classList.add("missing");toast("Write a short summary first.");return}
+  const t0=p.trainings[i], old=t0.delivery||{};
+  const d={status:g("ds")||"Held",heldOn:g("dh")||t0.date||"",attendance:g("da")===""?"":Number(g("da")),actualCost:g("dc")===""?"":Number(g("dc")),feedback:summary,wentWell:g("dw")||"",improve:g("di")||"",followUp:g("du")||"",reportedAt:old.reportedAt||nowIso(),updatedAt:nowIso(),reportedBy:S.uid||null,late:old.late||(!!t0.date&&today()>(t0.extendedTo||addDays(t0.date,REPORT_DAYS)))};
   const ch=[]; if((old.status||"Planned")!==d.status)ch.push(`Training #${i+1} · Status: ${old.status||"Planned"} → ${d.status}`); if(String(old.attendance??"")!==String(d.attendance))ch.push(`Training #${i+1} · Attendance: ${short(old.attendance)} → ${short(d.attendance)}`); if(String(old.actualCost??"")!==String(d.actualCost))ch.push(`Training #${i+1} · Actual cost: ${rm(old.actualCost)} → ${rm(d.actualCost)}`);
   btn.disabled=true;
-  try{await S.db.doc("plans/"+curId()).update({trainings:tr,log:withLog(p,logEntry(`Training #${i+1} report`,d.feedback,ch))});if(S.form&&!S.dirty)S.form.trainings[i].delivery=d;toast("Report saved.")}
-  catch(e){toast("Couldn't save the report. Try again.")}finally{btn.disabled=false}
+  await updateTraining(curId(),i,x=>{x.delivery=d;delete x.request},old.status==="Held"?`Training #${i+1} report updated`:`Training #${i+1} marked ${d.status.toLowerCase()}`,summary,ch,old.status==="Held"?"Report updated.":"Marked done. Thank you for the report!");
+  btn.disabled=false;
 }
 async function attachPaper(input){
   const file=input.files&&input.files[0]; if(!file) return;
@@ -1115,7 +1281,7 @@ function renderCalendar(){
   let body="",lastM=-1;
   for(const e of entries){const m=pd(e.t.date).getMonth();if(m!==lastM){body+=`<tr class="month"><td colspan="5">${MONL[m]} ${y}</td></tr>`;lastM=m}
     const code=wf(e.p,S.reviews[e.id]);
-    body+=`<tr><td class="date">${esc(fmtDate(e.t.date))}<div class="muted small">${esc(fmtTime(e.t.start))}${e.t.end?"–"+esc(fmtTime(e.t.end)):""}</div></td><td><b class="${MIN(baseOf(e.k))?.parent?"childname":""}">${esc(minName(e.k))}</b> #${e.i+1}${langTag(e.t)?` <span class="pill none">${esc(langTag(e.t))}</span>`:""}<div class="muted small">${esc(courseLabel(e.k,e.t))}</div></td><td>${esc(e.t.pic)}<div class="muted small">${esc([e.t.venue,e.t.venueDetail].filter(Boolean).join(" · "))}</div></td><td>${pill(code)}</td><td>${clashKeys.has(e.key)?`<span class="pill bad">Clash</span>`:e.t.delivery?.status==="Held"?`<span class="pill ok">Held</span>`:""}</td></tr>`}
+    body+=`<tr><td class="date">${esc(fmtDate(e.t.date))}<div class="muted small">${esc(fmtTime(e.t.start))}${e.t.end?"–"+esc(fmtTime(e.t.end)):""}</div></td><td><b class="${MIN(baseOf(e.k))?.parent?"childname":""}">${esc(minName(e.k))}</b> #${e.i+1}${langTag(e.t)?` <span class="pill none">${esc(langTag(e.t))}</span>`:""}<div class="muted small">${esc(courseLabel(e.k,e.t))}</div></td><td>${esc(e.t.pic)}<div class="muted small">${esc([e.t.venue,e.t.venueDetail].filter(Boolean).join(" · "))}</div></td><td>${pill(code)}</td><td>${clashKeys.has(e.key)?`<span class="pill bad">Clash</span>`:(()=>{const L=life(e.t,code);return ["held","due","overdue","unfulfilled","request","cancelled"].includes(L.k)?lifePill(L):""})()}</td></tr>`}
   v.innerHTML=pageHead(`${y} Training Calendar`,`Every ministry's saved training dates on one timeline. Two ministries on the same weekend are flagged as a clash with a proposed new date. Levites tech teams (Sound, Lighting, LED, Media) may share a weekend on different days.`)+
   `<div class="card row spread"><label class="f" style="display:flex;align-items:center;gap:8px">Year<select id="cal-year" style="width:auto;margin:0">${S.cfg.years.map(x=>`<option ${x===y?"selected":""}>${x}</option>`).join("")}</select></label>
     <div class="row"><span class="pill sub">${entries.length} trainings</span>${groups.length?`<span class="pill bad">${groups.length} clash${groups.length>1?"es":""} · ${nMove} to move</span>`:entries.length?`<span class="pill ok">No clashes</span>`:""}
@@ -1131,11 +1297,12 @@ function renderCalendar(){
 
 /* ================= Overview ================= */
 function progressOf(p,k){
-  const want=Number(p?.frequency)||MIN(k)?.freq||4, ts=(p?.trainings)||[], td=today();
-  const segs=ts.map(t=>{const s=t.delivery?.status;if(s==="Held")return "held";if(s==="Deferred")return "def";if(s==="Cancelled")return "can";if(t.date&&t.date<td)return "due";return "up"});
-  const order={held:0,def:1,due:2,up:3,can:4}; segs.sort((a,b)=>order[a]-order[b]);
+  const want=Number(p?.frequency)||MIN(k)?.freq||4, ts=(p?.trainings)||[], code=p?wf(p,S.reviews[docId(p.year,k)]):"none";
+  const map={held:"held",upcoming:"up",planned:"up",nodate:"up",notapproved:"up",due:"due",overdue:"due",unfulfilled:"unf",cancelled:"can",request:"def"};
+  const segs=ts.map(t=>map[life(t,code).k]||"up");
+  const order={held:0,def:1,due:2,unf:3,up:4,can:5}; segs.sort((a,b)=>order[a]-order[b]);
   while(segs.length<want) segs.push("none");
-  return {segs,want,held:segs.filter(s=>s==="held").length};
+  return {segs,want,held:segs.filter(s=>s==="held").length,unf:segs.filter(s=>s==="unf").length};
 }
 function overviewRows(y){return orderedUnits().map(m=>{const id=docId(y,m.key),p=S.plans[id],r=S.reviews[id];return {m,id,p,r,code:wf(p,r),pr:progressOf(p,m.key),spread:p?spreadIssues(p):[]}})}
 function renderOverview(){
@@ -1161,24 +1328,25 @@ function renderOverview(){
       <button class="btn small ov-open" type="button" data-open="${x.m.key}">Open</button></div>`});
   v.innerHTML=pageHead(`${y} Plans Overview`,`Submission status and training progress for every team. Plans are due ${esc(fmtLong(dueDate(y)))}; on-time submission earns the "Plan on time" points in the Ministry Training KPI.`)+
   `<div class="card toolbar"><label class="f" style="display:flex;align-items:center;gap:8px">Year<select id="ov-year" style="width:auto;margin:0">${S.cfg.years.map(x=>`<option ${x===y?"selected":""}>${x}</option>`).join("")}</select></label>
-   <div class="row"><button class="btn small" type="button" id="ov-pdf">${ICON.pdf} PDF Report</button><button class="btn small" type="button" id="ov-csv">${ICON.csv} CSV</button></div></div>
-  <div class="kpi"><div><span>Plans submitted</span><b>${sub} / ${kpiRows.length}</b></div><div><span>Approved</span><b>${appr} / ${kpiRows.length}</b></div><div><span>Trainings held</span><b>${held} / ${sess}</b></div><div><span>Est. total cost</span><b>${rm(total)}</b></div></div>
+   <div class="row"><button class="btn small primary" type="button" id="ov-ye">${ICON.pdf} Year-End Report</button><button class="btn small" type="button" id="ov-pdf">${ICON.pdf} PDF Report</button><button class="btn small" type="button" id="ov-csv">${ICON.csv} CSV</button></div></div>
+  <div class="kpi"><div><span>Plans submitted</span><b>${sub} / ${kpiRows.length}</b></div><div><span>Approved</span><b>${appr} / ${kpiRows.length}</b></div><div><span>Unfulfilled</span><b style="color:${all.reduce((a,x)=>a+x.pr.unf,0)?"var(--red)":"inherit"}">${all.reduce((a,x)=>a+x.pr.unf,0)}</b></div><div><span>Trainings held</span><b>${held} / ${sess}</b></div><div><span>Est. total cost</span><b>${rm(total)}</b></div></div>
   <div class="fchips">${chip("all","All")}${chip("none","Not started")}${chip("draft","In progress")}${chip("review","Waiting on review")}${chip("approved","Approved")}</div>
   <div class="ov-list">${list||`<div class="ov-empty">No teams in this group.</div>`}</div>
-  <div class="legend"><span><i style="background:var(--green);border-radius:2px"></i>Held</span><span><i style="background:#8fb3ad;border-radius:2px"></i>Upcoming</span><span><i style="background:#d9534f;border-radius:2px"></i>Report due</span><span><i style="background:#e0b24c;border-radius:2px"></i>Deferred</span><span><i style="background:var(--soft-2);border:1px dashed #c6cdc7;border-radius:2px"></i>Not planned yet</span></div>`;
+  <div class="legend"><span><i style="background:var(--green);border-radius:2px"></i>Held</span><span><i style="background:#8fb3ad;border-radius:2px"></i>Upcoming</span><span><i style="background:#d9534f;border-radius:2px"></i>Report due</span><span><i style="background:#e0b24c;border-radius:2px"></i>Change requested</span><span><i style="background:#7a1f1f;border-radius:2px"></i>Unfulfilled</span><span><i style="background:var(--soft-2);border:1px dashed #c6cdc7;border-radius:2px"></i>Not planned yet</span></div>`;
   $("#ov-year").onchange=e=>{if(S.dirty&&!confirmLeave())return e.target.value=S.year;S.year=+e.target.value;loadForm();renderAll()};
   v.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{S.ovFilter=b.dataset.filter;renderOverview()});
   const open=k=>{if(S.dirty&&!confirmLeave())return;S.key=k;try{localStorage.setItem("towtp.key",S.key)}catch(_){}loadForm();setView("form")};
   v.querySelectorAll(".ov-row").forEach(r=>{r.onclick=e=>{e.stopPropagation();open(r.dataset.open)};r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open(r.dataset.open)}}});
   $("#ov-pdf").onclick=e=>pdfOut(()=>overviewPdf(y),`TOW-Training-Overview-${y}`,e.currentTarget);
   $("#ov-csv").onclick=()=>exportCsv(y);
+  $("#ov-ye").onclick=e=>pdfOut(()=>yearEndPdf(y),`TOW-Training-Year-End-Report-${y}`,e.currentTarget);
 }
 async function exportCsv(y){
-  const head=["Year","Team","Ministry","Plan status","Training #","Date","Day","Start","End","Course","Team","Language team","Headcount","PIC","What it covers","Expected outcome","Venue","Venue details","Trainer type","Trainer","Format",...COST_FIELDS.map(c=>c[1]+" (RM)"),"Total est. (RM)","Cost notes","Delivery status","Attendance","Actual cost (RM)","Feedback"];
+  const head=["Year","Team","Ministry","Plan status","Training #","Date","Day","Start","End","Course","Team","Language team","Headcount","PIC","What it covers","Expected outcome","Venue","Venue details","Trainer type","Trainer","Format",...COST_FIELDS.map(c=>c[1]+" (RM)"),"Total est. (RM)","Cost notes","Training status","Original date","Times rescheduled","Date held","Attendance","Actual cost (RM)","Summary","What went well","To improve","Follow-up"];
   const q=v=>{v=String(v??"");return /[",\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v};
   const lines=[head.map(q).join(",")];
   for(const m of orderedUnits(false)){const p=S.plans[docId(y,m.key)];if(!p)continue;const code=WF[wf(p,S.reviews[docId(y,m.key)])][0];
-    (p.trainings||[]).forEach((t,i)=>lines.push([y,m.name,minFull(m.base),code,i+1,t.date,t.date?DOW[pd(t.date).getDay()]:"",t.start,t.end,courseLabel(m.key,t),t.team,m.lang,t.headcount,t.pic,t.covers,t.outcome,t.venue,t.venueDetail,t.trainerType,t.trainer,t.format,...COST_FIELDS.map(([k])=>Number(t.cost?.[k])||0),tCost(t),t.costNotes,t.delivery?.status||"Planned",t.delivery?.attendance??"",t.delivery?.actualCost??"",t.delivery?.feedback||""].map(q).join(",")))}
+    (p.trainings||[]).forEach((t,i)=>lines.push([y,m.name,minFull(m.base),code,i+1,t.date,t.date?DOW[pd(t.date).getDay()]:"",t.start,t.end,courseLabel(m.key,t),t.team,m.lang,t.headcount,t.pic,t.covers,t.outcome,t.venue,t.venueDetail,t.trainerType,t.trainer,t.format,...COST_FIELDS.map(([k])=>Number(t.cost?.[k])||0),tCost(t),t.costNotes,life(t,wf(p,S.reviews[docId(y,m.key)])).label,t.originalDate||"",t.rescheduled||0,t.delivery?.heldOn||"",t.delivery?.attendance??"",t.delivery?.actualCost??"",t.delivery?.feedback||"",t.delivery?.wentWell||"",t.delivery?.improve||"",t.delivery?.followUp||""].map(q).join(",")))}
   if(lines.length===1){toast("No plans saved for this year yet.");return}
   await saveFile(`TOW-Training-Plans-${y}.csv`,"﻿"+lines.join("\n"));
 }
@@ -1436,7 +1604,7 @@ function calendarPdf(y){
 /* ================= Views & boot ================= */
 function setView(v){
   S.view=v;
-  for(const x of ["form","calendar","overview","settings"]){$("#view-"+x).hidden=x!==v;$("#tab-"+x).setAttribute("aria-selected",x===v)}
+  for(const x of ["form","calendar","overview","reminders","settings"]){$("#view-"+x).hidden=x!==v;$("#tab-"+x).setAttribute("aria-selected",x===v)}
   try{history.replaceState(null,"","#"+v)}catch(_){}
   renderAll(); window.scrollTo(0,0);
 }
@@ -1446,10 +1614,12 @@ function renderAll(){
   if(S.view==="calendar") renderCalendar();
   if(S.view==="overview") renderOverview();
   if(S.view==="settings") renderSettings();
+  if(S.view==="reminders") renderReminders();
+  {const n=remindersCount(),b=$("#tab-reminders");if(b)b.textContent=n?`Reminders (${n})`:"Reminders"}
 }
 document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>setView(b.dataset.view));
-window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(["form","calendar","overview","settings"].includes(h)&&h!==S.view)setView(h)});
-{const h0=location.hash.slice(1);if(["form","calendar","overview"].includes(h0))S.view=h0;}
+window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(["form","calendar","overview","reminders","settings"].includes(h)&&h!==S.view)setView(h)});
+{const h0=location.hash.slice(1);if(["form","calendar","overview","reminders"].includes(h0))S.view=h0;}
 if(!S.cfg.years.includes(S.year)) S.year=S.cfg.years[0];
 loadForm(); setView(S.view);
 
