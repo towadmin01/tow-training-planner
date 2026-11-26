@@ -391,11 +391,11 @@ const C=(code,title,covers,outcome,by)=>({code,title,covers,outcome,by});
 const DEFAULTS={
  years:[2027,2028],
  dueMonth:12, dueDay:15,
- v:5,
+ v:7,
  staff:["Ps. Derick Wong","Ps. Jocelyn Yoong","Ps. Kenrick Kong","Ps. Kevin Ong","Ps. Marianne Chow","Ps. Melissa Lai","Ps. Michael Lia","Ps. Viven Tan","Cheah Kok Hon","Iris Yap","Jeremy Ong","Jessica Lim","Leon Wong","Mary Jane","Priscilla Chin","Siew Boon Ping","Wendy Ngo","Winnie Phang"],
  ministries:[
-  {key:"levites",name:"Levites (Worship)",parent:"",pic:"Ps. Kenrick Kong",picEn:"",picZh:"",team:"Worship team (musicians, vocalists, worship leaders)",freq:4,kpi:true,active:true},
-  {key:"lighting",name:"Lighting",parent:"levites",pic:"Ps. Kenrick Kong",picEn:"",picZh:"",team:"Lighting team",freq:4,kpi:true,active:true},
+  {key:"levites",name:"Levites – Worship",parent:"",pic:"Ps. Kenrick Kong",picEn:"",picZh:"",team:"Worship team (musicians, vocalists, worship leaders)",freq:4,kpi:true,active:true},
+  {key:"lighting",name:"Levites – Lighting",parent:"",pic:"Ps. Kenrick Kong",picEn:"",picZh:"",team:"Lighting team",freq:4,kpi:true,active:true},
   {key:"sound",name:"Levites – Sound",parent:"",pic:"Cheah Kok Hon",picEn:"",picZh:"",team:"Sound team",freq:4,kpi:true,active:true},
   {key:"led",name:"Levites – LED",parent:"",pic:"Leon Wong",picEn:"",picZh:"",team:"LED wall team",freq:4,kpi:true,active:true},
   {key:"media",name:"Levites – Media",parent:"",pic:"Leon Wong",picEn:"",picZh:"",team:"Media / livestream / slides team",freq:4,kpi:true,active:true},
@@ -1299,6 +1299,8 @@ function mergeCfg(doc){
     if(!c.ministries.some(m=>m.key==="connect")) c.ministries.push(clone(DEFAULTS.ministries.find(m=>m.key==="connect")));
     c.ministries=c.ministries.map(m=>m.key==="connect"?Object.assign({},m,{group:true,parent:"",name:"Connect & Hospitality",active:true}):(m.key==="lounge"||m.key==="ushers")?Object.assign({},m,{parent:"connect"}):m);
   }
+  if((doc.v||1)<6){c.ministries=c.ministries.map(m=>m.key==="levites"&&m.name==="Levites (Worship)"?Object.assign({},m,{name:"Levites – Worship"}):m)}
+  if((doc.v||1)<7){c.ministries=c.ministries.map(m=>m.key==="lighting"?Object.assign({},m,{name:m.name==="Lighting"?"Levites – Lighting":m.name,parent:""}):m)}
   if((doc.v||1)<3){c.ministries=c.ministries.map(m=>["youth","ya"].includes(m.key)&&m.combined===undefined?Object.assign({},m,{combined:true}):m)}
   c.v=DEFAULTS.v;
   return c;
